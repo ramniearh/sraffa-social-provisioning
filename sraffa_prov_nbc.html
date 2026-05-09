@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substantivist Sraffian Master Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #f4f4f9;
+            --surface: #ffffff;
+            --text: #333333;
+            --border: #dddddd;
+            --primary: #4a90e2;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, h3 { color: #2c3e50; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: center;
+        }
+        th { background-color: #f8f9fa; }
+        input[type="number"] {
+            width: 70px;
+            padding: 4px;
+            text-align: right;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            width: 120px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background: #357abd; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #c0392b; }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .metrics-box {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        
+        canvas { max-width: 100%; max-height: 400px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The Substantivist Sraffian Simulator</h1>
+    <p>Build your matrix. The system automatically calculates physical balance, eigen-prices, and surplus appropriation.</p>
+
+    <!-- MATRIX EDITOR -->
+    <div class="card">
+        <h2>1. The Oikos Matrix (Physical Flows)</h2>
+        <div class="controls">
+            <button onclick="addSector()">+ Add Sector</button>
+            <button class="btn-danger" onclick="removeSector()">- Remove Last Sector</button>
+            <button onclick="loadPreset('sahlins')" style="background:#DEB887; color:black;">Load Sahlins</button>
+            <button onclick="loadPreset('hudson')" style="background:#F4A460; color:black;">Load Hudson</button>
+        </div>
+        <div id="matrix-container"></div>
+    </div>
+
+    <!-- DIAGNOSTICS & DASHBOARD -->
+    <div class="dashboard">
+        <div class="card">
+            <h2>2. Diagnostics & Prices</h2>
+            <div id="diagnostics-panel" class="metrics-box"></div>
+        </div>
+        <div class="card">
+            <h2>3. Structural Value Appropriation</h2>
+            <canvas id="appropriationChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- STATE MANAGEMENT ---
+    let state = {
+        sectors: ["Wheat", "Iron", "Workers"],
+        matrix: [
+            [100, 50, 200],
+            [50,  10, 20],
+            [250, 40, 50]
+        ],
+        totals: [350, 100, 340],
+        numeraireIdx: 2,
+        isSocial: [false, false, true],
+        isSurplus: [false, false, false],
+        colors: ['#DEB887', '#708090', '#2E8B57', '#CD5C5C', '#FFD700', '#8A2BE2', '#FF4500']
+    };
+
+    let appropriationChart = null;
+
+    // --- MATH ENGINE ---
+    // Power Iteration to find dominant eigenvalue and eigenvector of Transpose(A)
+    function calculateEigen(A, iterations = 1000) {
+        let n = A.length;
+        if (n === 0) return { val: 1, vec: [] };
+        let v = new Array(n).fill(1.0);
+        
+        for (let iter = 0; iter < iterations; iter++) {
+            let v_new = new Array(n).fill(0);
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    v_new[i] += A[j][i] * v[j]; // Note: A[j][i] acts as Transpose
+                }
+            }
+            let norm = Math.sqrt(v_new.reduce((sum, val) => sum + val * val, 0));
+            if (norm === 0) break;
+            v = v_new.map(val => val / norm);
+        }
+
+        // Rayleigh quotient for eigenvalue
+        let num = 0, den = 0;
+        for (let i = 0; i < n; i++) {
+            let Av_i = 0;
+            for (let j = 0; j < n; j++) Av_i += A[j][i] * v[j];
+            num += v[i] * Av_i;
+            den += v[i] * v[i];
+        }
+        return { val: num / den, vec: v };
+    }
+
+    // --- CORE LOGIC & RENDER ---
+    function updateStateFromDOM() {
+        let n = state.sectors.length;
+        for (let i = 0; i < n; i++) {
+            state.sectors[i] = document.getElementById(`sec-name-${i}`).value;
+            state.totals[i] = parseFloat(document.getElementById(`total-${i}`).value) || 0;
+            state.isSocial[i] = document.getElementById(`social-${i}`).checked;
+            state.isSurplus[i] = document.getElementById(`surplus-${i}`).checked;
+            
+            if (document.getElementById(`numeraire-${i}`).checked) state.numeraireIdx = i;
+
+            for (let j = 0; j < n; j++) {
+                state.matrix[i][j] = parseFloat(document.getElementById(`cell-${i}-${j}`).value) || 0;
+            }
+        }
+        analyzeSystem();
+    }
+
+    function renderMatrix() {
+        let n = state.sectors.length;
+        let html = `<table><tr>
+            <th>Sector / Inputs</th>`;
+        
+        for (let i = 0; i < n; i++) {
+            html += `<th>Sector ${i}</th>`;
+        }
+        html += `<th>Total Output</th><th>Config</th></tr>`;
+
+        for (let i = 0; i < n; i++) {
+            html += `<tr>
+                <td><input type="text" id="sec-name-${i}" value="${state.sectors[i]}" onchange="updateStateFromDOM()"></td>`;
+            for (let j = 0; j < n; j++) {
+                html += `<td><input type="number" id="cell-${i}-${j}" value="${state.matrix[i][j]}" onchange="updateStateFromDOM()"></td>`;
+            }
+            html += `<td><input type="number" id="total-${i}" value="${state.totals[i]}" onchange="updateStateFromDOM()" style="background:#e8f4f8; font-weight:bold;"></td>
+                <td style="text-align:left; font-size:0.9em; white-space:nowrap;">
+                    <label><input type="radio" name="numeraire" id="numeraire-${i}" ${state.numeraireIdx === i ? 'checked' : ''} onchange="updateStateFromDOM()"> Numeraire</label><br>
+                    <label><input type="checkbox" id="social-${i}" ${state.isSocial[i] ? 'checked' : ''} onchange="updateStateFromDOM()"> Social Class</label><br>
+                    <label><input type="checkbox" id="surplus-${i}" ${state.isSurplus[i] ? 'checked' : ''} onchange="updateStateFromDOM()"> Surplus Good</label>
+                </td>
+            </tr>`;
+        }
+        html += `</table>`;
+        document.getElementById('matrix-container').innerHTML = html;
+    }
+
+    function analyzeSystem() {
+        let n = state.sectors.length;
+        let diagHtml = "";
+
+        // 1. Physical Balance Check
+        let isBalanced = true;
+        diagHtml += `<h3>Physical Balances</h3><ul>`;
+        for (let i = 0; i < n; i++) {
+            let rowSum = state.matrix[i].reduce((a, b) => a + b, 0);
+            let net = state.totals[i] - rowSum;
+            if (net > 0.01) {
+                diagHtml += `<li style="color: green;">${state.sectors[i]}: SURPLUS (+${net.toFixed(1)})</li>`;
+                isBalanced = false;
+            } else if (net < -0.01) {
+                diagHtml += `<li style="color: red;">${state.sectors[i]}: DEFICIT (${net.toFixed(1)})</li>`;
+                isBalanced = false;
+            }
+        }
+        if (isBalanced) {
+            diagHtml += `<li style="color: green;"><strong>All sectors in perfect balance.</strong></li>`;
+        }
+        diagHtml += `</ul>`;
+
+        // 2. Technical Matrix & Eigenvalues
+        let A = Array(n).fill().map(() => Array(n).fill(0));
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                if (state.totals[j] > 0) A[i][j] = state.matrix[i][j] / state.totals[j];
+            }
+        }
+
+        let eigen = calculateEigen(A);
+        let lambda = eigen.val;
+        let p_raw = eigen.vec;
+
+        diagHtml += `<h3>System Thermodynamics</h3>`;
+        if (Math.abs(lambda - 1.0) < 0.005) {
+            diagHtml += `<div class="alert alert-success">System is at Subsistence (λ ≈ ${lambda.toFixed(4)})</div>`;
+        } else {
+            diagHtml += `<div class="alert alert-danger">Warning: Matrix is not at Subsistence (λ = ${lambda.toFixed(4)}). <br>If λ > 1, the system consumes more than it produces.</div>`;
+        }
+
+        // 3. Prices
+        let p_numeraire = p_raw[state.numeraireIdx] || 1;
+        let prices = p_raw.map(p => Math.abs(p / p_numeraire));
+
+        diagHtml += `<h3>Exchange Ratios (Prices)</h3><ul>`;
+        for (let i = 0; i < n; i++) {
+            let tag = (i === state.numeraireIdx) ? " <strong>(Numeraire)</strong>" : "";
+            diagHtml += `<li>${state.sectors[i]}: <strong>${prices[i].toFixed(4)}</strong>${tag}</li>`;
+        }
+        diagHtml += `</ul>`;
+        document.getElementById('diagnostics-panel').innerHTML = diagHtml;
+
+        // 4. Value Appropriation Chart Data
+        let labels = [];
+        let basicValues = [];
+        let surplusValues = [];
+        let barColors = [];
+
+        for (let s = 0; s < n; s++) {
+            if (state.isSocial[s]) {
+                let basicVal = 0;
+                let surpVal = 0;
+                
+                for (let i = 0; i < n; i++) {
+                    let flowValue = state.matrix[i][s] * prices[i];
+                    if (state.isSurplus[i]) surpVal += flowValue;
+                    else basicVal += flowValue;
+                }
+
+                labels.push(state.sectors[s]);
+                basicValues.push(basicVal);
+                surplusValues.push(surpVal);
+                barColors.push(state.colors[s % state.colors.length]);
+            }
+        }
+
+        updateChart(labels, basicValues, surplusValues, barColors);
+    }
+
+    function updateChart(labels, basic, surplus, colors) {
+        let ctx = document.getElementById('appropriationChart').getContext('2d');
+        if (appropriationChart) appropriationChart.destroy();
+
+        appropriationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Basic/Provisioning Value',
+                        data: basic,
+                        backgroundColor: colors,
+                        borderColor: '#333',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Surplus/Veblenian Value',
+                        data: surplus,
+                        backgroundColor: 'rgba(50, 50, 50, 0.2)', // Hatch proxy
+                        borderColor: '#333',
+                        borderWidth: 1,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Total Appropriated Value (Prices)' } }
+                }
+            }
+        });
+    }
+
+    // --- MUTATIONS & PRESETS ---
+    function addSector() {
+        let n = state.sectors.length;
+        state.sectors.push(`Sector ${n}`);
+        state.matrix.forEach(row => row.push(0));
+        state.matrix.push(new Array(n + 1).fill(0));
+        state.totals.push(100);
+        state.isSocial.push(false);
+        state.isSurplus.push(false);
+        renderMatrix();
+        analyzeSystem();
+    }
+
+    function removeSector() {
+        if (state.sectors.length <= 2) return alert("Must have at least 2 sectors.");
+        state.sectors.pop();
+        state.matrix.pop();
+        state.matrix.forEach(row => row.pop());
+        state.totals.pop();
+        state.isSocial.pop();
+        state.isSurplus.pop();
+        if (state.numeraireIdx >= state.sectors.length) state.numeraireIdx = 0;
+        renderMatrix();
+        analyzeSystem();
+    }
+
+    function loadPreset(type) {
+        if (type === 'sahlins') {
+            state.sectors = ["Foraging", "Biomass/Wood", "Tools", "Shelter", "Community/Care"];
+            state.matrix = [
+                [ 50,   0,   0,   0, 950],
+                [  0,  50,   0,  50, 400],
+                [ 10,  20,  10,  10,  50],
+                [  0,  50,   0,   0,  50],
+                [940, 380,  90,  40, 550]
+            ];
+            state.totals = [1000, 500, 100, 100, 2000];
+            state.numeraireIdx = 4;
+            state.isSocial = [false, false, false, false, true];
+            state.isSurplus = [false, false, false, false, false];
+        } else if (type === 'hudson') {
+            state.sectors = ["Grain", "Raw Materials", "Tools", "Food Rations", "Surplus Goods", "Workers", "Authority"];
+            state.matrix = [
+                [200,   0,   0, 1630,   0,  60,  10],
+                [ 50,  50, 150,    0, 100,   0,   0],
+                [ 50,  30,  20,   40,   0,  60,  40],
+                [100, 100, 100,  150,   0, 800, 100],
+                [  0,   0,   0,    0,   0,   0, 100],
+                [500, 400, 200,  550, 150, 400, 250],
+                [ 30,  50,  30,   50,   0,  40,  30]
+            ];
+            state.totals = [1900, 350, 240, 1350, 100, 2450, 300];
+            state.numeraireIdx = 6;
+            state.isSocial = [false, false, false, false, false, true, true];
+            state.isSurplus = [false, false, false, false, true, false, false];
+        }
+        renderMatrix();
+        analyzeSystem();
+    }
+
+    // Init
+    window.onload = () => {
+        renderMatrix();
+        analyzeSystem();
+    };
+</script>
+</body>
+</html>

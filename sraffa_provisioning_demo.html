@@ -38,31 +38,31 @@
         .btn-preset:hover { opacity: 0.9; }
         .btn-preset.active { border: 2px solid var(--accent); background: #263238; box-shadow: 0 0 8px rgba(38,166,154,0.4); }
 
-        .matrix-wrapper { overflow-x: auto; margin-bottom: 20px; }
+        .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; }
         table { border-collapse: collapse; width: 100%; font-size: 13px; }
         th, td { border: 1px solid var(--border); padding: 6px; text-align: center; }
         th { background: #f0f4f8; font-weight: 600; font-size: 12px; }
         .row-header { display: flex; gap: 5px; justify-content: flex-start; align-items: center; }
         
-        input[type="number"] { width: 55px; text-align: right; padding: 4px; border: 1px solid #ccc; font-family: monospace; }
-        input[type="text"] { padding: 4px; border: 1px solid #ccc; }
+        input[type="number"] { width: 55px; text-align: right; padding: 4px; border: 1px solid #ccc; font-family: monospace; border-radius: 3px; }
+        input[type="text"] { padding: 4px; border: 1px solid #ccc; border-radius: 3px; }
         .input-name { width: 110px; font-weight: bold; }
         .input-unit { width: 60px; font-size: 11px; color: #666; font-style: italic; background:#f9f9f9;}
         .total-cell { font-weight: bold; transition: background 0.3s; }
         
         .toggle-col { background: #fafafa; }
 
-        .btn-action { background: var(--accent); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 10px;}
+        .btn-action { background: var(--accent); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 15px;}
         .btn-action:hover { opacity: 0.9; }
         .btn-action.stale { background: var(--warning); }
-        .controls { display: flex; gap: 10px; margin-bottom: 15px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 5px; align-items: center;}
 
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .result-box { background: #f8f9fa; padding: 20px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; }
         h3 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 12px;}
         
         .heatmap-table td { transition: background-color 0.3s; font-family: monospace; font-size: 13px; }
-        .primer { font-size: 13px; color: #546e7a; margin-bottom: 10px; font-style: italic; }
+        .primer { font-size: 14px; color: #37474f; margin-bottom: 10px; }
         
         .chart-wrapper { position: relative; height: 280px; width: 100%; margin-top: 10px; }
         .chart-wrapper-horizontal { position: relative; height: 140px; width: 100%; margin-top: 10px; }
@@ -99,22 +99,25 @@
     </div>
 
     <div class="panel">
-        <div class="controls">
-            <button class="btn-preset" onclick="addSector()" style="background:#455a64;">+ Add Sector</button>
-            <button class="btn-preset" onclick="removeSector()" style="background: var(--danger);">- Remove Sector</button>
-            <span style="margin-left: 15px; font-size: 13px; color: #666;">
-                <strong>Primer:</strong> Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function.
-            </span>
+        
+        <div style="margin-bottom: 15px;">
+            <div class="controls">
+                <button class="btn-preset" onclick="addSector()" style="background:#455a64;">+ Add Sector</button>
+                <button class="btn-preset" onclick="removeSector()" style="background: var(--danger);">- Remove Sector</button>
+            </div>
+            <p class="primer" style="color: #455a64; font-size: 14px; line-height: 1.5; margin-top: 10px;">
+                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix, modifying the inter-sector flows and the total output. Use the right-hand columns to designate your <strong>Numeraire</strong> (the standard of value against which other sectors are measured), tag sectors as <strong>Social</strong> (central to human reproduction), or mark them as <strong>Surplus</strong> (goods or classes that consume output without re-entering core production).
+            </p>
         </div>
 
         <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()">
             </div>
         
-        <div class="primer" style="margin-top: 0; line-height: 1.8; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px solid #eee;">
-            <span class="legend-dot" style="background:#90caf9;"></span><strong>Economic (Basic):</strong> Core productive requirements.<br>
-            <span class="legend-dot" style="background:#a5d6a7;"></span><strong>Social (Basic):</strong> Nodes central to human reproduction (e.g., households, workers, community).<br>
-            <span class="legend-dot" style="background:#ef9a9a;"></span><strong>Economic (Surplus):</strong> Commodities that consume system output without feeding back into core production (e.g., luxury goods).<br>
-            <span class="legend-dot" style="background:#ce93d8;"></span><strong>Social (Surplus):</strong> An extractive social class that consumes surplus (e.g., Capitalists, Clergy).<br>
+        <div class="primer" style="margin-top: 10px; line-height: 1.8; background: #f9f9f9; padding: 12px; border-radius: 4px; border: 1px solid #eee;">
+            <span class="legend-dot" style="background:#90caf9;"></span><strong>Standard Economic:</strong> Core productive industries (e.g., agriculture, mining).<br>
+            <span class="legend-dot" style="background:#a5d6a7;"></span><strong>Social Sector:</strong> Nodes central to human reproduction (e.g., households, workers, community).<br>
+            <span class="legend-dot" style="background:#ef9a9a;"></span><strong>Surplus / Extractive Tag:</strong> Highlights sectors that consume wealth without feeding back into core production (e.g., luxury, tributes).<br>
+            <span class="legend-dot" style="background:#ce93d8;"></span><strong>Social + Non-Basic:</strong> An extractive or surplus-consuming social class (e.g., Capitalists, Clergy).<br>
             <div style="margin-top:5px; font-size:12px; color:#888;"><em>* The chosen Numeraire (Standard of Value) is highlighted in a darker variant of its category color.</em></div>
         </div>
 
@@ -128,14 +131,14 @@
                 <h3>Matrix Diagnostics</h3>
                 
                 <div class="sub-header">1. Viability & Reproduction (Eigenvalue λ)</div>
-                <p class="primer">If λ = 1, the system achieves exact physical reproduction. If λ &lt; 1, it yields an unallocated physical surplus. If λ &gt; 1, it operates at a systemic deficit.</p>
+                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">If λ = 1, the system achieves physical reproduction. If λ &lt; 1, it yields an unallocated physical surplus. If λ &gt; 1, it operates at a systemic deficit.</p>
                 <div id="out-lambda" style="margin-bottom: 20px;"></div>
 
                 <div class="sub-header">2. Physical Balance</div>
                 <div id="out-balance" style="margin-bottom: 20px;"></div>
 
                 <div class="sub-header">3. Structural Exchange Ratios</div>
-                <p class="primer">These are not market prices. They are objective measures of structural dependency, expressing how much of the system's total socio-ecological web must be mobilized to reproduce one unit of a given good.</p>
+                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">These are not market prices. They are measures of structural dependency, expressing the proportion of the system's socio-ecological web mobilized to reproduce one unit of a given good.</p>
                 <div id="out-prices"></div>
             </div>
 
@@ -143,8 +146,8 @@
                 
                 <div class="result-box" style="flex-grow: 1;">
                     <h3>Gross Sectoral Output</h3>
-                    <p class="primer">
-                        Calculates the total structural volume of each sector by multiplying its physical output by its exchange ratio. This translates physically incomparable units (like tons of grain and hours of care) into a single, unified metric of systemic scale.
+                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
+                        Calculates the structural volume of each sector by multiplying its physical output by its exchange ratio. This translates physically incomparable units (like tons of grain and hours of care) into a unified metric of systemic scale.
                     </p>
                     <div class="chart-wrapper">
                         <canvas id="valChart"></canvas>
@@ -153,7 +156,7 @@
 
                 <div class="result-box">
                     <h3>Social Appropriation Breakdown</h3>
-                    <p class="primer">Where does the total output of the society go? This 100% chart displays exactly how aggregate output is divided between basic social provisioning, non-basic surplus extraction, and the intermediate goods required just to keep production running.</p>
+                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">This chart displays how aggregate output is divided between basic social provisioning, non-basic surplus extraction, and the intermediate goods required to maintain ongoing production.</p>
                     <div class="chart-wrapper-horizontal">
                         <canvas id="appChart"></canvas>
                     </div>
@@ -163,8 +166,8 @@
         </div>
 
         <div class="panel" style="margin-top: 20px;">
-            <h3>Technical Matrix (Unitary Requirements)</h3>
-            <p class="primer">Normalized physical requirements. Values represent the exact fractional input required from the Row sector to produce exactly 1 unit of Output in the Column sector.</p>
+            <h3>The Technological DNA (Matrix A)</h3>
+            <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px; line-height: 1.5;">This matrix isolates the scale of the economy to reveal its underlying unitary requirements. Read down a column to see what is required to produce a single unit of that good. Because these ratios are structural, they form the basis for the relative exchange values of the society independently of scale or supply and demand.</p>
             <div class="matrix-wrapper" id="heatmap-container"></div>
         </div>
 
@@ -174,20 +177,20 @@
             
             <h4>1. The Sraffian Foundation: Beyond Marginalism</h4>
             <p>Neoclassical economics generally views the economy as a marketplace of independent individuals trading goods based on subjective utility and relative scarcity. In his 1960 work <em>Production of Commodities by Means of Commodities</em>, Piero Sraffa proposed an alternative framework for analyzing the economy that does not rely on marginal utility or subjective demand.</p>
-            <p>Sraffa models the economy as a <strong>circular, interdependent matrix</strong> of production. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed miners). This matrix allows for the calculation of objective systemic properties:</p>
+            <p>Sraffa models the economy as a <strong>circular, interdependent matrix</strong> of production. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed miners). This matrix allows for the calculation of systemic properties:</p>
             <ul>
                 <li><strong>Viability (λ):</strong> Can the system physically reproduce itself, or is it operating at a physical deficit (consuming more than it produces)?</li>
-                <li><strong>Structural Exchange Ratios:</strong> In this model, relative prices are not determined by market clearing. They are the mathematical exchange proportions strictly required to replace the inputs consumed and restart the production cycle.</li>
+                <li><strong>Structural Exchange Ratios:</strong> In this model, relative prices are not determined by market clearing. They are the mathematical exchange proportions required to replace the inputs consumed and restart the production cycle.</li>
             </ul>
             <p>Sraffa also formalized the distinction between <strong>Basic Commodities</strong> (goods that enter, directly or indirectly, into the production of all other goods) and <strong>Non-Basic Commodities</strong> (goods that are produced but do not re-enter the system as productive inputs, such as luxury items). In his model, only Basic commodities determine the structural constraints of the economy and the rate of profit.</p>
 
             <h4>2. The Substantivist Turn: Endogenizing Social Reproduction</h4>
-            <p>Sraffa’s core model focuses on the production of objective commodities, treating the distribution of the surplus (via the wage rate and profit rate) as exogenous variables determined by institutional or political struggles outside the mathematical system. Polanyian economic sociology and feminist economics, however, emphasize that economic processes are strictly "embedded" in social relations, and that social reproduction (care, community maintenance, institutional governance) is a foundational economic process.</p>
-            <p>By adding <strong>Social Sectors</strong> (Households, Communities, The State) directly into the rows and columns of the matrix, we "close the loop" and treat the reproduction of human life and culture as endogenous to the provisioning system. This allows for new analytical interpretations:</p>
+            <p>Sraffa’s core model focuses on the production of objective commodities, treating the distribution of the surplus (via the wage rate and profit rate) as exogenous variables determined by institutional or political struggles outside the mathematical system. Polanyian economic sociology and feminist economics, however, emphasize that economic processes are "embedded" in social relations, and that social reproduction (care, community maintenance, institutional governance) is a foundational economic process.</p>
+            <p>By adding <strong>Social Sectors</strong> (Households, Communities, The State) directly into the rows and columns of the matrix, we "close the loop" and treat the reproduction of human life and culture as endogenous to the provisioning system. This allows for analytical interpretations such as:</p>
             <ul>
-                <li><strong>Exchange ratios as socio-ecological metrics:</strong> When community maintenance or care work is included in the matrix, the "price" of an industrial good objectively reflects the proportion of social reproduction structurally required to provision it.</li>
+                <li><strong>Exchange ratios as socio-ecological metrics:</strong> When community maintenance or care work is included in the matrix, the "price" of an industrial good reflects the proportion of social reproduction structurally required to provision it.</li>
                 <li><strong>Quantifying Surplus Appropriation:</strong> By tracking the flow of basic versus non-basic goods into specific social classes, the model can quantify what proportion of an economy's total output is dedicated to core provisioning versus discretionary or extractive surplus consumption.</li>
-                <li><strong>Analyzing Non-Market Societies:</strong> By removing assumptions of generalized markets and money, this matrix approach can be used to analyze a hunter-gatherer foraging camp (Sahlins) or an ancient Mesopotamian palace economy (Hudson) with the same structural rigor used to analyze capitalist provisioning.</li>
+                <li><strong>Analyzing Non-Market Societies:</strong> By removing assumptions of generalized markets and money, this matrix approach can be used to analyze a hunter-gatherer foraging camp (Sahlins) or an ancient Mesopotamian palace economy (Hudson) with the same structural logic used to analyze capitalist provisioning.</li>
             </ul>
         </div>
 
@@ -330,7 +333,9 @@
                 html += `<td><input type="number" id="cell_${i}_${j}" value="${state.oikos[i][j]}" min="0" onchange="state.oikos[${i}][${j}]=parseFloat(this.value)||0"></td>`;
             }
             
-            html += `<td class="total-cell" style="background:${bg};"><input type="number" id="tot_${i}" value="${state.total_output[i]}" min="0" onchange="state.total_output[${i}]=parseFloat(this.value)||0" style="background:transparent; border:none; font-weight:bold; color:${textColor}; width:80%;"></td>`;
+            html += `<td class="total-cell" style="background:${bg};">
+                        <input type="number" id="tot_${i}" value="${state.total_output[i]}" min="0" onchange="state.total_output[${i}]=parseFloat(this.value)||0" style="background:rgba(255,255,255,0.3); border:1px solid rgba(0,0,0,0.3); font-weight:bold; color:${textColor}; width:80%; border-radius:3px;">
+                     </td>`;
             
             let isNum = state.numeraire === i ? 'checked' : '';
             let isSoc = state.social.includes(i) ? 'checked' : '';
@@ -404,7 +409,7 @@
                 isBalanced = false;
             }
         }
-        if(isBalanced) balHtml += `<tr><td>The matrix is fully closed. All outputs are perfectly absorbed as inputs by the defined sectors.</td></tr>`;
+        if(isBalanced) balHtml += `<tr><td>The matrix is closed. All outputs are absorbed as inputs by the defined sectors.</td></tr>`;
         balHtml += `</table>`;
         document.getElementById('out-balance').innerHTML = balHtml;
 
@@ -442,7 +447,7 @@
         priceHtml += `</tbody></table>`;
         document.getElementById('out-prices').innerHTML = priceHtml;
 
-        // 4. Value Appropriation Logic
+        // 4. Value Appropriation Logic (100% Chart Prep)
         let totalSystemClaim = totalValues.reduce((a,b) => a+b, 0);
         let totalSocialPct = 0;
         let chartDatasets = [];

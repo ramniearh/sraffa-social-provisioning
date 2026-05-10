@@ -8,16 +8,15 @@ import networkx as nx
 
 # =====================================================================
 # SRAFFIAN MATRIX OF PROVISIONING & SOCIAL REPRODUCTION
-# Expanding the Sraffian framework to attempt to develop a unified 
-# formalism for social and economic provisioning systems. 
-#
-# This model embeds non-market institutions and human social reproduction 
-# directly into the physical input-output matrix, treating distribution 
-# as a structural prior to exchange value.
+# A unified formalism for social and economic provisioning systems,
+# expanding Sraffa's 'production of commodities by means of 
+# commodities' framework to account for social reproduction and
+# macro-institutions (chartalism, feminism)
 # =====================================================================
 
+
 # Select the model to run: 'sahlins', 'hudson', 'capitalist', or 'diy'
-ACTIVE_MODEL = 'hudson'
+ACTIVE_MODEL = 'capitalist'
 
 models = {}
 

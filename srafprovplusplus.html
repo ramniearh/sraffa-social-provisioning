@@ -15,6 +15,15 @@
             --warning: #f57c00;
             --text: #263238;
             --danger: #ef5350;
+            
+            /* Institution Backgrounds */
+            --inst-exchange: rgba(30, 136, 229, 0.15);       /* Blue */
+            --inst-redistribution: rgba(142, 36, 170, 0.15); /* Purple */
+            --inst-reciprocity: rgba(67, 160, 71, 0.15);     /* Green */
+            
+            /* Sector Text Colors */
+            --text-economic: #1565c0;
+            --text-social: #2e7d32;
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -40,22 +49,30 @@
 
         .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; text-align: center; }
         table { border-collapse: collapse; width: 100%; font-size: 13px; }
-        th, td { border: 1px solid var(--border); padding: 6px; text-align: center; }
-        th { background: #f0f4f8; font-weight: 600; font-size: 12px; }
-        .row-header { display: flex; gap: 5px; justify-content: flex-start; align-items: center; }
+        th, td { border: 1px solid var(--border); padding: 0; text-align: center; transition: background-color 0.2s; }
+        th { background: #f0f4f8; font-weight: 600; font-size: 12px; padding: 6px;}
+        .row-header { display: flex; gap: 5px; justify-content: flex-start; align-items: center; padding: 6px; background: #fff; }
         
-        /* Hide number input spinners and fix VS Code warning by adding standard appearance */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { appearance: textfield; -moz-appearance: textfield; width: 55px; text-align: right; padding: 4px; border: 1px solid #ccc; font-family: monospace; border-radius: 3px; }
+        
+        input[type="number"].matrix-cell { 
+            appearance: textfield; -moz-appearance: textfield; width: 55px; text-align: right; 
+            padding: 8px 4px; font-family: monospace; border-radius: 0;
+            border: none; background: transparent; outline: none; cursor: pointer;
+            width: 100%; box-sizing: border-box;
+        }
+        input[type="number"].matrix-cell:hover, input[type="number"].matrix-cell:focus {
+            background: rgba(255,255,255,0.5);
+        }
         
         input[type="text"] { padding: 4px; border: 1px solid #ccc; border-radius: 3px; }
         .input-name { width: 110px; font-weight: bold; }
         .input-unit { width: 60px; font-size: 11px; color: #666; font-style: italic; background:#f9f9f9;}
-        .total-cell { font-weight: bold; transition: background 0.3s; }
+        .total-cell { font-weight: bold; padding: 6px; transition: background 0.3s;}
         .total-input { background: rgba(255,255,255,0.4); border: 1px solid rgba(0,0,0,0.3); font-weight: bold; width: 65px; border-radius: 3px; text-align: right; padding: 4px; }
         
-        .toggle-col { background: #fafafa; }
+        .toggle-col { background: #fafafa; padding: 6px;}
 
         .btn-action { background: var(--accent); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 15px;}
         .btn-action:hover { opacity: 0.9; }
@@ -66,7 +83,6 @@
         .result-box { background: #f8f9fa; padding: 20px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; }
         h3 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 12px;}
         
-        /* Centered and padded technical matrix */
         .heatmap-table { margin: 0 auto; width: auto; font-family: monospace; font-size: 13px; }
         .heatmap-table th, .heatmap-table td { padding: 10px 18px; transition: background-color 0.3s; }
         
@@ -80,10 +96,8 @@
         .diag-table td { text-align: left; font-size: 14px; padding: 8px; border: 1px solid #cfd8dc; }
         
         .auto-width-table table { width: auto; min-width: 60%; }
-
         .sub-header { font-weight: 600; color: var(--primary); margin-top: 20px; margin-bottom: 5px; font-size: 15px;}
-        
-        .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+        .inst-box { display: inline-block; width: 16px; height: 12px; border: 1px solid #ccc; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
 
         /* Course Styling */
         .course-box { background: #e8ecef; padding: 30px; border-radius: 8px; border-left: 6px solid var(--primary); margin-top: 40px; line-height: 1.6;}
@@ -117,19 +131,26 @@
                 <button class="btn-preset" onclick="removeSector()" style="background: var(--danger);">- Remove Sector</button>
             </div>
             <p class="primer" style="color: #455a64; font-size: 14px; line-height: 1.5; margin-top: 10px;">
-                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below, modifying both the inter-sector flows and the total output. Use the right-hand columns to designate your <strong>Numéraire</strong> (Standard of Value / Unit of Account), tag sectors as <strong>Social</strong> (human reproduction), or mark them as <strong>Surplus</strong> (goods or classes that consume output without re-entering core production).
+                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below, modifying both the inter-sector flows and the total output. Use the right-hand columns to designate your <strong>Numéraire</strong> (Standard of Value / Unit of Account) or tag sectors as <strong>Social</strong> (human reproduction).
             </p>
         </div>
 
-        <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()">
-            </div>
+        <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
         
-        <div class="primer" style="margin-top: 10px; line-height: 1.8; background: #f9f9f9; padding: 12px; border-radius: 4px; border: 1px solid #eee;">
-            <span class="legend-dot" style="background:#90caf9;"></span><strong>Sraffian/Economic sectors (Basic):</strong> Core productive processes (e.g. agriculture, mining).<br>
-            <span class="legend-dot" style="background:#a5d6a7;"></span><strong>Polanyian/Social sectors (Basic):</strong> Nodes central to human reproduction (e.g., households, workers, community).<br>
-            <span class="legend-dot" style="background:#ef9a9a;"></span><strong>Economic (Surplus/Non-Basic):</strong> Goods that do not re-enter core production (e.g., luxury goods).<br>
-            <span class="legend-dot" style="background:#ce93d8;"></span><strong>Social (Surplus/Non-Basic):</strong> A social class that consumes surplus without producing basic inputs (e.g., Capitalists, Clergy*).<br>
-            <div style="margin-top:5px; font-size:12px; color:#888;"><em>* The chosen Numéraire is highlighted in a darker variant of its category color.</em></div>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+            <div class="primer" style="flex: 1; min-width: 300px; line-height: 1.8; background: #f9f9f9; padding: 12px; border-radius: 4px; border: 1px solid #eee;">
+                <strong>Sector Typography (Row/Col Headers):</strong><br>
+                <span style="color: var(--text-economic); font-weight: bold;">Blue Text:</span> Economic Sector<br>
+                <span style="color: var(--text-social); font-weight: bold;">Green Text:</span> Social Sector<br>
+            </div>
+            
+            <div class="primer" style="flex: 1; min-width: 300px; line-height: 1.8; background: #fffde7; padding: 12px; border-radius: 4px; border: 1px solid #fff59d;">
+                <strong>Instituted Processes (Right-Click Cell to Cycle):</strong><br>
+                <span class="inst-box" style="background:#fff;"></span> Unspecified<br>
+                <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange (Price-mediated)<br>
+                <span class="inst-box" style="background:var(--inst-redistribution);"></span> Redistribution (State/Authority)<br>
+                <span class="inst-box" style="background:var(--inst-reciprocity);"></span> Reciprocity (Community/Obligation)<br>
+            </div>
         </div>
 
         <button id="calc-btn" class="btn-action" onclick="calculateSystem()">Calculate Systemic Parameters</button>
@@ -145,6 +166,9 @@
                 <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Checks if the aggregate output aligns with structural consumption, and if the system achieves physical reproduction.</p>
                 <div id="out-lambda" style="margin-bottom: 10px;"></div>
                 <div id="out-balance" style="margin-bottom: 20px;"></div>
+
+                <div class="sub-header">Sraffian Sector Analysis</div>
+                <div id="out-sraffa-types" style="margin-bottom: 20px; font-size: 13px;"></div>
 
                 <div class="sub-header">Relative Exchange Values (Left Eigenvector)</div>
                 <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Mathematical exchange proportions required to replace the inputs consumed and restart the production cycle. They act as a relational measure of the structural interdependence required for social and economic reproduction. These are analogous to market prices, but must be interpreted more carefully in a substantivist framework*.</p>
@@ -179,7 +203,7 @@
             <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px; line-height: 1.5; text-align: center;">Values represent the exact physical quantity of the row sector's good required as an input to produce exactly one physical unit of the column sector's good.</p>
             <div class="matrix-wrapper" id="heatmap-container"></div>
         </div>
-
+        
         <div class="course-box">
             <h2>Crash Course: Sraffa meets Polanyi</h2>
             <p>This interactive sandbox merges two traditions in heterodox political economy and economic sociology: <strong>Piero Sraffa's</strong> structural matrix mathematics, and <strong>Karl Polanyi's</strong> Substantivist view of the economy as embedded in social institutions. We want to move from from a commodity-production view of economic systems to a generalized social reproduction view of socioeconomic systems, for which market-exchange-based commodity reproduction is only a special case and other institutional frameworks (e.g. reciprocity, redistribution) can also account for social reproduction. A single formalism should be able to capture these different social formations, all of which share an underlying structure: in substantivist terms, all are instituted process of social reproduction. </p>
@@ -209,6 +233,10 @@
 </div>
 
 <script>
+    const instBgs = ['transparent', 'var(--inst-exchange)', 'var(--inst-redistribution)', 'var(--inst-reciprocity)'];
+
+    const makeInst = (n, val) => Array.from({length: n}, () => new Array(n).fill(val));
+
     const presets = {
         diy: {
             sectors: [
@@ -217,7 +245,8 @@
             ],
             oikos: [ [100, 50, 0, 250], [50, 100, 10, 20], [0, 0, 0, 0], [300, 50, 40, 50] ],
             total_output: [500, 200, 50, 500],
-            numeraire_index: 0, social_indices: [3], surplus_indices: [2]
+            numeraire_index: 0, social_indices: [3],
+            institutions: makeInst(4, 0)
         },
         sraffa_ch1: {
             sectors: [
@@ -225,7 +254,8 @@
             ],
             oikos: [ [280, 120], [12, 8] ],
             total_output: [400, 20],
-            numeraire_index: 0, social_indices: [], surplus_indices: []
+            numeraire_index: 0, social_indices: [],
+            institutions: makeInst(2, 1) // All Exchange
         },
         sraffa_ch2: {
             sectors: [
@@ -234,7 +264,10 @@
             ],
             oikos: [ [240, 90, 120, 100, 25], [90, 120, 60, 10, 20], [120, 90, 90, 50, 50], [200, 100, 150, 0, 0], [50, 20, 30, 0, 0] ],
             total_output: [575, 300, 400, 450, 100],
-            numeraire_index: 0, social_indices: [3, 4], surplus_indices: [4]
+            numeraire_index: 0, social_indices: [3, 4],
+            institutions: [ // Economic sectors exchange, Social sectors unspecified for now
+                [1,1,1,0,0], [1,1,1,0,0], [1,1,1,0,0], [0,0,0,0,0], [0,0,0,0,0]
+            ]
         },
         sahlins: {
             sectors: [
@@ -243,7 +276,8 @@
             ],
             oikos: [ [50,0,0,0,950], [0,50,0,50,400], [10,20,10,10,50], [0,50,0,0,50], [940,380,90,40,550] ],
             total_output: [1000, 500, 100, 100, 2000],
-            numeraire_index: 4, social_indices: [4], surplus_indices: []
+            numeraire_index: 4, social_indices: [4],
+            institutions: makeInst(5, 3) // All Reciprocity
         },
         hudson: {
             sectors: [
@@ -253,7 +287,11 @@
             ],
             oikos: [ [200,0,1630,0,60,10], [50,50,0,100,0,0], [100,100,150,0,800,100], [0,0,0,0,0,100], [500,400,550,150,400,250], [30,50,50,0,40,30] ],
             total_output: [2000, 500, 1500, 100, 3050, 300],
-            numeraire_index: 5, social_indices: [4, 5], surplus_indices: [3]
+            numeraire_index: 5, social_indices: [4, 5],
+            institutions: [ // Mostly Redistribution (2), some Exchange (1)
+                [2,2,2,2,2,2], [2,2,2,1,2,2], [2,2,2,2,2,2],
+                [1,1,1,1,1,1], [2,2,2,2,2,2], [2,2,2,2,2,2]
+            ]
         },
         capitalist: {
             sectors: [
@@ -262,7 +300,8 @@
             ],
             oikos: [ [500,400,0,600,100], [300,400,300,1200,300], [300,300,200,400,50], [1200,1400,400,0,0], [200,100,50,0,0] ],
             total_output: [2000, 3000, 1500, 4000, 500],
-            numeraire_index: 3, social_indices: [3, 4], surplus_indices: [2, 4]
+            numeraire_index: 3, social_indices: [3, 4],
+            institutions: makeInst(5, 1) // All Exchange
         }
     };
 
@@ -291,7 +330,6 @@
         if(isStale || document.getElementById('out-prices').innerHTML !== '') {
             if(!confirm("Loading a preset will overwrite your current matrix. Continue?")) return;
         }
-        
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
         
@@ -302,63 +340,69 @@
             total_output: [...p.total_output],
             numeraire: p.numeraire_index,
             social: [...p.social_indices],
-            surplus: [...p.surplus_indices]
+            institutions: p.institutions ? p.institutions.map(row => [...row]) : makeInst(p.sectors.length, 0)
         };
         renderMatrix();
         markStale(); 
     }
 
-    function getSectorColor(i) {
+    function cycleInst(e, i, j) {
+        e.preventDefault(); 
+        state.institutions[i][j] = (state.institutions[i][j] + 1) % 4;
+        document.getElementById(`td_${i}_${j}`).style.backgroundColor = instBgs[state.institutions[i][j]];
+        markStale();
+    }
+
+    function getSectorTotalColor(i) {
         let isNum = (state.numeraire === i);
         let isSoc = state.social.includes(i);
-        let isSurp = state.surplus.includes(i);
         
-        if(isSoc && isSurp) return isNum ? '#6a1b9a' : '#ce93d8'; // Purple
         if(isSoc) return isNum ? '#2e7d32' : '#a5d6a7'; // Green
-        if(isSurp) return isNum ? '#c62828' : '#ef9a9a'; // Red
         return isNum ? '#1565c0' : '#90caf9'; // Blue
     }
 
     function renderMatrix() {
         const N = state.sectors.length;
         
-        let html = `<table><thead><tr><th style="text-align:left;">Sector Definition</th>`;
+        let html = `<table><thead><tr><th style="text-align:left; background:#fff;">Sector Definition</th>`;
         for(let i=0; i<N; i++) {
             let shortName = state.sectors[i].name.split(' ')[0];
-            html += `<th id="th_name_${i}">Inputs to<br>${shortName}</th>`;
+            let color = state.social.includes(i) ? 'var(--text-social)' : 'var(--text-economic)';
+            html += `<th id="th_name_${i}" style="color:${color};">${shortName}</th>`;
         }
         html += `<th>TOTAL OUTPUT</th>`;
-        html += `<th class="toggle-col">Numéraire?</th><th class="toggle-col">Social?</th><th class="toggle-col">Surplus?</th></tr></thead><tbody>`;
+        html += `<th class="toggle-col">Numéraire?</th><th class="toggle-col">Social?</th></tr></thead><tbody>`;
 
         for(let i=0; i<N; i++) {
-            let bg = getSectorColor(i);
-            let textColor = (state.numeraire === i) ? '#ffffff' : '#000000';
-
+            let color = state.social.includes(i) ? 'var(--text-social)' : 'var(--text-economic)';
+            let totalBg = getSectorTotalColor(i);
+            let totalTextColor = (state.numeraire === i) ? '#ffffff' : '#000000';
+            
             html += `<tr>
                 <td class="row-header">
-                    <input type="text" class="input-name" value="${state.sectors[i].name}" placeholder="Name" oninput="updateName(${i}, this.value)">
+                    <input type="text" class="input-name" value="${state.sectors[i].name}" placeholder="Name" oninput="updateName(${i}, this.value)" style="color:${color};">
                     <input type="text" class="input-unit" value="${state.sectors[i].unit}" placeholder="Unit" oninput="state.sectors[${i}].unit=this.value">
                 </td>`;
             
             for(let j=0; j<N; j++) {
-                html += `<td><input type="number" id="cell_${i}_${j}" value="${state.oikos[i][j]}" min="0" onchange="state.oikos[${i}][${j}]=parseFloat(this.value)||0"></td>`;
+                let bg = instBgs[state.institutions[i][j] || 0];
+                html += `<td id="td_${i}_${j}" style="background-color: ${bg};" oncontextmenu="cycleInst(event, ${i}, ${j})">
+                    <input type="number" id="cell_${i}_${j}" class="matrix-cell" value="${state.oikos[i][j]}" min="0" 
+                    onchange="state.oikos[${i}][${j}]=parseFloat(this.value)||0">
+                </td>`;
             }
             
-            html += `<td class="total-cell" style="background:${bg};">
-                        <input type="number" class="total-input" id="tot_${i}" value="${state.total_output[i]}" min="0" onchange="state.total_output[${i}]=parseFloat(this.value)||0" style="color:${textColor};">
+            html += `<td class="total-cell" style="background:${totalBg};">
+                        <input type="number" class="total-input" id="tot_${i}" value="${state.total_output[i]}" min="0" onchange="state.total_output[${i}]=parseFloat(this.value)||0" style="color:${totalTextColor};">
                      </td>`;
             
             let isNum = state.numeraire === i ? 'checked' : '';
             let isSoc = state.social.includes(i) ? 'checked' : '';
-            let isSur = state.surplus.includes(i) ? 'checked' : '';
             
             html += `<td class="toggle-col"><input type="radio" name="numeraire" ${isNum} onchange="state.numeraire=${i}; renderMatrix(); markStale();"></td>`;
             html += `<td class="toggle-col"><input type="checkbox" ${isSoc} onchange="toggleArray('social', ${i}, this.checked); renderMatrix(); markStale();"></td>`;
-            html += `<td class="toggle-col"><input type="checkbox" ${isSur} onchange="toggleArray('surplus', ${i}, this.checked); renderMatrix(); markStale();"></td>`;
-            
             html += `</tr>`;
         }
-
         html += `</tbody></table>`;
         document.getElementById('matrix-container').innerHTML = html;
     }
@@ -366,7 +410,7 @@
     function updateName(i, val) {
         state.sectors[i].name = val;
         let shortName = val.split(' ')[0];
-        document.getElementById(`th_name_${i}`).innerHTML = `Inputs to<br>${shortName}`;
+        document.getElementById(`th_name_${i}`).innerHTML = shortName;
     }
 
     function toggleArray(arrName, index, isChecked) {
@@ -378,37 +422,59 @@
     }
 
     function addSector() {
-        document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-diy').classList.add('active');
-
+        document.getElementById('btn-diy').click(); 
         state.sectors.push({name: `Sector ${state.sectors.length+1}`, unit: "units"});
         state.total_output.push(0); 
         state.oikos.forEach(row => row.push(0));
         state.oikos.push(new Array(state.sectors.length).fill(0));
+        state.institutions.forEach(row => row.push(0));
+        state.institutions.push(new Array(state.sectors.length).fill(0));
         renderMatrix();
         markStale();
     }
 
     function removeSector() {
         if(state.sectors.length <= 2) return alert("Minimum 2 sectors required.");
-        
-        document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-diy').classList.add('active');
-
+        document.getElementById('btn-diy').click();
         state.sectors.pop(); state.total_output.pop(); state.oikos.pop();
         state.oikos.forEach(row => row.pop());
+        state.institutions.pop();
+        state.institutions.forEach(row => row.pop());
         if(state.numeraire >= state.sectors.length) state.numeraire = 0;
         state.social = state.social.filter(x => x < state.sectors.length);
-        state.surplus = state.surplus.filter(x => x < state.sectors.length);
         renderMatrix();
         markStale();
     }
 
-    // --- MATH & DIAGNOSTICS ---
+    function detectSraffianTypes(N, core_indices) {
+        let basics = [];
+        let nonBasics = [];
+        let nCore = core_indices.length;
+
+        for (let i = 0; i < nCore; i++) {
+            let startNode = core_indices[i];
+            let reachable = new Set();
+            let queue = [startNode];
+            
+            while(queue.length > 0) {
+                let curr = queue.shift();
+                reachable.add(curr);
+                for (let j = 0; j < nCore; j++) {
+                    let target = core_indices[j];
+                    if (state.oikos[curr][target] > 0 && !reachable.has(target)) {
+                        queue.push(target);
+                    }
+                }
+            }
+            if (reachable.size === nCore) basics.push(startNode);
+            else nonBasics.push(startNode);
+        }
+        return { basics, nonBasics };
+    }
+
     function calculateSystem() {
         const N = state.sectors.length;
 
-        // 2. Technical Matrix A (Polanyian Matrix)
         let A = [];
         for(let i=0; i<N; i++) {
             A.push([]);
@@ -416,47 +482,42 @@
         }
         renderHeatmap(A);
 
-        // Core Economic Sub-Matrix (Sraffian Matrix)
         let core_indices = [];
         for(let i=0; i<N; i++) {
-            if(!state.social.includes(i) && !state.surplus.includes(i)) {
+            if(!state.social.includes(i)) {
                 core_indices.push(i);
             }
         }
+
+        let { basics, nonBasics } = detectSraffianTypes(N, core_indices);
+
+        let typesHtml = "";
+        if (basics.length > 0) typesHtml += `<strong>Basic Commodities:</strong> ${basics.map(i => state.sectors[i].name).join(', ')}<br>`;
+        if (nonBasics.length > 0) typesHtml += `<strong>Non-Basic Commodities (Surplus):</strong> ${nonBasics.map(i => state.sectors[i].name).join(', ')}`;
+        if (basics.length === 0 && nonBasics.length === 0) typesHtml = "No economic sectors defined.";
+        document.getElementById('out-sraffa-types').innerHTML = typesHtml;
 
         let A_core = [];
         for(let i=0; i<core_indices.length; i++) {
             A_core.push([]);
             for(let j=0; j<core_indices.length; j++) {
-                let r = core_indices[i];
-                let c = core_indices[j];
-                A_core[i].push(state.total_output[c] > 0 ? (state.oikos[r][c] / state.total_output[c]) : 0);
+                A_core[i].push(A[core_indices[i]][core_indices[j]]);
             }
         }
 
-        // 1. Viability & Balance
         let lambda_sraffian = core_indices.length > 0 ? getDominantEigenvector(A_core).lambda : 0;
-        let {lambda: pi_polanyian, eigenvector} = getDominantEigenvector(A);
+        let {lambda: sigma_polanyian, eigenvector} = getDominantEigenvector(A);
 
-        let lamSHtml = "";
-        if (core_indices.length === 0) {
-            lamSHtml = `<div style="flex: 1;"><span style="color:#888;">No core economic sectors defined.</span></div>`;
-        } else {
-            let sColor = lambda_sraffian < 0.99 ? "var(--accent)" : (lambda_sraffian > 1.01 ? "var(--danger)" : "var(--primary)");
-            let sText = lambda_sraffian < 0.99 ? "Economy generates a physical surplus." : (lambda_sraffian > 1.01 ? "Economy is in deficit." : "Strict subsistence economy.");
-            lamSHtml = `<div style="flex: 1;">
-                <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Sraffian Core (&lambda;)</div>
-                <strong style="font-size:22px; color:${sColor};">${lambda_sraffian.toFixed(4)}</strong><br>
-                <span style="font-size:13px; color:#546e7a;">${sText}</span>
+        let lamSHtml = core_indices.length === 0 ? `<div style="flex: 1;"><span style="color:#888;">No basic economic sectors defined.</span></div>` :
+            `<div style="flex: 1;">
+                <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Sraffian Eigenvalue</div>
+                <strong style="font-size:22px; color:${lambda_sraffian < 0.99 ? "var(--accent)" : (lambda_sraffian > 1.01 ? "var(--danger)" : "var(--primary)")};">&lambda; = ${lambda_sraffian.toFixed(4)}</strong>
             </div>`;
-        }
 
-        let pColor = pi_polanyian < 0.99 ? "var(--warning)" : (pi_polanyian > 1.01 ? "var(--danger)" : "var(--accent)");
-        let pText = pi_polanyian < 0.99 ? "Systemic unallocated surplus (hoarding/waste)." : (pi_polanyian > 1.01 ? "Systemic Deficit (unsustainable)." : "Closed Social Reproduction.");
         let lamPHtml = `<div style="flex: 1; border-left: 1px solid #eee; padding-left: 20px;">
-            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Polanyian Total (&pi;)</div>
-            <strong style="font-size:22px; color:${pColor};">${pi_polanyian.toFixed(4)}</strong><br>
-            <span style="font-size:13px; color:#546e7a;">${pText}</span>
+            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Polanyian Eigenvalue</div>
+            <strong style="font-size:22px; color:${sigma_polanyian < 0.99 ? "var(--warning)" : (sigma_polanyian > 1.01 ? "var(--danger)" : "var(--accent)")};">&sigma; = ${sigma_polanyian.toFixed(4)}</strong><br>
+            <span style="font-size:13px; color:#546e7a;">${sigma_polanyian < 0.99 ? "Systemic Surplus." : (sigma_polanyian > 1.01 ? "Systemic Deficit." : "Closed Social Reproduction.")}</span>
         </div>`;
 
         document.getElementById('out-lambda').innerHTML = `<div style="display: flex; gap: 20px; background: #fff; padding: 15px; border: 1px solid #cfd8dc; border-radius: 6px;">${lamSHtml}${lamPHtml}</div>`;
@@ -468,20 +529,12 @@
             let diff = state.total_output[i] - rowSum;
             if(Math.abs(diff) > 0.01) {
                 if (isBalanced) balHtml += `<table class="diag-table" style="margin-top: 10px;">`;
-                let note = diff > 0 ? "Unallocated Surplus" : "Structural Deficit";
-                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diff > 0 ? 'var(--primary)' : 'var(--danger)'};">${note} of ${diff.toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
+                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diff > 0 ? 'var(--primary)' : 'var(--danger)'};">${diff > 0 ? "Unallocated Surplus" : "Structural Deficit"} of ${diff.toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
                 isBalanced = false;
             }
         }
-        
-        if(isBalanced) {
-            balHtml = `<div style="padding: 10px; background: #e8f5e9; color: #2e7d32; border-radius: 4px; font-size: 13px; margin-top: 10px;"><strong>The matrix is closed.</strong> All outputs are absorbed as inputs by the defined sectors.</div>`;
-        } else {
-            balHtml += `</table>`;
-        }
-        document.getElementById('out-balance').innerHTML = balHtml;
+        document.getElementById('out-balance').innerHTML = isBalanced ? `<div style="padding: 10px; background: #e8f5e9; color: #2e7d32; border-radius: 4px; font-size: 13px; margin-top: 10px;"><strong>The matrix is closed.</strong> All outputs are absorbed.</div>` : balHtml + `</table>`;
 
-        // 3. Relative Exchange Coefficients
         let prices = new Array(N).fill(0);
         let num_val = eigenvector[state.numeraire];
         let priceHtml = `<table class="diag-table"><thead><tr><th>Physical Unit</th><th>Exchange Ratio (in ${state.sectors[state.numeraire].name})</th></tr></thead><tbody>`;
@@ -494,15 +547,12 @@
             let val = prices[i] * state.total_output[i];
             totalValues.push(val);
             labels.push(state.sectors[i].name);
-            bgColors.push(getSectorColor(i));
-            
-            let isNumRow = (i === state.numeraire) ? 'style="background:#e8f4f8; font-weight:bold;"' : '';
-            priceHtml += `<tr ${isNumRow}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${prices[i].toFixed(4)}</td></tr>`;
+            bgColors.push(state.social.includes(i) ? '#81c784' : '#64b5f6');
+            priceHtml += `<tr ${i === state.numeraire ? 'style="background:#e8f4f8; font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${prices[i].toFixed(4)}</td></tr>`;
         }
         priceHtml += `</tbody></table>`;
         document.getElementById('out-prices').innerHTML = priceHtml;
 
-        // 4. Value Appropriation Logic (100% Chart)
         let totalSystemClaim = totalValues.reduce((a,b) => a+b, 0);
         let totalSocialPct = 0;
         let chartDatasets = [];
@@ -517,64 +567,34 @@
 
         for(let idx = 0; idx < state.social.length; idx++) {
             let s = state.social[idx];
-            let basic = 0, surplus = 0;
-            
-            let isSurplusClass = state.surplus.includes(s);
-            let sectorColor = getSectorColor(s);
+            let basic_val = 0, surplus_val = 0;
 
             for(let i=0; i<N; i++) {
-                let v = state.oikos[i][s] * prices[i];
-                if(state.surplus.includes(i) || isSurplusClass) {
-                    surplus += v;
+                let flowVal = state.oikos[i][s] * prices[i];
+                if(nonBasics.includes(i)) {
+                    surplus_val += flowVal; 
                 } else {
-                    basic += v;
+                    basic_val += flowVal;   
                 }
             }
             
-            let classTotal = basic + surplus;
-            let shareOfSystem = totalSystemClaim > 0 ? (classTotal / totalSystemClaim) * 100 : 0;
-            let pctBasic = totalSystemClaim > 0 ? (basic / totalSystemClaim) * 100 : 0;
-            let pctSurplus = totalSystemClaim > 0 ? (surplus / totalSystemClaim) * 100 : 0;
+            let pctBasic = totalSystemClaim > 0 ? (basic_val / totalSystemClaim) * 100 : 0;
+            let pctSurplus = totalSystemClaim > 0 ? (surplus_val / totalSystemClaim) * 100 : 0;
+            totalSocialPct += (pctBasic + pctSurplus);
             
-            totalSocialPct += shareOfSystem;
             let palette = classColorPalette[idx % classColorPalette.length];
 
             if (pctBasic > 0.01) {
-                chartDatasets.push({
-                    label: `${state.sectors[s].name} (Basic)`,
-                    data: [pctBasic],
-                    backgroundColor: palette.basic,
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                    stack: 'Stack 0'
-                });
+                chartDatasets.push({ label: `${state.sectors[s].name} (Basic Provisioning)`, data: [pctBasic], backgroundColor: palette.basic, borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
             }
-            
             if (pctSurplus > 0.01) {
-                let surpColor = isSurplusClass ? sectorColor : '#ef9a9a';
-                
-                chartDatasets.push({
-                    label: `${state.sectors[s].name} (Surplus)`,
-                    data: [pctSurplus],
-                    backgroundColor: surpColor,
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                    stack: 'Stack 0'
-                });
+                chartDatasets.push({ label: `${state.sectors[s].name} (Surplus Appropriation)`, data: [pctSurplus], backgroundColor: palette.surplus, borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
             }
         }
         
         let remainder = Math.max(0, 100 - totalSocialPct);
-        
         if (remainder > 0.01) {
-            chartDatasets.push({
-                label: `Intermediate Production`,
-                data: [remainder],
-                backgroundColor: '#cfd8dc', 
-                borderColor: '#fff',
-                borderWidth: 1,
-                stack: 'Stack 0'
-            });
+            chartDatasets.push({ label: `Intermediate Production`, data: [remainder], backgroundColor: '#cfd8dc', borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
         }
 
         drawCharts(labels, totalValues, bgColors, chartDatasets);
@@ -605,8 +625,7 @@
         let n = A.length;
         let html = '<table class="heatmap-table"><thead><tr><th></th>';
         for(let i=0; i<n; i++) {
-            let shortName = state.sectors[i].name.split(' ')[0];
-            html += `<th>${shortName}</th>`;
+            html += `<th>${state.sectors[i].name.split(' ')[0]}</th>`;
         }
         html += '</tr></thead><tbody>';
 
@@ -637,29 +656,16 @@
 
         appChartInst = new Chart(document.getElementById('appChart').getContext('2d'), {
             type: 'bar',
-            data: {
-                labels: ['100% of System Output'], 
-                datasets: singleBarDatasets
-            },
+            data: { labels: ['100% of System Output'], datasets: singleBarDatasets },
             options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                indexAxis: 'y', 
-                scales: { 
-                    x: { stacked: true, max: 100, min: 0 }, 
-                    y: { stacked: true, display: false } 
-                },
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 11} } },
-                    tooltip: { mode: 'nearest', callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.x.toFixed(1) + '%'; } } }
-                }
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y', 
+                scales: { x: { stacked: true, max: 100, min: 0 }, y: { stacked: true, display: false } },
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 11} } } }
             }
         });
     }
 
-    window.onload = () => {
-        loadPreset('diy', document.getElementById('btn-diy'));
-    };
+    window.onload = () => loadPreset('diy', document.getElementById('btn-diy'));
 </script>
 </body>
 </html>

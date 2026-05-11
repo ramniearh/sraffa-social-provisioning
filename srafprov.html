@@ -18,12 +18,12 @@
             
             /* Institution Backgrounds */
             --inst-exchange: rgba(30, 136, 229, 0.15);       /* Blue */
-            --inst-redistribution: rgba(229, 57, 53, 0.15);  /* Red */
+            --inst-redistribution: rgba(255, 213, 79, 0.3);  /* Yellow/Amber */
             --inst-reciprocity: rgba(67, 160, 71, 0.15);     /* Green */
             
             /* Sector Text Colors */
             --text-economic: #1565c0;
-            --text-social: #2e7d32;
+            --text-social: #7b1fa2; /* Purple */
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -49,7 +49,7 @@
 
         .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; text-align: center; }
         
-        /* 100% width table */
+        /* Centralized, natural-width table */
         table { border-collapse: collapse; width: 100%; margin: 0 auto; font-size: 13px; }
         th, td { border: 1px solid var(--border); padding: 0; text-align: center; transition: background-color 0.2s; }
         th { background: #f0f4f8; font-weight: 600; font-size: 13px; padding: 6px;}
@@ -118,12 +118,12 @@
 
     <div class="preset-bar" id="preset-bar">
         <span style="font-size: 14px; font-weight: bold; margin-right: 10px;">Load Model:</span>
-        <button class="btn-preset active" id="btn-diy" onclick="loadPreset('diy', this)" style="background: #607d8b;">Clear / Custom</button>
+        <button class="btn-preset active" id="btn-diy" onclick="loadPreset('diy', this)" style="background: #607d8b;">Custom</button>
         <button class="btn-preset" id="btn-sraffa_ch1" onclick="loadPreset('sraffa_ch1', this)" style="background: #37474f;">Sraffa Ch. 1: subsistence</button>
         <button class="btn-preset" id="btn-sraffa_ch2" onclick="loadPreset('sraffa_ch2', this)" style="background: #37474f;">Sraffa Ch. 2: surplus (Adapted)</button>
         <button class="btn-preset" id="btn-sahlins" onclick="loadPreset('sahlins', this)">Sahlins (Foraging)</button>
         <button class="btn-preset" id="btn-hudson" onclick="loadPreset('hudson', this)">Hudson (Palace Hoard)</button>
-        <button class="btn-preset" id="btn-capitalist" onclick="loadPreset('capitalist', this)">Capitalism</button>
+        <button class="btn-preset" id="btn-capitalist" onclick="loadPreset('capitalist', this)">Financialization</button>
     </div>
 
     <div class="panel">
@@ -134,7 +134,7 @@
             </div>
             
             <p class="primer" style="margin-top: 15px;">
-                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below (both for the inter-sector allocations and for the total output). If a row adds up to less than the total output, there is a surplus of production in that sector (indicated by a &gt;, &lt;, or = sign).
+                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below (both for the inter-sector allocations and for the total output). If a row adds up to more (or less) than the total output, there is a surplus (or deficit) of production in that sector (indicated by a &gt;, &lt; sign).
             </p>
         </div>
 
@@ -142,11 +142,10 @@
         
         <div style="margin-bottom: 20px;">
             <p class="primer">
-                Use the right-hand columns to designate your <strong><u style="text-decoration: underline;">Numéraire</u></strong> (Standard of Value / Unit of Account).
+                Use the right-hand columns to designate a <strong><u style="text-decoration: underline;">Numéraire</u></strong> (Standard of Value / Unit of Account).
             </p>
             <p class="primer">
-                <span style="color: var(--text-economic); font-weight: bold;">Blue Text</span> represents Sraffian/Economic sectors: These are core productive processes (e.g. agriculture, mining).<br>
-                Tag sectors as <span style="color: var(--text-social); font-weight: bold;">Social</span> to include Polanyian social reproduction sectors central to human reproduction (e.g., households, workers, community).
+                <span style="color: var(--text-economic); font-weight: bold;">Blue Text</span> represents Sraffian/Economic sectors: These are core productive processes (e.g. agriculture, mining). You can tag sectors as <span style="color: var(--text-social); font-weight: bold;">Purple</span> to include Polanyian social reproduction sectors central to human reproduction (e.g., households, workers, community).
             </p>
             <p class="primer">
                 Cell background colors indicate the primary form of integration through which that specific flow is processed. Right-click the cell to cycle through these:<br>
@@ -173,8 +172,8 @@
                 <div id="out-lambda" style="margin-bottom: 10px;"></div>
                 <div id="out-balance" style="margin-bottom: 20px;"></div>
 
-                <div class="sub-header">Relative Exchange Values (Left Eigenvector)</div>
-                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Mathematical exchange proportions required to replace the inputs consumed and restart the production cycle. They act as a relational measure of the structural interdependence required for social and economic reproduction. These are analogous to market prices, but must be interpreted more carefully in a substantivist framework*.</p>
+                <div class="sub-header">Relative Exchange Weights (Left Eigenvector)</div>
+                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Mathematical exchange proportions required to replace the inputs consumed and restart the production cycle. They act as a relational measure of the structural interdependence required for social and economic reproduction.</p>
                 <div id="out-prices" class="auto-width-table"></div>
             </div>
 
@@ -183,7 +182,7 @@
                 <div class="result-box" style="flex-grow: 1;">
                     <h3>Gross Sectoral Scale / Output (in Numéraire)</h3>
                     <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        Calculates the total scale of each sector by multiplying its physical output by its relative exchange value. This translates physically incomparable units into a single metric of scale expressed in the Numéraire. This is an analogue of economic 'value' or 'output', but must be interpreted more carefully in a substantivist framework*.
+                        Calculates the total scale of each sector by multiplying its physical output by its relative exchange numerical value. This translates physically incomparable units into a single metric of scale expressed in the Numéraire.
                     </p>
                     <div class="chart-wrapper">
                         <canvas id="valChart"></canvas>
@@ -191,7 +190,7 @@
                 </div>
 
                 <div class="result-box">
-                    <h3>Social Appropriation Breakdown</h3>
+                    <h3>Sectoral Absorption Breakdown</h3>
                     <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Displays (from 0% to 100%) how aggregate output is structurally absorbed by social classes versus intermediate economic reproduction.</p>
                     <div class="chart-wrapper-horizontal">
                         <canvas id="appChart"></canvas>
@@ -209,7 +208,7 @@
         
         <div class="course-box">
             <h2>Crash Course: Sraffa meets Polanyi</h2>
-            <p>This interactive sandbox merges two traditions in heterodox political economy and economic sociology: <strong>Piero Sraffa's</strong> structural matrix mathematics, and <strong>Karl Polanyi's</strong> Substantivist view of the economy as embedded in social institutions. We want to move from from a commodity-production view of economic systems to a generalized social reproduction view of socioeconomic systems, for which market-exchange-based commodity reproduction is only a special case and other institutional frameworks (e.g. reciprocity, redistribution) can also account for social reproduction. A single formalism should be able to capture these different social formations, all of which share an underlying structure: in substantivist terms, all are instituted process of social reproduction. </p>
+            <p>This interactive sandbox merges Piero Sraffa's structural matrix mathematics with Karl Polanyi's substantivist economic sociology. It provides a formalism to represent physical and social flows, shifting from a commodity-production view of the economy to a generalized model of social reproduction. Within this framework, market-exchange commodity reproduction is only a special case. The matrix maps how different sectors are integrated through Polanyi's "instituted processes" (reciprocity, redistribution, or exchange). While the matrix quantifies these flows, it does not function as a complete institutional model; rather, it highlights the underlying structural interdependence of varied social formations.</p>
             
             <h4>1. The Sraffian Foundation: Beyond Marginalism</h4>
             <p>Neoclassical economics generally views the economy as a marketplace of independent individuals trading goods based on subjective utility and relative scarcity. In his 1960 work <em>Production of Commodities by Means of Commodities</em>, Piero Sraffa proposed an alternative framework for analyzing the economy that does not rely on marginal utility or subjective demand.</p>
@@ -229,7 +228,13 @@
                 <li><strong>Analyzing Non-Market Societies:</strong> By removing assumptions of generalized markets and money, this matrix approach can be used to analyze a hunter-gatherer foraging camp (Sahlins) or an ancient Mesopotamian palace economy (Hudson) with the same structural logic used to analyze capitalist provisioning.</li>
             </ul>
             
-            <p style="margin-top: 20px; font-size: 13px; color: #546e7a;"><em>Note: Items marked with an asterisk (*) in this tool are pending better substantivist interpretation. Importantly, this matrix is currently silent about the institutional form taken by these flows. Nothing in the matrix itself dictates whether these exchanges are mediated by money, state authority, or cultural obligation. This code provides a formalism to represent physical and social flows—not a complete model of the economy, and even less so a model of institutions. However, it serves as a powerful baseline for institutional work, mapping how different areas of the matrix are handled by Polanyi's "instituted processes" (such as reciprocity, redistribution, or market exchange).</em></p>
+            <h4>3. Exploring the Preset Scenarios</h4>
+            <p>These presets provide stylized sketches referencing historical and empirical literature:</p>
+            <ul>
+                <li><strong>Sahlins (Foraging):</strong> Drawing on Marshall Sahlins' concept of the "Original Affluent Society," this matrix outlines a system where subsistence foraging requires a small fraction of total labor time, leaving the majority for community reproduction and leisure. A "Feasts" sector functions as a social sink that absorbs excess biomass to generate social cohesion. Integration is modeled primarily via Reciprocity.</li>
+                <li><strong>Hudson (Palace Hoard):</strong> Based on Michael Hudson's analysis of Bronze Age Mesopotamian accounting. The core domestic economy (grain, rations, corvée labor) operates through fixed administrative proportions (e.g., 60 units of grain per month of labor) via Palace Redistribution. Market Exchange is confined to the margins, modeling how the Temple utilizes Silver (the numéraire) to procure External Trade Luxury goods.</li>
+                <li><strong>Financialization:</strong> A structural representation of contemporary financialized capitalism. F.I.R.E. (Finance, Insurance, Real Estate) and Capitalists are grouped as a social class that extracts surplus value via contracts while consuming minimal physical inputs. A Technical Innovation sector transforms physical inputs into structural shifts (patents). The Biosphere is modeled as a dual-purpose sector: supplying raw materials to Industry and acting as an unpriced sink for waste, generating a structural deficit. Unpaid domestic and reproductive care work is accounted for within the Workers' sector through internal Reciprocity flows.</li>
+            </ul>
         </div>
 
     </div>
@@ -244,18 +249,21 @@
         diy: {
             sectors: [
                 {name: "Wheat", unit: "tons"}, {name: "Iron", unit: "kg"}, 
-                {name: "Luxury", unit: "units"}, {name: "Workers", unit: "hours"}
+                {name: "Luxury", unit: "units"}, {name: "Workers", unit: "hours"},
+                {name: "Authority/Infrastructure", unit: "infra"}, {name: "Waste", unit: "tons"}
             ],
             oikos: [ 
-                [100, 50, 100, 250], 
-                [50, 100, 30, 20], 
-                [0, 0, 0, 10], 
-                [300, 150, 50, 1500] 
+                [100, 50, 10, 250, 50, 10], 
+                [50, 100, 20, 20, 10, 10], 
+                [0, 0, 0, 10, 30, 0], 
+                [300, 150, 20, 1200, 30, 0],
+                [20, 20, 10, 40, 10, 0],
+                [0, 0, 0, 0, 0, 0]
             ],
-            total_output: [500, 200, 50, 2000],
-            numeraire_index: 0, social_indices: [3],
+            total_output: [500, 200, 50, 1800, 100, 20],
+            numeraire_index: 4, social_indices: [3, 4, 5],
             institutions: [
-                [1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,3]
+                [1,1,1,1,2,0], [1,1,1,1,2,0], [1,1,1,1,2,0], [1,1,1,3,2,0], [2,2,2,2,2,0], [0,0,0,0,0,0]
             ]
         },
         sraffa_ch1: {
@@ -265,7 +273,7 @@
             oikos: [ [280, 120], [12, 8] ],
             total_output: [400, 20],
             numeraire_index: 0, social_indices: [],
-            institutions: makeInst(2, 1) // All Exchange
+            institutions: makeInst(2, 1) 
         },
         sraffa_ch2: {
             sectors: [
@@ -287,50 +295,72 @@
         sahlins: {
             sectors: [
                 {name: "Foraging", unit: "kcal"}, {name: "Biomass", unit: "kg"}, 
-                {name: "Tools", unit: "units"}, {name: "Shelter", unit: "days"}, {name: "Community", unit: "hours"}
+                {name: "Tools", unit: "units"}, {name: "Shelter", unit: "days"}, 
+                {name: "Worker Community", unit: "hours"}, {name: "Feasts", unit: "events"}
             ],
-            oikos: [ [50,0,0,0,950], [0,50,0,50,400], [10,20,10,10,50], [0,50,0,0,50], [940,380,90,40,550] ],
-            total_output: [1000, 500, 100, 100, 2000],
-            numeraire_index: 4, social_indices: [4],
-            institutions: makeInst(5, 3) // All Reciprocity
+            oikos: [ 
+                [100, 0, 20, 0, 600, 280], 
+                [0, 100, 40, 60, 400, 400], 
+                [10, 20, 10, 10, 40, 10], 
+                [0, 50, 0, 10, 40, 0], 
+                [400, 200, 100, 100, 1000, 400],
+                [0, 0, 0, 0, 10, 0]
+            ],
+            total_output: [1000, 1000, 100, 100, 2200, 10],
+            numeraire_index: 4, social_indices: [4, 5],
+            institutions: makeInst(6, 3) 
         },
         hudson: {
             sectors: [
-                {name: "Grain", unit: "tons"}, {name: "Materials", unit: "tons"}, 
-                {name: "Rations", unit: "units"}, {name: "Veblenian", unit: "units"}, 
-                {name: "Workers", unit: "hours"}, {name: "Temple", unit: "days"}
+                {name: "Grain", unit: "sila"}, {name: "Materials", unit: "tons"}, 
+                {name: "Workers", unit: "months"}, {name: "Temple", unit: "months"}, 
+                {name: "Silver / External Luxury", unit: "shekels"}
             ],
-            oikos: [ [200,0,1630,0,60,10], [50,50,0,100,0,0], [100,100,150,0,800,100], [0,0,0,0,0,100], [500,400,550,150,400,250], [30,50,50,0,40,30] ],
-            total_output: [2000, 500, 1500, 100, 3050, 300],
-            numeraire_index: 5, social_indices: [4, 5],
-            institutions: [ // Mostly Redistribution (2), some Exchange (1)
-                [2,2,2,2,2,2], [2,2,2,1,2,2], [2,2,2,2,2,2],
-                [1,1,1,1,1,1], [2,2,2,2,2,2], [2,2,2,2,2,2]
+            oikos: [ 
+                [100, 50, 600, 250, 0], 
+                [50, 50, 200, 190, 10], 
+                [400, 200, 50, 300, 50], 
+                [50, 20, 20, 50, 60], 
+                [0, 0, 0, 50, 0]
+            ],
+            total_output: [1000, 500, 1000, 200, 100],
+            numeraire_index: 3, social_indices: [2, 3],
+            institutions: [ 
+                [2,2,2,2,1], 
+                [2,2,2,2,1], 
+                [2,2,2,2,1], 
+                [2,2,2,2,1], 
+                [1,1,1,1,1]
             ]
         },
         capitalist: {
             sectors: [
                 {name: "Industry", unit: "tons"}, {name: "Services", unit: "MWh"}, 
-                {name: "F.I.R.E.", unit: "contracts"}, {name: "Workers", unit: "hours"}, 
-                {name: "Capitalists", unit: "claims"}, {name: "State", unit: "value"}
+                {name: "Technical Innovation", unit: "patents"}, {name: "Veblenian / Luxury goods", unit: "units"}, 
+                {name: "Workers", unit: "hours"}, {name: "F.I.R.E. / Capitalists", unit: "claims"}, 
+                {name: "State", unit: "value"}, {name: "Biosphere (Sink)", unit: "tons"}
             ],
             oikos: [ 
-                [500,400,0,600,100, 400], 
-                [300,400,300,1200,300, 500], 
-                [300,300,200,400,50, 250], 
-                [1200,1400,400,0,0, 1000], 
-                [200,100,50,0,0, 150],
-                [200,300,100,300,100, 0]
+                [400, 300, 100, 50, 600, 50, 200, 100], 
+                [300, 400, 200, 50, 1000, 100, 300, 50], 
+                [50, 50, 10, 0, 0, 100, 50, 0], 
+                [0, 0, 0, 0, 0, 100, 100, 0, 0], 
+                [800, 1000, 100, 100, 600, 100, 200, 0], 
+                [100, 100, 50, 50, 50, 50, 100, 0], 
+                [100, 100, 50, 50, 200, 100, 100, 0],
+                [200, 50, 0, 0, 0, 0, 0, 0]
             ],
-            total_output: [2000, 3000, 1500, 4000, 500, 1000],
-            numeraire_index: 3, social_indices: [3, 4, 5],
-            institutions: [ // Exchange (1) for market, Redistribution (2) for State
-                [1,1,1,1,1,2], 
-                [1,1,1,1,1,2], 
-                [1,1,1,1,1,2], 
-                [1,1,1,0,0,2], 
-                [1,1,1,0,0,2],
-                [2,2,2,2,2,2]
+            total_output: [1800, 2400, 260, 100, 2900, 500, 700, 150],
+            numeraire_index: 6, social_indices: [4, 5, 6, 7],
+            institutions: [ 
+                [1,1,1,1,1,1,2,0], 
+                [1,1,1,1,1,1,2,0], 
+                [1,1,1,1,1,1,2,0], 
+                [1,1,1,1,1,1,2,0], 
+                [1,1,1,1,3,1,2,0], 
+                [1,1,1,1,1,1,2,0],
+                [2,2,2,2,2,2,2,0],
+                [0,0,0,0,0,0,0,0]
             ]
         }
     };
@@ -398,7 +428,7 @@
             let signEl = document.getElementById(`sum_sign_${i}`);
             if(signEl) {
                 signEl.style.color = '#546e7a';
-                signEl.style.fontSize = '13px';
+                signEl.style.fontSize = '12px';
                 if (Math.abs(tot - rowSum) < 0.001) {
                     signEl.innerHTML = '=';
                 } else if (tot > rowSum) {
@@ -415,7 +445,7 @@
         
         let html = `<table><thead><tr><th style="text-align:left; background:#fff;">Sector Definition</th>`;
         for(let i=0; i<N; i++) {
-            let shortName = state.sectors[i].name.split(' ')[0];
+            let shortName = state.sectors[i].name;
             let color = state.social.includes(i) ? 'var(--text-social)' : 'var(--text-economic)';
             let deco = state.numeraire === i ? 'text-decoration:underline;' : '';
             html += `<th id="th_name_${i}" style="color:${color}; ${deco}">${shortName}</th>`;
@@ -443,7 +473,7 @@
             }
             
             html += `<td class="total-cell" style="background:${totalBg};">
-                        <span id="sum_sign_${i}" style="display:inline-block; width:12px; text-align:center; margin-right:5px; font-weight:bold;"></span>
+                        <span id="sum_sign_${i}" style="display:inline-block; width:10px; text-align:center; margin-right:4px; font-weight:bold;"></span>
                         <input type="number" class="total-input" id="tot_${i}" value="${state.total_output[i]}" min="0" onchange="state.total_output[${i}]=parseFloat(this.value)||0; markStale();">
                      </td>`;
             
@@ -456,12 +486,12 @@
         }
         html += `</tbody></table>`;
         document.getElementById('matrix-container').innerHTML = html;
-        updateRowSums(); // Set initial signs
+        updateRowSums(); 
     }
 
     function updateName(i, val) {
         state.sectors[i].name = val;
-        let shortName = val.split(' ')[0];
+        let shortName = val;
         document.getElementById(`th_name_${i}`).innerHTML = shortName;
     }
 
@@ -474,7 +504,6 @@
     }
 
     function addSector() {
-        // Toggle UI buttons manually instead of clicking to avoid warning popup
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-diy').classList.add('active');
         
@@ -491,7 +520,6 @@
     function removeSector() {
         if(state.sectors.length <= 2) return alert("Minimum 2 sectors required.");
         
-        // Toggle UI buttons manually instead of clicking
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-diy').classList.add('active');
         
@@ -542,7 +570,7 @@
             </div>`;
 
         let lamPHtml = `<div style="flex: 1; border-left: 1px solid #eee; padding-left: 20px;">
-            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Polanyian Eigenvalue</div>
+            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Provisioning Eigenvalue</div>
             <strong style="font-size:22px; color:${sigma_polanyian < 0.99 ? "var(--warning)" : (sigma_polanyian > 1.01 ? "var(--danger)" : "var(--accent)")};">&sigma; = ${sigma_polanyian.toFixed(4)}</strong><br>
             <span style="font-size:13px; color:#546e7a;">${sigma_polanyian < 0.99 ? "Systemic Surplus." : (sigma_polanyian > 1.01 ? "Systemic Deficit." : "Closed Social Reproduction.")}</span>
         </div>`;
@@ -574,7 +602,7 @@
             let val = prices[i] * state.total_output[i];
             totalValues.push(val);
             labels.push(state.sectors[i].name);
-            bgColors.push(state.social.includes(i) ? '#81c784' : '#64b5f6');
+            bgColors.push(state.social.includes(i) ? '#ce93d8' : '#64b5f6'); 
             priceHtml += `<tr ${i === state.numeraire ? 'style="background:#e8f4f8; font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${prices[i].toFixed(4)}</td></tr>`;
         }
         priceHtml += `</tbody></table>`;
@@ -585,7 +613,7 @@
         let totalSocialPct = 0;
         let chartDatasets = [];
         
-        const classColorPalette = ['#2b8277', '#1565c0', '#e65100', '#4527a0', '#c2185b'];
+        const classColorPalette = ['#6a1b9a', '#8e24aa', '#ab47bc', '#ce93d8', '#e1bee7'];
 
         for(let idx = 0; idx < state.social.length; idx++) {
             let s = state.social[idx];
@@ -639,7 +667,7 @@
         let n = A.length;
         let html = '<table class="heatmap-table"><thead><tr><th></th>';
         for(let i=0; i<n; i++) {
-            html += `<th>${state.sectors[i].name.split(' ')[0]}</th>`;
+            html += `<th>${state.sectors[i].name}</th>`;
         }
         html += '</tr></thead><tbody>';
 

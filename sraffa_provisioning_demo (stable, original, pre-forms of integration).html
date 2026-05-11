@@ -141,8 +141,8 @@
             <div class="result-box">
                 <h3>Systemic Reproduction Parameters</h3>
                 
-                <div class="sub-header">Viability, Reproduction and Sectoral Balances</div>
-                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Checks if the aggregate output aligns with structural consumption, and if the system achieves physical reproduction.</p>
+                <div class="sub-header">Viability, Reproduction and Sectoral Balances (Eigenvalue)</div>
+                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Checks if the aggregate output aligns with structural consumption, and if the system achieves physical reproduction (λ = 1).</p>
                 <div id="out-lambda" style="margin-bottom: 10px;"></div>
                 <div id="out-balance" style="margin-bottom: 20px;"></div>
 
@@ -408,7 +408,7 @@
     function calculateSystem() {
         const N = state.sectors.length;
 
-        // 2. Technical Matrix A (Polanyian Matrix)
+        // 2. Technical Matrix A
         let A = [];
         for(let i=0; i<N; i++) {
             A.push([]);
@@ -416,52 +416,14 @@
         }
         renderHeatmap(A);
 
-        // Core Economic Sub-Matrix (Sraffian Matrix)
-        let core_indices = [];
-        for(let i=0; i<N; i++) {
-            if(!state.social.includes(i) && !state.surplus.includes(i)) {
-                core_indices.push(i);
-            }
-        }
-
-        let A_core = [];
-        for(let i=0; i<core_indices.length; i++) {
-            A_core.push([]);
-            for(let j=0; j<core_indices.length; j++) {
-                let r = core_indices[i];
-                let c = core_indices[j];
-                A_core[i].push(state.total_output[c] > 0 ? (state.oikos[r][c] / state.total_output[c]) : 0);
-            }
-        }
-
         // 1. Viability & Balance
-        let lambda_sraffian = core_indices.length > 0 ? getDominantEigenvector(A_core).lambda : 0;
-        let {lambda: pi_polanyian, eigenvector} = getDominantEigenvector(A);
-
-        let lamSHtml = "";
-        if (core_indices.length === 0) {
-            lamSHtml = `<div style="flex: 1;"><span style="color:#888;">No core economic sectors defined.</span></div>`;
-        } else {
-            let sColor = lambda_sraffian < 0.99 ? "var(--accent)" : (lambda_sraffian > 1.01 ? "var(--danger)" : "var(--primary)");
-            let sText = lambda_sraffian < 0.99 ? "Economy generates a physical surplus." : (lambda_sraffian > 1.01 ? "Economy is in deficit." : "Strict subsistence economy.");
-            lamSHtml = `<div style="flex: 1;">
-                <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Sraffian Core (&lambda;)</div>
-                <strong style="font-size:22px; color:${sColor};">${lambda_sraffian.toFixed(4)}</strong><br>
-                <span style="font-size:13px; color:#546e7a;">${sText}</span>
-            </div>`;
-        }
-
-        let pColor = pi_polanyian < 0.99 ? "var(--warning)" : (pi_polanyian > 1.01 ? "var(--danger)" : "var(--accent)");
-        let pText = pi_polanyian < 0.99 ? "Systemic unallocated surplus (hoarding/waste)." : (pi_polanyian > 1.01 ? "Systemic Deficit (unsustainable)." : "Closed Social Reproduction.");
-        let lamPHtml = `<div style="flex: 1; border-left: 1px solid #eee; padding-left: 20px;">
-            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Polanyian Total (&pi;)</div>
-            <strong style="font-size:22px; color:${pColor};">${pi_polanyian.toFixed(4)}</strong><br>
-            <span style="font-size:13px; color:#546e7a;">${pText}</span>
-        </div>`;
-
-        document.getElementById('out-lambda').innerHTML = `<div style="display: flex; gap: 20px; background: #fff; padding: 15px; border: 1px solid #cfd8dc; border-radius: 6px;">${lamSHtml}${lamPHtml}</div>`;
-
+        let {lambda, eigenvector} = getDominantEigenvector(A);
         let balHtml = "";
+        let lamColor = lambda < 0.99 ? "var(--warning)" : (lambda > 1.01 ? "var(--danger)" : "var(--accent)");
+        let lamText = lambda < 0.99 ? "System generates an unallocated physical surplus." : (lambda > 1.01 ? "Systemic Deficits (unsustainable reproduction)." : "Simple Reproduction (Mathematically closed loop).");
+        
+        document.getElementById('out-lambda').innerHTML = `<strong style="font-size:20px; color:${lamColor};">λ = ${lambda.toFixed(5)}</strong> <br><span style="color:#666; font-weight:bold;">${lamText}</span>`;
+
         let isBalanced = true;
         for(let i=0; i<N; i++) {
             let rowSum = state.oikos[i].reduce((a,b)=>a+b, 0);

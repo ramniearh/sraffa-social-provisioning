@@ -382,6 +382,7 @@ NOTE 8: ENTROPY & DISSIPATIVE STRUCTURES (Prigogine)
   dissipate that energy through expanded consumption, luxury, or warfare (acting as entropy sinks), 
   the system faces a thermodynamic/accumulation crisis and structurally collapses.
 
-NOTE 9: MONEY AS ITS OWN SOCIAL SECTOR SINK, and post-keynesian effective demand
+NOTE 9: MONEY AS ITS OWN SOCIAL SECTOR SINK, and post-keynesian effective demand. Also versus Leontieff *monetary* matrix.
+where regulation school?
 """
 

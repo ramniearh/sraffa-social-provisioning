@@ -136,13 +136,16 @@
             <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
             
             <p class="primer">
-                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below. If a row adds up to more (or less) than the total output, there is a surplus (or deficit) of production in that sector (indicated by a &gt;, &lt; sign).
+                Read rows horizontally to see where a good is distributed; read columns vertically to see what a sector requires as inputs. You can edit the inter-sector flows and total outputs directly. If a row's sum differs from its total output, the &gt; or &lt; signs indicate a surplus or deficit.
             </p>
             <p class="primer">
                 Use the right-hand columns to designate a <strong><u style="text-decoration: underline;">Numéraire</u></strong> (Standard of Value / Unit of Account).
             </p>
             <p class="primer">
-                <span style="color: var(--text-economic); font-weight: bold;">Blue Text</span> represents core economic/productive processes. Tag sectors as <span style="color: var(--text-social); font-weight: bold;">Purple</span> to include Polanyian social reproduction sectors. Cell background colors indicate the primary form of integration through which that specific flow is processed. Right-click the cell to cycle through these:<br>
+                <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> denotes typical economic sectors (e.g., agriculture, industry), as discussed by Sraffa. Toggle the 'Social' checkbox to assign, in <span style="color: var(--text-social); font-weight: bold;">Purple</span>, "Polanyian" or substantivist sectors responsible for social reproduction (e.g., households, community, the state).
+            </p>
+            <p class="primer">
+                Cell background colors indicate the primary form of integration through which that specific flow is processed (these are just annotations, with no effect on the math). Right-click the cell to cycle through these:<br>
                 <span style="display:inline-block; margin-top:8px;">
                     <span class="inst-box" style="background:#fff;"></span> Unspecified &nbsp;&nbsp;&nbsp;
                     <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange &nbsp;&nbsp;&nbsp;
@@ -154,40 +157,6 @@
 
         <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
         
-        <button id="calc-btn" class="btn-action" onclick="calculateSystem()">Calculate Systemic Parameters</button>
-    </div>
-
-        <div style="margin-bottom: 15px;">
-            <div class="controls">
-                <button class="btn-preset" onclick="addSector()" style="background:#455a64;">+ Add Sector</button>
-                <button class="btn-preset" onclick="removeSector()" style="background: var(--danger);">- Remove Sector</button>
-            </div>
-            
-            <p class="primer" style="margin-top: 15px;">
-                Read rows horizontally to trace where a good goes. Read columns vertically to see what a sector requires to function. You can input your own numbers in the matrix below (both for the inter-sector allocations and for the total output). If a row adds up to more (or less) than the total output, there is a surplus (or deficit) of production in that sector (indicated by a &gt;, &lt; sign).
-            </p>
-        </div>
-
-        <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
-        
-        <div style="margin-bottom: 20px;">
-            <p class="primer">
-                Use the right-hand columns to designate a <strong><u style="text-decoration: underline;">Numéraire</u></strong> (Standard of Value / Unit of Account).
-            </p>
-            <p class="primer">
-                <span style="color: var(--text-economic); font-weight: bold;">Blue Text</span> represents Sraffian/Economic sectors: These are core productive processes (e.g. agriculture, mining). You can tag sectors as <span style="color: var(--text-social); font-weight: bold;">Purple</span> to include Polanyian social reproduction sectors central to human reproduction (e.g., households, workers, community).
-            </p>
-            <p class="primer">
-                Cell background colors indicate the primary form of integration through which that specific flow is processed (this are just annotations, with no effect on the math). Right-click the cell to cycle through these:<br>
-                <span style="display:inline-block; margin-top:8px;">
-                    <span class="inst-box" style="background:#fff;"></span> Unspecified &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-redistribution);"></span> Redistribution &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-reciprocity);"></span> Reciprocity
-                </span>
-            </p>
-        </div>
-
         <button id="calc-btn" class="btn-action" onclick="calculateSystem()">Calculate Systemic Parameters</button>
     </div>
 
@@ -198,7 +167,7 @@
                 <h3>Systemic Reproduction Parameters</h3>
                 
                 <div class="sub-header">Viability, Reproduction and Sectoral Balances (eigenvalues)</div>
-                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Checks if the aggregate output aligns with structural consumption, and if the system achieves physical reproduction.</p>
+                <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Calculates the dominant eigenvalue of the technical coefficients matrix. For the core economic subsystem (&lambda;), this evaluates if the technical processes generate a physical surplus, a deficit, or exact subsistence. For the extended system (&sigma;), it evaluates if the entire network of socio-economic flows closes under the assumption that all outputs serve a necessary reproductive function.</p>
                 <div id="out-lambda" style="margin-bottom: 10px;"></div>
                 <div id="out-balance" style="margin-bottom: 20px;"></div>
 
@@ -221,7 +190,7 @@
 
                 <div class="result-box">
                     <h3>Gross Provisioning Absorption by Social Sector</h3>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Displays (from 0% to 100%) hShows what share of total gross flows is absorbed by social sectors versus material reproduction of the productive apparatus. This is a gross flow measure — it does not represent net surplus.</p>
+                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">Displays (from 0% to 100%) what share of total gross flows is absorbed by social sectors versus material reproduction of the productive apparatus. This is a gross flow measure — it does not represent net surplus.</p>
                     <div class="chart-wrapper-horizontal">
                         <canvas id="appChart"></canvas>
                     </div>
@@ -238,7 +207,7 @@
         
         <div class="course-box">
             <h2>Crash Course: Sraffa meets Polanyi</h2>
-            <p>This interactive sandbox merges Piero Sraffa's structural matrix mathematics with Karl Polanyi's substantivist economic sociology. It provides a formalism to represent physical and social flows, shifting from a commodity-production view of the economy to a generalized model of social reproduction. Within this framework, market-exchange commodity reproduction is only a special case. The matrix maps how different sectors are integrated through Polanyi's "instituted processes" (reciprocity, redistribution, or exchange). While the matrix quantifies these flows, it does not function as a complete institutional model; rather, it highlights the underlying structural interdependence of varied social formations.</p>
+            <p>This interactive sandbox combines Piero Sraffa's structural matrix mathematics and Karl Polanyi's substantivist economic sociology. It provides a formalism to represent physical and social flows, shifting from a commodity-production view of the economy to a generalized model of social reproduction. Within this framework, market-exchange commodity reproduction is only a special case. The matrix maps how different sectors are integrated through Polanyi's "instituted processes" (reciprocity, redistribution, or exchange). While the matrix quantifies these flows, it does not function as a complete institutional model; rather, it highlights the underlying structural interdependence of varied social formations.</p>
             
             <h4>1. The Sraffian Foundation: Beyond Marginalism</h4>
             <p>Neoclassical economics generally views the economy as a marketplace of independent individuals trading goods based on subjective utility and relative scarcity. In his 1960 work <em>Production of Commodities by Means of Commodities</em>, Piero Sraffa proposed an alternative framework for analyzing the economy that does not rely on marginal utility or subjective demand.</p>
@@ -247,18 +216,18 @@
                 <li><strong>Viability (λ):</strong> Can the system physically reproduce itself, or is it operating at a physical deficit (consuming more than it produces)?</li>
                 <li><strong>Relative Exchange Weights:</strong> Derived from the left eigenvector of the technical matrix, these are the mathematical exchange proportions required to replace the inputs consumed and restart the production cycle.</li>
             </ul>
-            <p>Sraffa also formalized the distinction between <strong>Basic Commodities</strong> (goods that enter, directly or indirectly, into the production of all other goods) and <strong>Non-Basic Commodities</strong> (goods that are produced but do not re-enter the system as productive inputs, such as luxury items). In his original book (Chapter 2), Sraffa treats the distribution of surplus (wages and profits) as external to the matrix. In our <em>Sraffa Ch. 2 (Surplus, one scenario)</em> preset, we adapt this by bringing Capitalists and Workers directly into the matrix as rows and columns, turning the distribution of surplus into a visible structural flow.</p>
+            <p>Sraffa also formalized the distinction between <strong>Basic Commodities</strong> (goods that enter, directly or indirectly, into the production of all other goods) and <strong>Non-Basic Commodities</strong> (goods that are produced but do not re-enter the system as productive inputs, such as luxury items). In his original book (Chapter 2), Sraffa treats the distribution of surplus (wages and profits) as external to the matrix. In our <em>Sraffa Ch. 2</em> preset, we adapt this by bringing Capitalists and Workers directly into the matrix. This closes the system by assigning specific surplus shares, capturing one realized point on Sraffa's wage-profit frontier. Note that treating workers and capitalists as required matrix inputs makes a stronger structural claim than Sraffa's original formulation.</p>
 
             <h4>2. The Substantivist Turn: Endogenizing Social Reproduction</h4>
             <p>Sraffa’s core model focuses on the production of economic commodities, treating the distribution of the surplus (via the wage rate and profit rate) as exogenous variables determined by institutional or political struggles over monetary measures outside the mathematical system. This is not too far removed from Polanyian economic sociology, which sees economic processes are "embedded" in social relations. Every society arguably overlays a type of social and political process over what could be understood as a strictly economic process - Sraffa's example in Chapter 2 can be seen as a special case of a more general relationship between the economy and society. Feminist and ecological economics go further and argue that all social reproduction (care, community maintenance, institutional governance) is a foundational economic process. </p>
-            <p>This closes Sraffa's surplus economy by assigning specific output shares, capturing one point on his wage-profit frontier. Try changing the worker/capitalist allocations and recalculating — the exchange ratio between wheat and iron will shift. Note: bringing workers and capitalists into the matrix as sectors makes them required inputs, which is a stronger claim than Sraffa's original formulation.</p>
-            <p>By adding <strong>Social Sectors</strong> (Households, Communities, The State) directly into the rows and columns of the matrix, we "close the loop" and treat the reproduction of human life and culture as endogenous to the provisioning system. Sraffa's wage-profit frontier is a special case of a more general institutional problem: every society that produces a surplus must decide how to distribute it. Palace rations, potlatch obligations, and capitalist wage contracts are three institutional answers to the same structural question. The provisioning matrix makes this visible across all social formations.  This allows for analytical interpretations such as:</p>
+            <p>By adding <strong>Social Sectors</strong> (Households, Communities, The State) directly into the rows and columns of the matrix, we "close the loop" and treat the reproduction of human life and culture as endogenous to the provisioning system. Sraffa's wage-profit frontier is a special case of a more general institutional problem: every society that produces a surplus must decide how to distribute it. Palace rations, potlatch obligations, and capitalist wage contracts are three institutional answers to the same structural question. The provisioning matrix makes this visible across all social formations. This allows for analytical interpretations such as:</p>
             <ul>
                 <li><strong>Exchange values as socio-ecological metrics:</strong> When community maintenance or care work is included in the matrix, the relative value of an industrial good reflects the proportion of social reproduction structurally required to provision it.</li>
                 <li><strong>Quantifying Surplus Appropriation:</strong> By tracking the flow of basic versus non-basic goods into specific social classes, the model can quantify what proportion of an economy's total output is dedicated to core provisioning versus discretionary surplus consumption.</li>
-                <li><strong>Analyzing Non-Market Societies:</strong> By removing assumptions of generalized markets and money, this matrix approach can be used to analyze a hunter-gatherer foraging camp (Sahlins) or an ancient Mesopotamian palace economy (Hudson) with the same structural logic used to analyze capitalist provisioning. Importantly, the requirements of social reproduction, reflected in the broader provisioning matrix, apply to any economy, whether or not it is integrated through markets. Our "Provisioning Coefficient" can then be seen as a social-reproduction analogue to the exchange prices calculated by Sraffa, and it would be valuable to explore the extent to which these two vectors diverge in specific instances is. </li>
-                <li>Sectors whose outputs are absorbed without re-entering production are structurally non-basic — they don't affect Provisioning Centrality scores. Luxury goods, ceremonial feasts, and financial instruments may all be non-basic structurally, even if socially significant. The matrix separates structural centrality from social importance.</li>
+                <li><strong>Analyzing Non-Market Societies:</strong> By removing assumptions of generalized markets and money, this matrix approach can be used to analyze a hunter-gatherer foraging camp (Sahlins) or an ancient Mesopotamian palace economy (Hudson) with the same structural logic used to analyze capitalist provisioning. Importantly, the requirements of social reproduction, reflected in the broader provisioning matrix, apply to any economy, whether or not it is integrated through markets. Our 'Provisioning Centrality' can then be seen as a social-reproduction analogue to the exchange prices calculated by Sraffa. It is analytically valuable to explore the extent to which these structural weights diverge from actual market prices.</li>
             </ul>
+
+            <p><strong>Basic vs. Non-Basic Social Flows:</strong> Sectors whose outputs are absorbed without re-entering the broader system's production are mathematically non-basic — they do not affect Provisioning Centrality scores. Luxury goods, ceremonial feasts, and financial instruments may all be non-basic in this mathematical sense, even if they are socially significant. The matrix calculation separates mathematical structural centrality from sociological importance.</p>
             
             <h4>3. Exploring the Preset Scenarios</h4>
             <p>These presets provide stylized sketches referencing historical and empirical literature:</p>
@@ -570,6 +539,28 @@
     function calculateSystem() {
         const N = state.sectors.length;
 
+        let zeroOutputSectors = [];
+        for (let i = 0; i < N; i++) {
+            if (state.total_output[i] <= 0) {
+                zeroOutputSectors.push(state.sectors[i].name);
+            }
+        }
+        
+        if (zeroOutputSectors.length > 0) {
+            document.getElementById('out-lambda').innerHTML = `
+                <div style="padding: 15px; background: #ffebee; color: #c62828; border: 1px solid #ef5350; border-radius: 4px; font-size: 14px;">
+                    <strong>⚠️ Mathematical Error:</strong> Sector(s) <em>${zeroOutputSectors.join(", ")}</em> have a <strong>TOTAL OUTPUT of 0</strong>. <br><br>
+                    This creates a structural "black hole" (a sector that cannot pass any value forward), violating the conditions required to calculate systemic eigenvalues. Please input a valid output &gt; 0.
+                </div>`;
+            document.getElementById('out-balance').innerHTML = '';
+            document.getElementById('out-prices').innerHTML = '';
+            
+            if(valChartInst) valChartInst.destroy();
+            if(appChartInst) appChartInst.destroy();
+            resetStale();
+            return; 
+        }
+
         let A = [];
         for(let i=0; i<N; i++) {
             A.push([]);
@@ -619,7 +610,7 @@
             <div style="display: flex; gap: 20px; background: #fff; padding: 15px; border: 1px solid #cfd8dc; border-radius: 6px; margin-bottom: 10px;">${lamSHtml}${lamPHtml}</div>
             <div style="font-size: 13px; color: #37474f; padding: 8px; background: #f0f4f8; border-radius: 4px; border: 1px solid #cfd8dc;">
                 ${nonBasicText} <br>
-                <em style="font-size: 11px; color: #666;">(Non-basics are structural sinks: they absorb outputs but do not feed back into the reproduction of all other commodities).</em>
+                <em style="font-size: 11px; color: #666;">(Non-basics are sectors that absorb inputs but whose outputs do not re-enter the broader system as productive inputs for basic commodities).</em>
             </div>`;
             
         let balHtml = "";
@@ -629,7 +620,7 @@
             let diff = state.total_output[i] - rowSum;
             if(Math.abs(diff) > 0.01) {
                 if (isBalanced) balHtml += `<table class="diag-table" style="margin-top: 10px;">`;
-                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diff > 0 ? 'var(--primary)' : 'var(--danger)'};">${diff > 0 ? "Unallocated Surplus" : "Structural Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
+                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diff > 0 ? 'var(--primary)' : 'var(--danger)'};">${diff > 0 ? "Unallocated Surplus" : "Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
                 isBalanced = false;
             }
         }
@@ -736,7 +727,6 @@
         let nonBasics = [];
 
         for (let i = 0; i < N; i++) {
-            // BFS to see if sector i eventually flows into all other sectors
             let visited = new Set();
             let queue = [i];
             visited.add(i);
@@ -744,7 +734,6 @@
             while (queue.length > 0) {
                 let curr = queue.shift();
                 for (let j = 0; j < N; j++) {
-                    // If curr flows into j, and we haven't visited j yet
                     if (state.oikos[curr][j] > 0 && !visited.has(j)) {
                         visited.add(j);
                         queue.push(j);
@@ -752,7 +741,6 @@
                 }
             }
 
-            // If it couldn't reach every sector, it's a Non-Basic
             if (visited.size < N) {
                 nonBasics.push(state.sectors[i].name);
             }

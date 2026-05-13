@@ -130,7 +130,7 @@
 
         <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
 
-        <button id="calc-btn" class="btn-action" onclick="calculateSystem()">Calculate System Parameters</button>
+        <button id="calc-btn" class="btn-action" onclick="calculateSystem()">CLICK HERE to Calculate System Parameters</button>
     </div>
 
     <div id="results-area">
@@ -450,7 +450,7 @@
             isStale = true;
             const btn = document.getElementById('calc-btn');
             btn.classList.add('stale');
-            btn.innerHTML = '⚠️ Matrix Changed: Re-Calculate Parameters';
+            btn.innerHTML = '⚠️ MATRIX CHANGED: CLICK HERE To Re-Calculate Parameters';
         }
         updateRowSums();
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sraffa meets Polanyi: a Social Provisioning Matrix</title>
+    <title>Sraffa meets Polanyi: a Social Provisioning Sandbox</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
@@ -12,20 +12,26 @@
             --panel: #ffffff;
             --border: #cfd8dc;
             --primary: #455a64;
-            --accent: #26a69a;
-            --warning: #f57c00;
-            --text: #263238;
-            --danger: #ef5350;
-            --inst-exchange: rgba(30, 136, 229, 0.15);
-            --inst-redistribution: rgba(255, 213, 79, 0.3);
-            --inst-reciprocity: rgba(67, 160, 71, 0.15);
-            --text-economic: #1565c0;
-            --text-social: #7b1fa2;
+            
+            /* Integration form cell backgrounds */
+            --inst-unassigned: #f5f5f5;                     /* very light grey */
+            --inst-exchange: rgba(30, 136, 229, 0.15);      /* soft blue — market */
+            --inst-redistribution: rgba(253, 216, 53, 0.25);/* soft gold — state/centric */
+            --inst-reciprocity: rgba(244, 81, 30, 0.15);    /* terracotta — kinship/gift */
+            
+            /* Sector text colours */
+            --text-economic: #1565c0;   /* deep indigo blue */
+            --text-social: #6a1b9a;     /* rich plum violet */
+            
+            /* Diagnostic Math Colors & UI Buttons */
+            --val-surplus: #00897b; /* Teal (Surplus, Non-basic, Active, Calculate) */
+            --val-deficit: #e53935; /* Red (Deficit, Remove, Stale) */
+            --val-balance: #455a64; /* Slate Grey (Balance, Subsistence, Add) */
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background-color: var(--bg);
-            color: var(--text);
+            color: #263238;
             margin: 0;
             padding: 20px;
             line-height: 1.5;
@@ -38,9 +44,9 @@
         }
         h1 { margin-top: 0; margin-bottom: 10px; color: var(--primary); }
         .preset-bar { display: flex; gap: 8px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: #f0f4f8; padding: 15px; border-radius: 6px; border: 1px solid var(--border);}
-        .btn-preset { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s; border: 2px solid transparent;}
+        .btn-preset { background: var(--val-balance); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s; border: 2px solid transparent;}
         .btn-preset:hover { opacity: 0.9; }
-        .btn-preset.active { border: 2px solid var(--accent); background: #263238; box-shadow: 0 0 8px rgba(38,166,154,0.4); }
+        .btn-preset.active { border: 2px solid var(--val-surplus); background: var(--val-surplus); box-shadow: 0 0 8px rgba(0,137,123,0.4); }
         .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; text-align: center; }
         table { border-collapse: collapse; width: 100%; margin: 0 auto; font-size: 13px; }
         th, td { border: 1px solid var(--border); padding: 0; text-align: center; transition: background-color 0.2s; }
@@ -48,87 +54,100 @@
         .row-header { display: flex; gap: 5px; justify-content: flex-start; align-items: center; padding: 6px; background: #fff; }
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
         input[type="number"].matrix-cell {
-            appearance: textfield; -moz-appearance: textfield; width: 100%; min-width: 40px; text-align: center;
-            padding: 8px 4px; font-family: monospace; font-size: 13px; border-radius: 0;
-            border: none; background: transparent; outline: none; cursor: pointer; box-sizing: border-box;
+            appearance: textfield; -moz-appearance: textfield; width: 60px; text-align: right;
+            padding: 4px; font-family: monospace; font-size: 13px; border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.3); background: #ffffff; outline: none; cursor: pointer; box-sizing: border-box;
+            margin: 4px auto; display: block; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
         }
-        input[type="number"].matrix-cell:hover, input[type="number"].matrix-cell:focus { background: rgba(255,255,255,0.5); }
+        input[type="number"].matrix-cell:hover, input[type="number"].matrix-cell:focus {
+            border-color: var(--val-surplus); background: #f8faff;
+        }
+        
         input[type="text"] { padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px;}
         .input-name { width: 110px; font-weight: bold; }
         .input-unit { width: 60px; font-size: 13px; color: #666; font-style: italic; background:#f9f9f9;}
         .total-cell { font-weight: bold; padding: 6px; transition: background 0.3s; white-space: nowrap; }
-        .total-input { background: #fff; border: 1px solid rgba(0,0,0,0.3); font-weight: bold; font-family: monospace; font-size: 13px; width: 65px; border-radius: 3px; text-align: right; padding: 4px; }
+        .total-input { background: #fff; border: 1px solid rgba(0,0,0,0.3); font-weight: bold; font-family: monospace; font-size: 13px; width: 65px; border-radius: 3px; text-align: right; padding: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
         .toggle-col { background: #fafafa; padding: 6px;}
-        .btn-action { background: var(--accent); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 15px;}
+        .btn-action { background: var(--val-surplus); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 15px;}
         .btn-action:hover { opacity: 0.9; }
-        .btn-action.stale { background: var(--warning); }
+        .btn-action.stale { background: var(--val-deficit); } /* Red when matrix changes */
         .controls { display: flex; gap: 10px; margin-bottom: 5px; align-items: center;}
         h3 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 12px;}
         .heatmap-table { margin: 0 auto; width: auto; font-family: monospace; font-size: 13px; }
         .heatmap-table th, .heatmap-table td { padding: 10px 18px; transition: background-color 0.3s; }
         .primer { font-size: 14px; color: #37474f; margin-bottom: 10px; }
-        .chart-wrapper { position: relative; height: 280px; width: 100%; margin-top: 10px; }
-        .chart-wrapper-horizontal { position: relative; height: 140px; width: 100%; margin-top: 10px; }
+        /* chart layout classes */
+        .chart-intro { font-size: 14px; color: #455a64; font-weight: 500; margin-top: 8px; margin-bottom: 4px; }
+        .chart-caption { font-size: 12px; color: #78909c; font-style: italic; margin-top: 8px; line-height: 1.5; border-top: 1px solid #e0e0e0; padding-top: 6px; }
+        .chart-wrapper { position: relative; height: 280px; width: 100%; margin-top: 6px; }
+        .chart-wrapper-horizontal { position: relative; height: 140px; width: 100%; margin-top: 6px; }
         .diag-table { width: 100%; margin-bottom: 15px; background: white; border-collapse: collapse; }
         .diag-table th { background: #eceff1; text-align: left; font-size: 13px; padding: 8px; border: 1px solid #cfd8dc; }
         .diag-table td { text-align: left; font-size: 14px; padding: 8px; border: 1px solid #cfd8dc; }
         .auto-width-table table { width: auto; min-width: 60%; }
-        .sub-header { font-weight: 600; color: var(--primary); margin-top: 20px; margin-bottom: 5px; font-size: 15px;}
+        .sub-header { font-weight: 600; color: var(--primary); margin-top: 20px; margin-bottom: 4px; font-size: 15px;}
         .inst-box { display: inline-block; width: 16px; height: 12px; border: 1px solid #ccc; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
+        /* Course box */
         .course-box { background: #e8ecef; padding: 30px; border-radius: 8px; border-left: 6px solid var(--primary); margin-top: 40px; line-height: 1.6;}
         .course-box h2 { margin-top: 0; color: var(--primary); }
         .course-box h4 { margin-top: 25px; margin-bottom: 10px; color: #263238; font-size: 16px; border-bottom: 1px solid #cfd8dc; padding-bottom: 5px;}
         .course-box p { font-size: 14px; margin-bottom: 15px; color: #37474f; }
         .course-box ul { font-size: 14px; color: #37474f; margin-top: 0; }
         .course-box li { margin-bottom: 8px; }
+        .ref-list { font-size: 13px; color: #546e7a; margin-top: 0; padding-left: 20px; }
+        .ref-list li { margin-bottom: 6px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Sraffa meets Polanyi: a Social Provisioning Matrix</h1>
+    <h1>Sraffa meets Polanyi: a Social Provisioning Sandbox</h1>
 
     <div class="preset-bar" id="preset-bar">
         <span style="font-size: 14px; font-weight: bold; margin-right: 10px;">Load Model:</span>
-        <button class="btn-preset active" id="btn-diy" onclick="loadPreset('diy', this)" style="background: #607d8b;">Custom</button>
-        <button class="btn-preset" id="btn-sraffa_ch1" onclick="loadPreset('sraffa_ch1', this)" style="background: #37474f;">Sraffa Ch. 1: subsistence</button>
-        <button class="btn-preset" id="btn-sraffa_ch2" onclick="loadPreset('sraffa_ch2', this)" style="background: #37474f;">Sraffa Ch. 2: surplus (Adapted)</button>
+        <button class="btn-preset active" id="btn-diy" onclick="loadPreset('diy', this)">Custom</button>
+        <button class="btn-preset" id="btn-sraffa_ch1" onclick="loadPreset('sraffa_ch1', this)">Sraffa Ch. 1: subsistence</button>
+        <button class="btn-preset" id="btn-sraffa_ch2" onclick="loadPreset('sraffa_ch2', this)">Sraffa Ch. 2: surplus (Adapted)</button>
         <button class="btn-preset" id="btn-sahlins" onclick="loadPreset('sahlins', this)">Sahlins (Foraging)</button>
         <button class="btn-preset" id="btn-hudson" onclick="loadPreset('hudson', this)">Hudson (Palace Economy)</button>
         <button class="btn-preset" id="btn-capitalist" onclick="loadPreset('capitalist', this)">Capitalism</button>
     </div>
 
     <div class="panel">
-        <div style="margin-bottom: 20px;">
-            <div class="controls">
-                <button class="btn-preset" onclick="addSector()" style="background:#455a64;">+ Add Sector</button>
-                <button class="btn-preset" onclick="removeSector()" style="background: var(--danger);">- Remove Sector</button>
-            </div>
+        <p class="primer" style="margin-top: 5px;">
+            This sandbox represents the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. As presented by Piero Sraffa in his original framework, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers - these recursive requirements are what make this a provisioning <em>system</em> rather than a collection of isolated activities. The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
+        </p>
+        <p class="primer">
+            Select a preset economy above and press <em>Calculate System Parameters</em> to see the structural properties of the system. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, toggle designations, or right-click cells. Click the calculate button again to see the effect of your changes.
+        </p>
 
-            <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
-
-            <p class="primer">
-                <b>Instructions:</b> Read rows horizontally to see how a sector's output is distributed across the system; read columns vertically to see what inputs a sector requires. You can edit inter-sector flows and total outputs directly. Where a row sum differs from total output, the &gt; or &lt; indicators show whether output exceeds or falls short of allocated flows.
-            </p>
-            <p class="primer">
-                Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (the unit of account used to normalize relationships to the other sectors; the choice of numéraire affects does not affect structural properties of the system).
-            </p>
-            <p class="primer">
-                <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> denotes economic sectors (commodity-producing activities, as in Sraffa). Toggle the 'Social' checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">Purple</span>, sectors whose primary function is social or ecological reproduction rather than commodity production (e.g., households, community institutions, the state, or the biosphere).
-            </p>
-            <p class="primer">
-                Cell background colors annotate the primary form of integration through which that flow is organized. Right-click any cell to cycle through forms. These annotations affect only the Institutional Integration chart; they have no bearing on eigenvalues, Provisioning Centrality, or any other structural calculation.<br>
-                <span style="display:inline-block; margin-top:8px;">
-                    <span class="inst-box" style="background:#fff;"></span> Unspecified &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-redistribution);"></span> Redistribution &nbsp;&nbsp;&nbsp;
-                    <span class="inst-box" style="background:var(--inst-reciprocity);"></span> Reciprocity
-                </span>
-            </p>
-        </div>
+        <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
 
         <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
+
+        <div class="controls" style="margin-bottom: 15px;">
+            <button class="btn-preset" onclick="addSector()" style="background: var(--val-balance);">+ Add Sector</button>
+            <button class="btn-preset" onclick="removeSector()" style="background: var(--val-deficit);">- Remove Sector</button>
+        </div>
+
+        <p class="primer">
+            Where a row's sum differs from its stated TOTAL OUTPUT, the &gt; or &lt; indicators show whether output exceeds or falls short of allocated flows. Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (the unit of account used as a reference to normalize calculations for the other sectors). The numéraire choice does not affect the structure of the system, it only rescales quantities of other sectors in relation to the one selected.
+        </p>
+        <p class="primer">
+            <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> in the column and row names denotes economic sectors (commodity-producing activities, in Sraffa's original sense). Toggle the <em>Social</em> checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">violet</span>, sectors whose primary function is social or ecological reproduction (in broadened provisioning sense that goes beyond Sraffa's and includes households, community institutions, the state, the biosphere). This designation directly affects the calculation of the viability parameters below, as it draws a separation between a commodity subsystem and the broader social system in which it is embedded.
+        </p>
+        <p class="primer">
+            Cell background colors annotate the primary form of integration (in the sense of Karl Polanyi) through which that flow is organized. These are just annotations; they do not affect the structure of the system or alter structural calculations. Right-click any cell to cycle through the colors marked below:<br>
+            <span style="display:inline-block; margin-top:8px;">
+                <span class="inst-box" style="background:var(--inst-unassigned);"></span> Unassigned &nbsp;&nbsp;&nbsp;
+                <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange &nbsp;&nbsp;&nbsp;
+                <span class="inst-box" style="background:var(--inst-redistribution);"></span> Redistribution &nbsp;&nbsp;&nbsp;
+                <span class="inst-box" style="background:var(--inst-reciprocity);"></span> Reciprocity
+            </span>
+        </p>
 
         <button id="calc-btn" class="btn-action" onclick="calculateSystem()">CLICK HERE to Calculate System Parameters</button>
     </div>
@@ -140,22 +159,31 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px;">
 
                 <div>
-                    <div class="sub-header" style="margin-top: 0;">Viability, Reproduction, and Sectoral Balances</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        &lambda; is the dominant eigenvalue of the technical coefficients sub-matrix formed by economic (non-social) sectors only. When &lambda; &lt; 1, this sub-system generates a physical surplus relative to its own direct reproduction requirements; &lambda; = 1 is exact subsistence; &lambda; &gt; 1 is a direct physical deficit. Note that &lambda; excludes inputs from social sectors, so it measures the economic core as if those inputs (labor, governance, etc.) were available for free — a partial, lower-bound reading of economic viability.
-                        <br><br>
-                        &sigma; is the dominant eigenvalue of the full provisioning matrix A, including social sectors. &sigma; = 1 means the system as a whole is at exact reproduction; &sigma; &lt; 1 indicates a system-level physical surplus; &sigma; &gt; 1 indicates a system-level deficit. Note: &sigma; and the balance table are distinct diagnostics. Unallocated flows (outputs not assigned to any input column) are detected by the balance table, not by &sigma;.
-                    </p>
+                    <div class="sub-header" style="margin-top: 0;">Viability and Reproduction (Eigenvalues and Sector Balances)</div>
+                    <p class="chart-intro">The core subsystem eigenvalue (λ) measures the isolated viability of the open economic matrix, approximating Sraffa's original commodity framework. The extended system eigenvalue (σ) measures the fully closed provisioning matrix, including social sectors.</p>
                     <div id="out-lambda" style="margin-bottom: 10px;"></div>
                     <div id="out-balance"></div>
+                    <p class="chart-caption">
+                        λ is the dominant eigenvalue of the technical coefficients sub-matrix formed by economic (non-social) sectors only. When λ &lt; 1, this sub-system generates a physical surplus relative to its own direct reproduction requirements; λ = 1 is exact subsistence; λ &gt; 1 is a direct physical deficit. Because λ excludes inputs from social sectors, it measures the economic core as if those inputs (labor, governance, ecological services) were freely available — a partial, lower-bound reading of economic viability.
+                        <br><br>
+                        σ is the dominant eigenvalue of the full provisioning matrix A, including social sectors. σ = 1 means the system as a whole is at exact reproduction; σ &lt; 1 indicates a system-level physical surplus; σ &gt; 1 indicates a system-level deficit. σ and the balance table are distinct diagnostics: σ measures the reproductive condition implied by the technical coefficients; the balance table detects unallocated flows (row sums differing from stated total outputs). This implementation interprets "social reproduction" in the broadest possible sense of "the society subsists in time until the next period".
+                    </p>
                 </div>
 
                 <div>
-                    <div class="sub-header" style="margin-top: 0;">Provisioning Centrality (Left Eigenvector)</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        The dominant left eigenvector of A — the vector <strong>p</strong> satisfying <strong>p</strong>&middot;A = &lambda;&middot;<strong>p</strong> — normalized to the chosen numéraire. When &lambda; = 1 (subsistence), these weights exactly reproduce Sraffa's exchange ratios for basic commodities: they are determined entirely by the physical structure of production. When &lambda; &ne; 1 (surplus or non-market economies), the vector retains the same formal structure but no longer maps directly to any market price. The label "Provisioning Centrality" indicates this more generaliz reading (buta precise interpretation in non-subsistence and non-market cases remains an open theoretical question).
+                    <div class="sub-header" style="margin-top: 0;">System Reproduction Weights (Left Eigenvector)</div>
+                    <p class="chart-intro">These weights act as a system-level indicator of the relational dependencies between all the sectors included in the matrix. These represent how much of the flows from all other sectors are required for the reproduction of this specific sector.</p>
+                    
+                    <div style="display: flex; justify-content: center; margin-top: 10px;">
+                        <table class="diag-table" style="width: auto; min-width: 40%; margin: 0;">
+                            <thead><tr><th>Physical Unit</th><th id="weight-header">Weights</th></tr></thead>
+                            <tbody id="out-centrality-tbody"></tbody>
+                        </table>
+                    </div>
+                    
+                    <p class="chart-caption">
+                        The dominant left eigenvector of A — the vector <strong>p</strong> satisfying <strong>p</strong>&middot;A = λ&middot;<strong>p</strong> — normalized to the chosen numéraire. In Sraffa's narrowly economic framework at exact subsistence (before surplus distribution is introduced), these weights correspond to market prices. In our extended framework, regardless of the institutional form of integration, the vector provides a systemic measure of how much of the provisioning network required to sustain each sector. These are (in some sense to be explored) analogues to prices in market systems.
                     </p>
-                    <div id="out-centrality" class="auto-width-table"></div>
                 </div>
 
             </div>
@@ -164,157 +192,185 @@
         <div class="panel">
             <h3>Visualizations</h3>
 
-            <!-- ── SECTION 1: Flow Networks (prominent, at top) ─────────────── -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px;">
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Physical Flow Network (Z)</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        The <strong>extensive</strong> topology of the provisioning system. Node size represents Gross Systemic Scale (Provisioning Centrality &times; total output) — how much structural weight a sector carries in absolute terms. Edge thickness represents the absolute physical flow Z[i&rarr;j]. Edge color reflects the user-assigned integration form. Read this network to identify which sectors handle the largest absolute volumes of material exchange and where the heaviest dependencies lie.
+                    <p class="chart-intro">Visualizes the absolute material activity in the system. Larger nodes represent greater systemic scale; thicker edges indicate higher physical flow volumes.</p>
+                    <div id="networkMapZ" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
+                    <p class="chart-caption">
+                        The "extensive" topology: node size represents Gross Systemic Scale (Provisioning Centrality × total output), combining structural importance with output volume. Edge thickness represents the absolute physical flow Z[i&rarr;j]. Edge color reflects the user-assigned integration form. This network shows where the largest absolute volumes of material exchange occur in the system — which sectors are big in aggregate terms, and where the heaviest flow dependencies lie. Node colors map to economic (blue) and social (violet) classifications.
                     </p>
-                    <div id="networkMapZ" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 10px;"></div>
                 </div>
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Technical Dependency Network (A)</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        The <strong>intensive</strong> recipe of the provisioning system. Node size represents per-unit Provisioning Centrality — each sector's structural weight independent of its scale of output. Edge thickness represents the technical coefficient A[i&rarr;j] — the quantity of good i required per unit of output j. Edge color reflects the user-assigned integration form. Read this network to identify which production processes carry the highest per-unit structural dependencies, regardless of their absolute scale.
+                    <p class="chart-intro">Visualizes the per-unit technical dependencies. Larger nodes indicate higher systemic centrality per unit of output; thicker edges represent larger input requirements per unit produced.</p>
+                    <div id="networkMapA" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
+                    <p class="chart-caption">
+                        The "intensive" structure: node size represents per-unit Provisioning Centrality — structural importance independent of output scale. Edge thickness represents the technical coefficient A[i&rarr;j]: the quantity of good i required per unit of output j. Edge color reflects the user-assigned integration form. This network shows which production processes carry the highest per-unit structural dependencies — the recipe of the economy stripped of its scale.
                     </p>
-                    <div id="networkMapA" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 10px;"></div>
                 </div>
             </div>
 
-            <!-- ── SECTION 2: Analytical charts — bars left, doughnut+radar right -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
 
-                <!-- LEFT COLUMN: bar charts stacked -->
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Gross Sectoral Scale (in Numéraire)</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        Each sector's total output multiplied by its Provisioning Centrality weight, expressed in numéraire units. This translates physically heterogeneous outputs into a single common scale. In the subsistence case (&lambda; = 1), this is equivalent to Sraffian value (price &times; quantity); in other cases, it serves as a provisional measure of each sector's extensive contribution to total provisioning. Blue bars = economic sectors; purple bars = social sectors.
+                    <p class="chart-intro">Calculates the total size of each sector within the provisioning system.</p>
+                    <div class="chart-wrapper"><canvas id="scaleChart"></canvas></div>
+                    <p class="chart-caption">
+                        Each sector's total output multiplied by its Provisioning Centrality weight, expressed in numéraire units. This translates physically heterogeneous outputs (tons of wheat, hours of labor, ecological services) into a single common structural scale. In the subsistence case (λ = 1), this equals Sraffian value (price × quantity). In other cases, it is a provisional measure of each sector's extensive contribution to total provisioning. Blue bars = economic sectors; violet bars = social sectors.
                     </p>
-                    <div class="chart-wrapper">
-                        <canvas id="scaleChart"></canvas>
-                    </div>
 
                     <div class="sub-header" style="margin-top: 30px;">Gross Input Absorption by Social Sector</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
+                    <p class="chart-intro">Displays the share of total systemic activity flowing through each social sector as inputs received.</p>
+                    <div class="chart-wrapper-horizontal"><canvas id="absChart"></canvas></div>
+                    <p class="chart-caption">
                         Each social sector's share of total systemic scale, measured by the weighted sum of inputs it receives (each inflow weighted by the Provisioning Centrality of its source sector). The grey remainder represents inputs absorbed by intermediate economic production. This is a gross flow measure of input absorption; it does not represent net surplus extraction.
                     </p>
-                    <div class="chart-wrapper-horizontal">
-                        <canvas id="absChart"></canvas>
-                    </div>
 
                     <div class="sub-header" style="margin-top: 30px;">Net Flow Position of Social Sectors</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        For each social sector: total weighted inputs received (column sum, each flow weighted by its source sector's Provisioning Centrality) minus total weighted outputs contributed (row sum, weighted by the sector's own Provisioning Centrality), expressed in numéraire units. A positive value indicates the sector receives more than it contributes in structural terms; a negative value indicates net structural contribution. This is a flow-accounting identity derived from the matrix and does not constitute a normative judgment about the sector's social role or productivity.
+                    <p class="chart-intro">Calculates whether social sectors contribute more to the system than they receive in systemic weight, or vice versa.</p>
+                    <div class="chart-wrapper"><canvas id="netFlowChart"></canvas></div>
+                    <p class="chart-caption">
+                        For each social sector: total weighted inputs received (column sum, each flow weighted by its source sector's Provisioning Centrality) minus total weighted outputs contributed (row sum, weighted by the sector's own Provisioning Centrality), expressed in numéraire units. A positive value indicates the sector receives more than it contributes structurally; negative indicates net structural contribution. Note that inputs and outputs use different weights (source-sector centrality vs. the sector's own centrality), creating an asymmetry that should be interpreted with care. This is a flow-accounting identity derived from the matrix structure; it does not constitute a normative judgment about the sector's social role or productivity.
                     </p>
-                    <div class="chart-wrapper">
-                        <canvas id="netFlowChart"></canvas>
-                    </div>
                 </div>
 
-                <!-- RIGHT COLUMN: doughnut + radar -->
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Institutional Integration Breakdown</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        Each flow Z[i&rarr;j] is attributed to its user-assigned Polanyian integration form. The flow's structural weight (Z[i][j] &times; Provisioning Centrality of sector i) is then aggregated by integration type. This chart reflects the qualitative annotations entered in the matrix and should be interpreted accordingly: it does not independently validate or empirically measure integration forms. The proportions change entirely if annotations are revised.
+                    <p class="chart-intro">Aggregates total systemic scale according to the user-assigned integration forms.</p>
+                    <div class="chart-wrapper"><canvas id="instChart"></canvas></div>
+                    <p class="chart-caption">
+                        Each flow Z[i&rarr;j] is attributed to its user-assigned Polanyian integration form. The flow's structural weight (Z[i][j] × Provisioning Centrality of sector i) is aggregated by integration type. This chart reflects the qualitative annotations entered in the matrix and should be interpreted accordingly — it does not independently validate or empirically measure integration forms. The proportions change entirely if annotations are revised.
                     </p>
-                    <div class="chart-wrapper">
-                        <canvas id="instChart"></canvas>
-                    </div>
 
                     <div class="sub-header" style="margin-top: 30px;">Provisioning Centrality Profile (Radar)</div>
-                    <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px;">
-                        A radial profile of Provisioning Centrality values across all sectors, normalized to the numéraire. The shape reflects how concentrated or distributed structural weight is in the system: a roughly circular profile indicates near-uniform centrality across sectors; a peaked or asymmetric profile indicates that structural weight is concentrated in a small number of sectors. Axes are not comparable across different numéraire choices.
+                    <p class="chart-intro">Plots the distribution of systemic weight across all sectors. A symmetric profile indicates evenly distributed centrality, while a peaked profile highlights sectors that dominate the provisioning network.</p>
+                    <div class="chart-wrapper"><canvas id="radarChart"></canvas></div>
+                    <p class="chart-caption">
+                        A radial profile of Systemic Reproduction Weights across all sectors, normalized to the numéraire. Axes are not comparable across different numéraire choices.
                     </p>
-                    <div class="chart-wrapper">
-                        <canvas id="radarChart"></canvas>
-                    </div>
+                    
+                    <div class="sub-header" style="margin-top: 30px;">Technical Coefficients Matrix (A)</div>
+                    <p class="chart-intro">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j.</p>
+                    <div class="matrix-wrapper" id="heatmap-container" style="margin-top: 10px; overflow-x: auto; background: #fafafa; border: 1px solid #cfd8dc; border-radius: 6px; padding: 10px;"></div>
+
                 </div>
 
             </div>
         </div>
 
-        <div class="panel" style="margin-top: 20px;">
-            <h3>Technical Coefficients Matrix (A)</h3>
-            <p class="primer" style="color: #546e7a; font-style: italic; font-size: 13px; line-height: 1.5;">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j. Darker cells indicate higher per-unit input requirements.</p>
-            <div class="matrix-wrapper" id="heatmap-container"></div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <!--  CRASH COURSE                                                       -->
-        <!-- ═══════════════════════════════════════════════════════════════════ -->
         <div class="course-box">
-            <h2>Crash Course: Sraffa meets Polanyi</h2>
+            <h2>Sraffa and Polanyi: A Conceptual Introduction to the Social Provisioning Framework</h2>
 
-            <p>This tool applies Sraffa's input-output matrix formalism to a broader class of economies than the capitalist commodity system Sraffa analyzed. The premise is that any society sustaining itself over time — through markets, palace redistribution, or generalized reciprocity — must maintain a set of interdependent material flows. These flows can be represented as a provisioning matrix whose mathematical properties (eigenvalues, eigenvectors) describe structural conditions of viability independently of the institutional form through which flows are organized. Polanyi's three forms of economic integration, in this tool, serve as qualitative annotations identifying how each specific flow is governed (they do not affect the reproduction calculations).</p>
+            <p>This sandbox applies Sraffa's input-output matrix formalism to a broader class of economies than the capitalist commodity system Sraffa analyzed. The premise is that any society sustaining itself over time — through markets, palace redistribution, or generalized reciprocity — must maintain a set of interdependent material flows. These flows can be represented as a provisioning matrix whose mathematical properties (eigenvalues, eigenvectors) describe structural conditions of viability independently of the institutional form through which they are organized.</p>
 
-            <h4>1. The Sraffian Foundation</h4>
+            <p>This tool is intended as an <em>intuition pump</em>: a thought-experiment device for making ideas about provisioning systems tangible and manipulable (in other words, this is not a tool for actual empirical research). The presets are only illustrations meant to convey the spirit of the cases, the institutional annotations are impressionistic and not formally connected to the rest of the mathematical framework, and the mathematics and visualizations rely on non-rigorous HTML-embedded calculations. The last section of the document sketches how this might be developed towards actual research applications.</p>
 
-            <p>In <em>Production of Commodities by Means of Commodities</em> (1960), Piero Sraffa proposed analyzing the economy not through individual preferences and relative scarcity, but as a system of circular, interdependent production processes. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed workers). These physical interdependencies are captured in the flow matrix Z, where Z[i][j] is the quantity of good i used as an input in producing good j. Dividing each cell by the total output of its column sector yields the technical coefficients matrix A, where A[i][j] is the quantity of good i required per unit of output j. This formalism yields two central results:</p>
+            <h4>1. Sraffa and Material Reproduction</h4>
+
+            <p>In <em>Production of Commodities by Means of Commodities</em> (1960), Piero Sraffa proposed analyzing the economy not through the lens of individual subjective preferences, utility maximization, and the relative scarcity of given resources. Instead, he conceptualized the economy as an objective system of circular, interdependent production processes, where commodities are produced by means of other commodities. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed workers). These physical interdependencies are captured in the flow matrix Z, where Z[i][j] is the quantity of good i used as an input in producing good j. Dividing each cell by the total output of its column sector yields the technical coefficients matrix A, where A[i][j] is the quantity of good i required per unit of output j. This formalism yields two results:</p>
 
             <ul>
-                <li><strong>Viability (&lambda;):</strong> The dominant eigenvalue of A determines whether the system can physically reproduce itself. When &lambda; &lt; 1, the system produces a physical surplus over its direct reproduction requirements; &lambda; = 1 is exact subsistence; &lambda; &gt; 1 is a physical deficit. The <em>Sraffa Ch. 1</em> preset reproduces the two-sector example from Sraffa (1960) with &lambda; = 1 exactly.</li>
-                <li><strong>Exchange Ratios:</strong> At subsistence (&lambda; = 1), the dominant left eigenvector of A — the price vector <strong>p</strong> satisfying <strong>p</strong>&middot;A = <strong>p</strong> — normalized to a chosen numéraire, exactly reproduces Sraffa's exchange ratios for basic commodities. These ratios are determined entirely by the structure of production, not by supply and demand. In the Ch. 1 preset, normalizing to wheat gives p<sub>iron</sub>/p<sub>wheat</sub> = 10, derived from the input coefficients alone.</li>
-                <li><strong>Basic vs. Non-Basic Commodities:</strong> A good is <em>basic</em> if it enters, directly or indirectly, into the production of every other good. A good is <em>non-basic</em> if its outputs do not reach all other sectors through the flow network. Non-basic goods do not affect exchange ratios or the dominant eigenvalue. Luxury goods are the paradigmatic case, though this is a structural classification — not a normative judgment about social value.</li>
+                <li><strong>Viability (λ):</strong> The dominant eigenvalue of A determines whether the system can physically reproduce itself. When λ &lt; 1, the system produces a physical surplus over its direct reproduction requirements; λ = 1 is exact subsistence; λ &gt; 1 is a physical deficit. The <em>Sraffa Ch. 1</em> preset reproduces the two-sector numerical example from Sraffa with λ = 1 exactly. Normalizing to wheat gives p<sub>iron</sub>/p<sub>wheat</sub> = 10.</li>
+                <li><strong>Exchange Ratios:</strong> At subsistence (λ = 1), the dominant left eigenvector of A (the price vector <strong>p</strong> satisfying <strong>p</strong>·A = <strong>p</strong>), normalized to a chosen numéraire, exactly reproduces Sraffa's exchange ratios for basic commodities.</li>
+                <li><strong>Basic vs. Non-Basic Commodities:</strong> A process is <em>basic</em> if its outputs enter, directly or indirectly, into the reproduction of every other process in the system. A process is <em>non-basic</em> if its outputs cannot reach all other processes through the flow network — meaning the system could reproduce without them (in formal terms, their removal does not alter the dominant eigenvalue or exchange ratios of the basic sub-system).</li>
             </ul>
 
-            <p>Sraffa also showed that in a surplus economy (&lambda; &lt; 1), the distribution of that surplus between wages and profits cannot be determined by the physical system alone: it requires an additional social or institutional parameter. This is the starting point for the extension below.</p>
+            <p>Sraffa also showed that in a surplus economy (λ &lt; 1), the distribution of the surplus between wages and profits cannot be determined by the physical system alone: it requires an additional social or institutional parameter. This is the starting point for the extension below.</p>
 
             <h4>2. Endogenizing Social Reproduction</h4>
 
-            <p>In Sraffa's original formulation, wages and profits are distributional parameters settled by institutional or political processes outside the matrix. This is a perspective shared with Polanyian economic sociology, which holds that - whether in market societies or not - distributional outcomes are the result of social and institutional settlements processes. Feminist economics and ecological economics extend this argument further: the reproduction of labor through care work and domestic production, and the regeneration of natural systems, are necessary conditions for any economic process — not externalities to be treated as given.</p>
+            <p>In Sraffa's original formulation, wages and profits are distributional parameters settled by institutional or political processes outside the matrix. This is very much in agreement with the perspective of embeddedness in Polanyian economic sociology, which holds that distributional outcomes are the result of social and institutional settlements rather than outcomes of the market. In fact, this is also true for non-market economies, which must also reproduce themselves through institutional processes. Feminist and ecological economics extend this further: the reproduction of labor through care work and domestic production, and the regeneration of natural systems, are necessary conditions for any economic process (not externalities to be treated as given), and these broader physical and social processes make a difference to the functioning of markets. By designating sectors as Social and incuding them in the same matrix, we bring institutions and reproduction into the same formalism that handles commodity production. Every sector, economic or social, now appears as both a user of inputs (its column) and a provider of outputs (its row). </p>
 
-            <p>By designating sectors as <strong>Social</strong> — households, community institutions, the state, the biosphere — this tool brings social reproduction directly into the matrix alongside commodity production. Every sector, economic or social, now appears as both a user of inputs (its column) and a provider of outputs (its row). The <em>Sraffa Ch. 2 (Adapted)</em> preset illustrates the consequences of this different perspective: bringing workers and capitalists directly into the matrix fixes one possible specific distributional outcome (one point on Sraffa's wage-profit frontier) and treats the reproduction of labor and capital as technical requirements of production. This is a stronger claim than Sraffa's original formulation, in which wages and profits remain external parameters. Palace rations, potlatch obligations, and capitalist wage contracts represent different institutional solutions to the same structural question: every society that produces a surplus must decide how to distribute it. The provisioning matrix makes this visible across social formations.</p>
+            <p>When social sectors are included in the full matrix, the dominant left eigenvector of A (here called <strong>Provisioning Centrality</strong>) can be seen as an extended, more general version of Sraffa's price exchange ratios, now no longer restricted to market societies. In Sraffa's subsistence model, this eigenvector determines the exchange ratios required for the economic core to exactly reproduce itself. In our extended model, it calculates the proportion of a system's total reproductive output required to sustain any given sector, whether economic or social. 
+            
+            <p>In Sraffa's Chapter 2, distributing a physical surplus as a uniform rate of profit requires homogenizing heterogeneous goods into a common unit of account. Because our version of the matrix maps material flows without reference to monetary values, distributing a physical surplus to a social sector yields structural weights that diverge from Sraffian prices. This divergence is connected to how specific institutional conventions (like monetary value accounting) represent specific ways to implement a broader process of economic provisioning. Palace rations, potlatch obligations, and capitalist wage contracts represent different institutional solutions to the same structural issue - the fact that every society that produces a surplus must organize its distribution.</p>
 
-            <h4>3. Provisioning Centrality</h4>
+            <p>This extension requires some care with interpreting the basic/non-basic distinction. The tool detects non-basic processes by "graph reachability": starting from a sector's outputs and following flows forward through Z, can all other sectors eventually be reached? If not, the sector is structurally non-basic — its outputs are absorbed without feeding back into the full reproduction circuit. However, in the extended provisioning matrix, many activities that look non-basic in commodity terms turn out to be basic in the broader substantivist sense. In the Sahlins preset, the Feasts sector absorbs biomass and community labor but feeds its output entirely to the Worker Community, which supplies labor to all productive activities. Feasts is therefore structurally basic: it sustains the social cohesion on which all other processes depend. A sector is genuinely non-basic in the extended matrix only when its outputs reach no other process. An example is the Waste sector in the Custom preset: it is produced as a byproduct but feeds back into nothing. Defining what constitutes necessary reproduction in a substantivist framework is a relevant problem requiring further reflection.</p>
 
-            <p>When social sectors are included in the full matrix, the dominant left eigenvector of A — here called <strong>Provisioning Centrality</strong> — generalizes Sraffa's exchange ratios. Formally, it is the vector <strong>p</strong> satisfying <strong>p</strong>&middot;A = &lambda;&middot;<strong>p</strong>, normalized to the numéraire. When &lambda; = 1 (subsistence), these weights coincide exactly with Sraffa's exchange ratios for basic commodities. When &lambda; &ne; 1, the vector retains the same formal structure but no longer maps directly to any market price.</p>
+            <h4>3. Polanyi's Forms of Integration</h4>
 
-            <p>An illustration of this perspective: when care work or community maintenance is included in the matrix, the Provisioning Centrality of an industrial good incorporates the indirect structural cost of sustaining the labor that produces it — a dependency that market prices systematically exclude. Whether this makes Provisioning Centrality a better measure than market prices for certain analytical purposes is a substantive theoretical claim that requires further argument beyond what the tool itself can establish.</p>
-
-            <h4>4. Polanyi's Integration Forms as Annotation</h4>
-
-            <p>Karl Polanyi (<em>The Great Transformation</em>, 1944; <em>Trade and Market in the Early Empires</em>, 1957) argued that economic processes are always embedded in social institutions, and identified three historical forms through which material flows are organized:</p>
+            <p>Karl Polanyi drew a fundamental distinction between the formal meaning of economy ('rational allocation of scarce means', in the classic formulation of what economics does) and the <em>substantive</em> meaning: the actual material provisioning of human societies through people's relationships with nature and with each other. For Polanyi, the formal definition is historically specific to market economies, but the substantive definition applies to all human societies. The economy, in the substantive sense, is an "instituted process": material provisioning is always organized through social institutions — whether kinship systems, temples, states, or markets — and cannot be understood independently of them.</p>
+            
+            <p>Cell background colors in the matrix annotate the primary form of integration through which a flow is organized. Polanyi identified three main historically recurring forms through which material flows can be institutionally organized, each underpinned by a distinct structural principle:</p>
             <ul>
-                <li><strong>Market Exchange:</strong> flows governed by price-forming markets and supply-demand dynamics.</li>
-                <li><strong>Redistribution:</strong> flows that converge to and are allocated from a center — a palace, a state treasury, a common fund.</li>
-                <li><strong>Reciprocity:</strong> flows governed by social obligation, symmetrical gift exchange, or kinship norms.</li>
+                <li><strong>Market Exchange</strong> rests on the principle of a price-forming market system: flows are mediated by supply, demand, and the competitive formation of prices. Exchange is impersonal, bilateral, and motivated by price differentials. Polanyi argued that genuine price-forming markets are historically rare and institutionally fragile — they require extensive political and legal infrastructure to maintain and tend to disembed from the social relations that previously governed them.</li>
+                <li><strong>Redistribution</strong> rests on the principle of centricity: flows converge to a center (a palace, a state treasury, a religious institution, a common fund) and are reallocated outward from it. The center may be a physical location, a social institution, or a rule system. Redistribution requires a stable political authority capable of collecting, storing, and allocating resources according to explicit or customary rules.</li>
+                <li><strong>Reciprocity</strong> rests on the principle of symmetry: flows pass between symmetrically positioned social groups — moieties, households, kin groups — bound by mutual obligation. Reciprocity does not require a center or a price; it requires social relationships of recognized equivalence and obligation. Gift economies, potlatch obligations, and household sharing largely operate on the reciprocity principle.</li>
             </ul>
 
-            <p>In this tool, these forms are cell-level annotations only. A flow can be labeled regardless of its magnitude or structural position. The annotations affect only the Institutional Integration chart; they have no bearing on eigenvalues, Provisioning Centrality, or any other structural property. The same physical interdependence can, in principle, be organized through any integration form. The divergence between the structure of provisioning and the institutional form governing it is also analytically interesting — that gap is part of what a Polanyian analysis adds to a purely technical one.</p>
+            <p>Polanyi also drew attention to what he called fictitious commodities. Labor, land, and money are not produced for sale (they arise from social life, nature, and political authority), yet market economies treat them as if they were ordinary commodities, subjecting them to market dynamics such as supply and demand. Including elements like labor, other social sectors, and natural resources in the matrix brings this to the fore: they appear as a key part of the socioeconomic provisioning process, but their reproduction logic differs from the logic of typical commodities.</p>
 
-            <h4>5. Non-Basic Sectors in Extended Systems</h4>
+            <p>In this tool, the three integration forms serve as cell-level annotations only (they do not alter eigenvalues, Provisioning Centrality, or any other property of the system, and only affect the aesthetics of the visualizations). However, they point at an underlying premise about the embeddedness of the economy in society: the same set of physical interdependences that reproduce a given economy can, at least in principle, be organized through different forms of integration. This tool only points towards this, but relationships between specific processes of provisioning and the institutional forms that govern them is an important analytical question that a Sraffa-Polanyi synthesis is very well positioned to illuminate.</p>
 
-            <p>The basic/non-basic distinction, when applied to a matrix that includes social sectors alongside commodity sectors, requires care. A sector is classified as non-basic here by graph reachability: starting from that sector's outputs and following flows forward through Z, can all other sectors eventually be reached? If not, the sector is structurally non-basic — its removal would not affect Provisioning Centrality scores. However, a sector can be structurally non-basic while remaining institutionally indispensable: ceremonial practices, financial instruments, and care services may sustain the social conditions under which production is possible, even if this does not appear in the current-period flow structure. Conversely, whether a sector registers as basic or non-basic is sensitive to specific modeling choices about how flows are routed — as the capitalism preset illustrates. Currently, this classification is mostly illustrative, not evaluative. But this is a promising area for future development of the framework.</p>
+            <h4>4. The Preset Scenarios</h4>
 
-            <h4>6. The Preset Scenarios</h4>
+            <p>The tool includes 5 preset matrixes capturing the logic of social provisioning in different social formations. These are stylized, illustrative sketches — the specific numerical values are not calibrated to historical, ethnographic, or empirical data, and should not be understood as empirical measurements. The goal here is only to capture some of the likely forms taken by provisioning in these well-studied systems, using our own formalism.</p>
 
-            <p>All presets are <strong>stylized, illustrative sketches</strong>. The specific numerical values are not calibrated to historical or empirical data, and should not be read as empirical measurements. They are chosen to make the structural logic visible in recognizable social formations, drawing on theoretical and interpretive frameworks from the cited literature.</p>
+            <p><strong>Sraffa Ch. 1 (Subsistence):</strong> The two-sector numerical example from Sraffa's Chapter 1, reproduced exactly. Wheat and iron are mutually dependent; λ = 1. The exchange ratio p<sub>iron</sub>/p<sub>wheat</sub> = 10 emerges from the input structure alone.</p>
 
-            <p><strong>Sraffa Ch. 1 (Subsistence):</strong> The two-sector numerical example from Chapter 1 of Sraffa (1960), reproduced exactly. Wheat and iron are mutually dependent; &lambda; = 1. Normalizing to wheat gives p<sub>iron</sub> = 10 — one ton of iron is "worth" ten quarters of wheat, derived from the input structure alone with no recourse to utility or demand.</p>
+            <p><strong>Sraffa Ch. 2 (Adapted):</strong> Sraffa's surplus economy, adapted by bringing workers and capitalists directly into the matrix as sectors with explicit reproduction requirements. In this preset, λ ≈ 0.80 for the economic core (wheat and iron alone), confirming an economic surplus of material goods. σ = 1.00 for the full provisioning system is a mathematical consequence of the matrix being fully closed: every unit of every good is absorbed within the system as an input somewhere (all row sums equal total outputs). In this specific preset, we modeled a political settlement where the 280 units of original agricultural grain input are split between seed (80), worker biological subsistence (160), and capitalist baseline consumption (40). The remaining 175 units of surplus wheat are distributed roughly 70% to Capitalists (122.5 units) and 30% to Workers (52.5 units) as discretionary consumption. This specific allocation represents only one point on Sraffa's wage-profit curve. It is a choice we made to illustrate Sraffa's Chapter 2 within our framework, pre-calibrating it to σ = 1. The broader theoretical implications of closing the matrix in different ways require further discussion and theory.</p>
 
-            <p><strong>Sraffa Ch. 2 (Adapted):</strong> Sraffa's surplus economy, adapted by bringing workers and capitalists directly into the matrix as sectors with explicit reproduction requirements. This approach treats the surplus as distributed to specific social sectors rather than as an external parameter, fixing one point on Sraffa's wage-profit frontier. The note in Section 2 above applies: this is a stronger structural claim than Sraffa's original formulation and should be read as one possible closure, not as a general result.</p>
+            <p><strong>Sahlins (Foraging):</strong> Inspired by Marshall Sahlins' "Original Affluent Society" argument. Sahlins drew on ethnographic time-budget studies — most notably Richard Lee's work with the !Kung San and James Woodburn's findings among the Hadza — to argue that foragers achieve material sufficiency with far less labor than industrial workers (adults would roughly 12–19 hours per week on food procurement, devoting the remainder of their  time to social life, rest, and ceremony). In this spirit, we allocated 400 hours (out of 2,200 total) of community labor to foraging; the rest flows to community maintenance, shelter, tools, and ceremonial feasts. λ ≈ 0.32 for the economic sub-system indicates the productive core operates well within capacity. σ = 1.0 reflects a closed, exactly-reproducing provisioning system. The Feasts sector is structurally basic in this matrix, illustrating our substantivist interpretation - that is, social expenditure can be seen as a production input in a more general, extended sense. Integration is modeled throughout as Reciprocity.</p>
 
-            <p><strong>Sahlins (Foraging):</strong> Loosely inspired by Marshall Sahlins' "Original Affluent Society" argument in <em>Stone Age Economics</em> (1972). Sahlins drew on ethnographic time-budget studies — most notably Richard Lee's (1968) work with the !Kung San of the Kalahari, which found adults spending approximately 12–19 hours per week on food procurement, and James Woodburn's (1968) parallel findings among the Hadza of Tanzania — to argue that foragers achieve material sufficiency with far less labor than agricultural or industrial workers, and devote the remainder to social life, rest, and ceremony. Our stylized matrix encodes this spirit: community labor allocated to foraging (400 hours out of 2,200 total, or roughly 18%) falls within the range Sahlins describes, while the majority flows to community maintenance, shelter, tools, and ceremonial feasts. The full-system eigenvalue &sigma; = 1.0 reflects a closed, exactly-reproducing provisioning system; the economic-sub-system eigenvalue &lambda; &asymp; 0.32 shows the productive core operating well within capacity — which is close to what Sahlins called "institutionalized underproduction." The Feasts sector merits particular attention: its output (ceremonial events) flows entirely to the Worker Community, where it is absorbed as social cohesion. Through this path Feasts is structurally <em>basic</em> in this matrix — its removal would alter Provisioning Centrality scores — which can be read as a modeling interpretation of Sahlins' claim that ceremonial expenditure sustains the cooperative capacity required by all other activities. Integration is modeled throughout as Reciprocity. This preset is a theoretical sketch, not an ethnographic reconstruction.</p>
+            <p><strong>Hudson (Palace Economy):</strong> Loosely based on Michael Hudson's analysis of Bronze Age Mesopotamian palace and temple economies. Hudson's scholarship draws on cuneiform tablets documenting a provisioning system anchored in centralized temple-palace accounting rather than market exchange. Standard monthly grain rations in Ur III and Old Babylonian records run to roughly 60 liters (sila) per adult male worker per month, with lower allocations for women and dependents. In the preset, we represent silver as a marginal sector connected to external trade, with a deliberate row-sum deficit representing silver that enters from outside without a domestic outflow equivalent. Setting Temple as the numéraire illustrates the administrative weight of the redistributive center (silver functioned primarily as an accounting unit for long-distance trade and debt settlement, not as a domestic medium of exchange; domestic provisioning ran on grain and fixed labor obligations, and a fixed silver-grain ratio served as the basis for economic calculation by the admnistration). Modeled in this way, the economic surplus (λ = 0.17) generated by the agricultural core reflects the temple/palace complex extracting output to feed dependent labor (corvée, weavers) and to trade for external luxuries.</p>
 
-            <p><strong>Hudson (Palace Economy):</strong> Loosely inspired by Michael Hudson's analysis of Bronze Age Mesopotamian palace and temple economies (Hudson 2004; Hudson &amp; Wunsch 2004). Hudson's scholarship draws on thousands of surviving cuneiform tablets — administrative records, ration lists, and debt instruments — documenting a provisioning system anchored in palace accounting rather than market exchange. Standard monthly grain rations in Ur III and Old Babylonian records run to roughly 60 liters (sila) per adult male worker per month, with lower allocations for women and dependents; specific rates vary considerably by period, institution, and status. Silver functioned primarily as an accounting unit for long-distance trade and debt settlement, not as a domestic medium of exchange; domestic provisioning ran on grain and fixed labor obligations. Hudson argues this inverts the conventional story of money's origins: coinage and market exchange came late; administrative credit and redistribution came first.</p>
+            <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized, but innovative, capitalism. This preset is a loose collage of several different themes relevant to economics and sociology. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with claims on system output through property rights and financial instruments. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the production circuit as inputs to Industry, Services, and other sectors. Veblenian goods flow exclusively to F.I.R.E. and Waste. The Work sector features a large self-loop (Z[4][4] = 6,900 hours, annotated as Reciprocity) representing unpaid domestic and care labor (the work assigned to other sectors is understood as paid; this reflects feminist economics estimates for the care-to-paid-work ratio in advanced economies). The Biosphere sector has a total output set below its row sum (gross material extractions), indicating rapid depletion of ecological stocks. Waste is modeled as a non-basic terminal sink (output flows nowhere). The surplus generated by the economic core (λ &lt; 0.20) occurs because the core isolates Industry and Services, treating their dependencies on Work and Biosphere as if they were free. The full-system eigenvalue σ &gt; 1 indicates that, in this stylized numerical setup, the physical flows required for reproduction exceed the system's generated outputs.</p>
 
-            <p>Our illustrative matrix encodes this structure: grain and materials circulate through the Temple sector via redistribution; the silver/trade sector sits as a marginal column for external commercial linkages, with a deliberate row-sum deficit representing silver that enters the economy from outside without a domestic equivalent outflow. The grain-to-workers technical coefficient in this matrix (A[Grain &rarr; Workers] = 0.6 sila-units per worker-month) is inspired loosely by the ration record but should not be read as calibrated data. Setting Temple as numéraire illustrates the administrative weight of the redistributive center; a grain-based numéraire would be equally valid and would shift the centrality profile accordingly.</p>
+            <h4>5. Literature and Research Directions</h4>
 
-            <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized capitalism. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with structural claims on system output through property rights, financial instruments, and returns on accumulated capital. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the current-period production circuit as inputs to Industry, Services, and other sectors — making it structurally <em>basic</em> in this single-period formulation. A more granular multi-period treatment might instead route innovation outputs into future-period changes to technical coefficients, rendering them non-basic in the current period; the present specification treats knowledge as a directly productive current-period input, which is a specific modeling choice. Veblenian and luxury goods flow exclusively to F.I.R.E.; since F.I.R.E.'s outputs in turn reach all sectors, luxury goods also register as structurally basic in this formulation — a result that can be read, in Veblenian terms, as conspicuous consumption sustaining the circuits of capital accumulation. The Biosphere sector has a total output deliberately set below its row sum (gross material extractions), representing a structural ecological deficit: the system depletes ecological stocks faster than they regenerate, at a rate invisible to any market price. This deficit drives the full-system eigenvalue to &sigma; &gt; 1 — the only preset where the extended system registers a structural deficit. Workers include a self-loop representing unpaid domestic and care labor required for the reproduction of the labor force itself; this cell is annotated as Reciprocity.</p>
+            <p>The matrix formalism, preset scenarios, and conceptual framing in this sandbox loosely implement ideas developed across several current research traditions. Sraffa's framework has been developed in an extensive neo-Ricardian literature (e.g., Kurz and Salvadori; Pivetti for monetary and distributional extensions; Martins for institutionalist and capability approaches; Chiodi for non-self-replacing states). The theoretical case for combining the classical surplus approach with Polanyian institutional analysis is central to the ongoing work of Cesaratto and Di Bucchianico. The treatment of social reproduction as endogenous to economic analysis is grounded in the social provisioning framework (Jo, Lee) and the Social Fabric Matrix (Hayden), alongside extensions in Social Accounting Matrices (Pyatt, Round, Stone), feminist economics (Folbre, Picchio, Antonopoulos, Hirway), and ecological input-output analysis (Hannon). Substantivist grounding relies on Polanyi, Sahlins, Hudson, and Gregory.</p>
 
-            <h4>7. Relation to Existing Literature</h4>
+            <p>While this is just a sandbox, it raises several relevant questions for theoretical reflection and potentially opens up a few novel research directions. Immediate extensions of the framework would include empirical calibration (e.g. using community currency records, time-use data, or archaeological and ethnographic evidence), extending the tool to cover important parts of Sraffa's framework that were not discussed above (e.g. joint production, fixed capital), and implementing a time dimension (for instance, by connecting to stock-flow consistent models and NK-models of interdependence). Beyond that, we believe three theoretical questions are raised by this framework: establishing more carefully the meanings of 'surplus' in a substantivist view in which the matrix is closed by the addition of social sectors; mapping the analogies and divergences between commodity-based price vectors and our measures of provisioning centrality; and operationalizing the institutional layer of the tool, which currently serves only as annotations/visualizations (for instance, by defining other dimensions of the matrix related to each form of integration and exploring interactions with the material-social provisioning matrix, or applying a transaction cost framework to determine which types of intercell flows should best be understood as occuring inside organizational hierarchies within markets). Some of these themes are also addressed, from a non-material-reproduction perspective, in the author's other current work (see Ferraciolli, 2026).</p>
 
-            <p>This tool synthesizes conceptual tools from several intersecting research traditions rather than advancing any one of them directly. On the Sraffian side, the mathematical foundations draw on Kurz &amp; Salvadori (1995); Pivetti (1991) and Cesaratto (e.g. 2012) have explored connections between Sraffian surplus theory, monetary distribution, and macroeconomics; Martins (2014) examines Sraffa's relation to institutionalist and capability approaches. The extension to social reproduction draws on Folbre (2001) and Antonopoulos &amp; Hirway (2010). Social Accounting Matrices (Pyatt &amp; Round 1977; Stone 1986) do something formally similar — extending national I-O accounts to include households and government as row/column accounts — and the eigenvalue layer added here is the main formal novelty relative to that tradition. On the heterodox and institutionalist side, Jo (2011) and Lee &amp; Jo (2011) have developed the concept of the social provisioning process as an organizing framework for heterodox economics; Hayden (2006)'s Social Fabric Matrix approach uses an analogous matrix formalism to represent institutional interdependencies, providing theoretical grounding for treating social reproduction as endogenous to economic analysis. The network interpretation of Provisioning Centrality is related  to Acemoglu, Carvalho, Ozdaglar &amp; Tahbaz-Salehi (2012).</p>
+            <h4>Relevant References</h4>
+            <p style="font-size: 13px; color: #546e7a; margin-bottom: 8px;">The tool loosely implements ideas related to the references below, but does not attemp to replicate any specific approach:</p>
 
-            <p style="margin-top: 20px; font-size: 13px; color: #546e7a;"><em>The matrix quantifies flow structures and their reproduction properties. It does not model the mechanisms through which flows are socially organized. The Polanyian integration labels are a descriptive layer that prepares the ground for explicit institutional modeling, in which different integration forms would generate distinct structural constraints on the matrix. The gap between structural analysis and institutional explanation is where the real theoretical work remains to be done.</em></p>
-        </div>
-
-    </div>
-</div>
-
-<script>
-    const instBgs = ['transparent', 'var(--inst-exchange)', 'var(--inst-redistribution)', 'var(--inst-reciprocity)'];
+            <ul class="ref-list">
+    <li>Acemoglu, D., Carvalho, V.M., Ozdaglar, A. and Tahbaz-Salehi, A. (2012). "The Network Origins of Aggregate Fluctuations." <em>Econometrica</em> 80(5): 1977–2016.</li>
+    <li>Aglietta, M. (1979). <em>A Theory of Capitalist Regulation</em>. NLB.</li>
+    <li>Antonopoulos, R. and Hirway, I. (eds.) (2010). <em>Unpaid Work and the Economy</em>. Palgrave Macmillan.</li>
+    <li>Boyer, R. (1990). <em>The Regulation School: A Critical Introduction</em>. Columbia University Press.</li>
+    <li>Cesaratto, S. (2012). "Neo-Kaleckian and Sraffian Controversies on the Theory of Accumulation." <em>Review of Political Economy</em> 24(3).</li>
+    <li>Cesaratto, S. (2024). "Surplus Approach and Institutions: Where Sraffa Meets Polanyi." Forthcoming.</li>
+    <li>Cesaratto, S. (2025). "Surplus Approach, Historical Materialism, and Pre-Capitalist Economies: Some Open Questions." Forthcoming.</li>
+    <li>Cesaratto, S. and Di Bucchianico, S. (2020). "From the Core to the Cores: Surplus Approach, Institutions and Economic Formations." <em>Contributions to Political Economy</em>.</li>
+    <li>Cesaratto, S. and Di Bucchianico, S. (2021). "The Surplus Approach, the Polanyian Tradition, and Institutions in Economic Anthropology and Archaeology." <em>Review of Political Economy</em>.</li>
+    <li>Chiodi, G. (2010). "On Non-Self-Replacing States." <em>Metroeconomica</em> 61(1).</li>
+    <li>Dennett, D.C. (2013). <em>Intuition Pumps and Other Tools for Thinking</em>. Norton.</li>
+    <li>Di Bucchianico, S. and Cesaratto, S. (2025). "Recent Neoclassical Contributions on the Origins of Inequality: A Sraffian Critique." Forthcoming.</li>
+    <li>Ferraciolli, E. et al. (2026). "The Devil's Dung: Money as a Mechanism of Generalized Reciprocity in Human Societies." <em>Rationality &amp; Society</em>.</li>
+    <li>Folbre, N. (2001). <em>The Invisible Heart: Economics and Family Values</em>. New Press.</li>
+    <li>Godley, W. and Lavoie, M. (2007). <em>Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth</em>. Palgrave Macmillan.</li>
+    <li>Gregory, C.A. (1982). <em>Gifts and Commodities</em>. Academic Press.</li>
+    <li>Hannon, B. (1973). "The Structure of Ecosystems." <em>Journal of Theoretical Biology</em> 41(3).</li>
+    <li>Hayden, F.G. (2006). <em>Policymaking for a Good Society: The Social Fabric Matrix Approach</em>. Springer.</li>
+    <li>Hudson, M. (2004). "The Archaeology of Money." In Wray (ed.), <em>Credit and State Theories of Money</em>. Edward Elgar.</li>
+    <li>Hudson, M. and Wunsch, C. (eds.) (2004). <em>Creating Economic Order: Record-Keeping, Standardization and the Development of Accounting in the Ancient Near East</em>. CDL Press.</li>
+    <li>Jo, T.-H. (2011). "Social Provisioning Process and Socio-Economic Modeling." <em>American Journal of Economics and Sociology</em> 70(5): 1094–1116.</li>
+    <li>Kauffman, S. (1993). <em>The Origins of Order: Self-Organization and Selection in Evolution</em>. Oxford University Press.</li>
+    <li>Kurz, H.D. and Salvadori, N. (1995). <em>Theory of Production: A Long-Period Analysis</em>. Cambridge University Press.</li>
+    <li>Lee, F.S. and Jo, T.-H. (2011). "Social Surplus Approach and Heterodox Economics." <em>Journal of Economic Issues</em> 45(4): 857–875.</li>
+    <li>Lee, R.B. (1968). "What Hunters Do for a Living." In Lee and DeVore (eds.), <em>Man the Hunter</em>. Aldine.</li>
+    <li>Leontief, W. (1941). <em>The Structure of the American Economy, 1919–1929</em>. Harvard University Press.</li>
+    <li>Martins, N.O. (2014). <em>The Cambridge Revival of Political Economy</em>. Routledge.</li>
+    <li>Pasinetti, L.L. (1977). <em>Lectures on the Theory of Production</em>. Columbia University Press.</li>
+    <li>Picchio, A. (1992). <em>Social Reproduction: The Political Economy of the Labour Market</em>. Cambridge University Press.</li>
+    <li>Pivetti, M. (1991). <em>An Essay on Money and Distribution</em>. Macmillan.</li>
+    <li>Polanyi, K. (1944). <em>The Great Transformation</em>. Farrar &amp; Rinehart.</li>
+    <li>Polanyi, K., Arensberg, C. and Pearson, H. (eds.) (1957). <em>Trade and Market in the Early Empires</em>. Free Press.</li>
+    <li>Prigogine, I. and Stengers, I. (1984). <em>Order Out of Chaos</em>. Bantam.</li>
+    <li>Pyatt, G. and Round, J.I. (1977). "Social Accounting Matrices for Development Planning." <em>Review of Income and Wealth</em> 23(4).</li>
+    <li>Sahlins, M. (1972). <em>Stone Age Economics</em>. Aldine.</li>
+    <li>Simmel, G. (1900/1978). <em>The Philosophy of Money</em>. Routledge.</li>
+    <li>Sraffa, P. (1960). <em>Production of Commodities by Means of Commodities</em>. Cambridge University Press.</li>
+    <li>Stone, R. (1986). "The Accounts of Society." <em>Journal of Applied Econometrics</em> 1(1).</li>
+    <li>Williamson, O.E. (1985). <em>The Economic Institutions of Capitalism</em>. Free Press.</li>
+    <li>Woodburn, J. (1968). "An Introduction to Hadza Ecology." In Lee and DeVore (eds.), <em>Man the Hunter</em>. Aldine.</li>
+            </ul>
+        </div></div></div><script>
+    const instBgs = ['var(--inst-unassigned)', 'var(--inst-exchange)', 'var(--inst-redistribution)', 'var(--inst-reciprocity)'];
     const makeInst = (n, val) => Array.from({length: n}, () => new Array(n).fill(val));
 
     const presets = {
@@ -351,10 +407,10 @@
         sraffa_ch2: {
             sectors: [
                 {name: "Wheat", unit: "qr"}, {name: "Iron", unit: "tons"},
-                {name: "Workers", unit: "labor-hrs"}, {name: "Capitalists", unit: "claims"}
+                {name: "Workers", unit: "labor-hrs"}, {name: "Capitalists", unit: "hours"}
             ],
             Z: [
-                [280, 120, 100, 75],
+                [80, 120, 212.5, 162.5],
                 [12, 8, 0, 0],
                 [350, 150, 0, 0],
                 [60, 40, 0, 0]
@@ -368,7 +424,7 @@
         sahlins: {
             sectors: [
                 {name: "Foraging", unit: "kcal"}, {name: "Biomass", unit: "kg"},
-                {name: "Tools", unit: "units"}, {name: "Shelter", unit: "days"},
+                {name: "Tools", unit: "units"}, {name: "Shelter", unit: "units"},
                 {name: "Worker Community", unit: "hours"}, {name: "Feasts", unit: "events"}
             ],
             Z: [
@@ -386,17 +442,17 @@
         hudson: {
             sectors: [
                 {name: "Grain", unit: "sila"}, {name: "Materials", unit: "tons"},
-                {name: "Workers", unit: "months"}, {name: "Temple / Palace", unit: "months"},
+                {name: "Workers", unit: "months"}, {name: "Temple / Palace", unit: "units"},
                 {name: "Silver / Long-dist. Trade", unit: "shekels"}
             ],
             Z: [
                 [100,  50, 600, 250,  0],
                 [ 50,  50, 200, 190, 10],
                 [400, 200,  50, 300, 50],
-                [ 50,  20,  20,  50, 60],
+                [0.4, 0.2, 0.2, 0.1, 0.1],
                 [  0,   0,   0,  50,  0]
             ],
-            total_output: [1000, 500, 1000, 200, 100],
+            total_output: [1000, 500, 1000, 1, 100],
             numeraire_index: 3, social_indices: [2, 3],
             institutions: [
                 [2,2,2,2,1],
@@ -411,30 +467,34 @@
                 {name: "Industry", unit: "tons"}, {name: "Services", unit: "MWh"},
                 {name: "Technical Innovation", unit: "patents"},
                 {name: "Veblenian / Luxury goods", unit: "units"},
-                {name: "Workers", unit: "hours"}, {name: "F.I.R.E. / Capitalists", unit: "claims"},
-                {name: "State", unit: "value"}, {name: "Biosphere (Sink)", unit: "tons"}
+                {name: "Work (labor + care)", unit: "hours"},
+                {name: "F.I.R.E. / Capitalists", unit: "contracts"},
+                {name: "State", unit: "programs"}, {name: "Biosphere (Sink)", unit: "biocapacity"},
+                {name: "Waste", unit: "tons"}
             ],
             Z: [
-                [400,300,100, 50, 600, 50,200,100],
-                [300,400,200, 50,1000,100,300, 50],
-                [ 50, 50, 10,  0,   0,100, 50,  0],
-                [  0,  0,  0,  0,   0,100,  0,  0],
-                [800,1000,100,100, 600,100,200,  0],
-                [100,100, 50, 50,  50, 50,100,  0],
-                [100,100, 50, 50, 200,100,100,  0],
-                [200, 50,  0,  0,   0,  0,  0,  0]
+                [400,300,100, 50, 600, 50,200, 50, 50],
+                [300,400,200, 50,1000,100,300, 50,  0],
+                [ 50, 50, 10,  0,   0,100, 50,  0,  0],
+                [  0,  0,  0,  0,   0,100,  0,  0,100],
+                [800,1000,100,100,6900,100,200, 0,  0],
+                [100,100, 50, 50,  50, 50,100,  0,  0],
+                [100,100, 50, 50, 200,100,100,  0,  0],
+                [400,200,  0,100, 300,  0,100,  0,  0],
+                [  0,  0,  0,  0,   0,  0,  0,  0,  0]
             ],
-            total_output: [1800,2400,260,100,2900,500,700,150],
-            numeraire_index: 6, social_indices: [4, 5, 6, 7],
+            total_output: [1800,2400,260,200,9200,500,700,800,150],
+            numeraire_index: 6, social_indices: [4, 5, 6, 7, 8],
             institutions: [
-                [1,1,1,1,1,1,2,0],
-                [1,1,1,1,1,1,2,0],
-                [1,1,1,1,1,1,2,0],
-                [1,1,1,1,1,1,2,0],
-                [1,1,1,1,3,1,2,0],
-                [1,1,1,1,1,1,2,0],
-                [2,2,2,2,2,2,2,0],
-                [0,0,0,0,0,0,0,0]
+                [1,1,1,1,1,1,2,0,0],
+                [1,1,1,1,1,1,2,0,0],
+                [1,1,1,1,1,1,2,0,0],
+                [1,1,1,1,1,1,2,0,0],
+                [1,1,1,1,3,1,2,0,0],
+                [1,1,1,1,1,1,2,0,0],
+                [2,2,2,2,2,2,2,0,0],
+                [0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0]
             ]
         }
     };
@@ -459,12 +519,12 @@
         isStale = false;
         const btn = document.getElementById('calc-btn');
         btn.classList.remove('stale');
-        btn.innerHTML = 'Calculate Systemic Parameters';
+        btn.innerHTML = 'Calculate System Parameters';
         updateRowSums();
     }
 
     function loadPreset(key, btnElement) {
-        if (isStale || document.getElementById('out-centrality').innerHTML !== '') {
+        if (isStale || document.getElementById('out-centrality-tbody').innerHTML !== '') {
             if (!confirm("Loading a preset will overwrite your current matrix. Continue?")) return;
         }
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
@@ -500,11 +560,10 @@
             let tot = state.total_output[i];
             let signEl = document.getElementById(`sum_sign_${i}`);
             if (signEl) {
-                signEl.style.color = '#546e7a';
                 signEl.style.fontSize = '12px';
-                if (Math.abs(tot - rowSum) < 0.001) signEl.innerHTML = '=';
-                else if (tot > rowSum) signEl.innerHTML = '&gt;';
-                else signEl.innerHTML = '&lt;';
+                if (Math.abs(tot - rowSum) < 0.001) { signEl.innerHTML = '='; signEl.style.color = 'var(--val-balance)'; }
+                else if (tot > rowSum) { signEl.innerHTML = '&gt;'; signEl.style.color = 'var(--val-surplus)'; }
+                else { signEl.innerHTML = '&lt;'; signEl.style.color = 'var(--val-deficit)'; }
             }
         }
     }
@@ -601,7 +660,7 @@
                     A zero total output creates a structural singularity (division by zero in A), preventing eigenvalue calculation. Please assign a positive total output to each sector.
                 </div>`;
             document.getElementById('out-balance').innerHTML = '';
-            document.getElementById('out-centrality').innerHTML = '';
+            document.getElementById('out-centrality-tbody').innerHTML = '';
             if (scaleChartInst) scaleChartInst.destroy();
             if (absChartInst) absChartInst.destroy();
             if (netFlowChartInst) netFlowChartInst.destroy();
@@ -634,40 +693,43 @@
         let lambda_core = econ_indices.length > 0 ? getDominantEigenvector(A_econ).lambda : 0;
         let {lambda: sigma_extended, eigenvector} = getDominantEigenvector(A);
 
+        // Non-basic process detection
         let nonBasicsList = detectNonBasics();
         let nonBasicText = nonBasicsList.length > 0
-            ? `<strong>Structurally Non-Basic Sectors:</strong> <span style="color:var(--warning);">${nonBasicsList.join(", ")}</span>`
-            : `<strong style="color:var(--accent);">All sectors are structurally Basic in the current flow configuration.</strong>`;
+            ? `<strong>Non-Basic Processes:</strong> <span style="color:var(--val-surplus);">${nonBasicsList.join(", ")}</span>`
+            : `<strong style="color:var(--val-surplus);">All processes are Basic in the current flow configuration.</strong>`;
 
         let sText = lambda_core < 0.99
-            ? "Economic sub-system generates a surplus (social-sector inputs excluded from this calculation)."
+            ? "Economic subsystem generates a surplus."
             : (lambda_core > 1.01
-                ? "Economic sub-system operates at a direct physical deficit."
-                : "Economic sub-system is at exact subsistence.");
+                ? "Economic subsystem operates in deficit."
+                : "Economic subsystem is at subsistence/reproduction.");
+        let lambdaColor = lambda_core < 0.99 ? "var(--val-surplus)" : (lambda_core > 1.01 ? "var(--val-deficit)" : "var(--val-balance)");
 
         let lamSHtml = econ_indices.length === 0
             ? `<div style="flex: 1;"><span style="color:#888;">No economic sectors defined.</span></div>`
             : `<div style="flex: 1;">
-                <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Economic Sub-system Eigenvalue (social inputs excluded)</div>
-                <strong style="font-size:22px; color:${lambda_core < 0.99 ? "var(--accent)" : (lambda_core > 1.01 ? "var(--danger)" : "var(--primary)")};">&lambda; = ${lambda_core.toFixed(4)}</strong><br>
+                <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Economic Subsystem Eigenvalue</div>
+                <strong style="font-size:22px; color:${lambdaColor};">&lambda; = ${lambda_core.toFixed(4)}</strong><br>
                 <span style="font-size:13px; color:#546e7a;">${sText}</span>
               </div>`;
 
         let sigmaLabel = sigma_extended < 0.99
-            ? "System-level physical surplus."
-            : (sigma_extended > 1.01 ? "System-level physical deficit." : "System at exact reproduction.");
+            ? "Provisioning system operates at surplus."
+            : (sigma_extended > 1.01 ? "Provisioning system in deficit." : "Provisioning system is at subsistence/reproduction.");
+        let sigmaColor = sigma_extended < 0.99 ? "var(--val-surplus)" : (sigma_extended > 1.01 ? "var(--val-deficit)" : "var(--val-balance)");
 
         let lamPHtml = `<div style="flex: 1; border-left: 1px solid #eee; padding-left: 20px;">
-            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Full Provisioning System Eigenvalue (all sectors)</div>
-            <strong style="font-size:22px; color:${sigma_extended < 0.99 ? "var(--warning)" : (sigma_extended > 1.01 ? "var(--danger)" : "var(--accent)")};">&sigma; = ${sigma_extended.toFixed(4)}</strong><br>
+            <div style="font-size:12px; text-transform:uppercase; color:#666; font-weight:bold;">Extended System Eigenvalue</div>
+            <strong style="font-size:22px; color:${sigmaColor};">&sigma; = ${sigma_extended.toFixed(4)}</strong><br>
             <span style="font-size:13px; color:#546e7a;">${sigmaLabel}</span>
         </div>`;
 
         document.getElementById('out-lambda').innerHTML = `
             <div style="display: flex; gap: 20px; background: #fff; padding: 15px; border: 1px solid #cfd8dc; border-radius: 6px; margin-bottom: 10px;">${lamSHtml}${lamPHtml}</div>
-            <div style="font-size: 13px; color: #37474f; padding: 8px; background: #f0f4f8; border-radius: 4px; border: 1px solid #cfd8dc;">
+            <div style="font-size: 13px; color: #004d40; padding: 10px; background: #e0f2f1; border-radius: 4px; border: 1px solid var(--val-surplus);">
                 ${nonBasicText}<br>
-                <em style="font-size: 11px; color: #666;">(A sector is non-basic if its outputs cannot reach all other sectors through the flow network Z. This is a structural classification sensitive to specific modeling choices; a non-basic sector may remain institutionally or socially indispensable.)</em>
+                <em style="font-size: 11px; color: #00695c;">(A "non-basic process" is one whose outputs cannot reach all other sectors through the flow network Z. In the extended provisioning matrix, this is a classification sensitive to modeling choices — an activity may be non-basic in a narrow commodity sense while remaining substantively necessary for social reproduction.)</em>
             </div>`;
 
         let balHtml = "";
@@ -676,18 +738,22 @@
             let rowSum = state.Z[i].reduce((a, b) => a + b, 0);
             let diff = state.total_output[i] - rowSum;
             if (Math.abs(diff) > 0.01) {
-                if (isBalanced) balHtml += `<table class="diag-table" style="margin-top: 10px;">`;
-                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diff > 0 ? 'var(--primary)' : 'var(--danger)'};">${diff > 0 ? "Unallocated Surplus" : "Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
+                if (isBalanced) balHtml += `<div style="display: flex; justify-content: center;"><table class="diag-table" style="margin-top: 10px; width: auto;">`;
+                let diffColor = diff > 0 ? "var(--val-surplus)" : "var(--val-deficit)";
+                balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diffColor};">${diff > 0 ? "Unallocated Surplus" : "Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
                 isBalanced = false;
             }
         }
+        if (!isBalanced) balHtml += `</table></div>`;
+        
         document.getElementById('out-balance').innerHTML = isBalanced
-            ? `<div style="padding: 10px; background: #e8f5e9; color: #2e7d32; border-radius: 4px; font-size: 13px; margin-top: 10px;"><strong>The matrix is closed.</strong> All outputs are absorbed as inputs.</div>`
-            : balHtml + `</table>`;
+            ? `<div style="padding: 10px; background: #eceff1; color: #263238; border-radius: 4px; border: 1px solid var(--val-balance); font-size: 13px; margin-top: 10px; text-align: center;"><strong>The provisioning matrix is closed.</strong> All outputs are absorbed as inputs.</div>`
+            : balHtml;
 
         let provisioning_weights = new Array(N).fill(0);
         let num_val = eigenvector[state.numeraire];
-        let centralityHtml = `<table class="diag-table"><thead><tr><th>Physical Unit</th><th>Provisioning Centrality (in ${state.sectors[state.numeraire].name})</th></tr></thead><tbody>`;
+        
+        let centralityTbody = '';
         let sectoral_scales = [], labels = [], bgColors = [];
 
         for (let i = 0; i < N; i++) {
@@ -695,13 +761,11 @@
             let scale = provisioning_weights[i] * state.total_output[i];
             sectoral_scales.push(scale);
             labels.push(state.sectors[i].name);
-            bgColors.push(state.social.includes(i) ? '#ce93d8' : '#64b5f6');
-            centralityHtml += `<tr ${i === state.numeraire ? 'style="background:#e8f4f8; font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${provisioning_weights[i].toFixed(4)}</td></tr>`;
+            // Deep blue for economic, plum violet for social
+            bgColors.push(state.social.includes(i) ? '#6a1b9a' : '#1565c0');
+            centralityTbody += `<tr ${i === state.numeraire ? 'style="background:rgba(69, 90, 100, 0.1); font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${provisioning_weights[i].toFixed(4)}</td></tr>`;
         }
-        centralityHtml += `</tbody></table>`;
-        document.getElementById('out-centrality').innerHTML = centralityHtml;
-
-        let aggregate_scale = sectoral_scales.reduce((a, b) => a + b, 0);
+        document.getElementById('out-centrality-tbody').innerHTML = centralityTbody;
 
         // Absorption + Net Flow for social sectors
         let totalSocialPct = 0, absChartDatasets = [], netFlowLabels = [], netFlowData = [], netFlowColors = [];
@@ -714,15 +778,17 @@
                 absorbed_scale  += state.Z[i][s] * provisioning_weights[i];
                 contributed_scale += state.Z[s][i] * provisioning_weights[s];
             }
+            let aggregate_scale = sectoral_scales.reduce((a, b) => a + b, 0);
             let pctAbsorbed = aggregate_scale > 0 ? (absorbed_scale / aggregate_scale) * 100 : 0;
             totalSocialPct += pctAbsorbed;
             let color = classColorPalette[idx % classColorPalette.length];
             if (pctAbsorbed > 0.01)
-                absChartDatasets.push({ label: `${state.sectors[s].name}`, data: [pctAbsorbed], backgroundColor: color, borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
+                absChartDatasets.push({ label: `${state.sectors[s].name} Absorption`, data: [pctAbsorbed], backgroundColor: color, borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
             let net = absorbed_scale - contributed_scale;
             netFlowLabels.push(state.sectors[s].name);
             netFlowData.push(net);
-            netFlowColors.push(net >= 0 ? '#ef9a9a' : '#80cbc4');
+            // Light red = net absorber, light green = net contributor
+            netFlowColors.push(net >= 0 ? '#ef9a9a' : '#c5e1a5');
         }
         let remainder = Math.max(0, 100 - totalSocialPct);
         if (remainder > 0.01)
@@ -738,10 +804,11 @@
 
         // Network data
         let networkNodesZ = [], networkEdgesZ = [], networkNodesA = [], networkEdgesA = [];
-        let instHexColors = ['#b0bec5', '#1e88e5', '#ffb300', '#43a047'];
+        // Edge colors: grey=unspecified, blue=market, gold=redistribution, terracotta=reciprocity
+        let instHexColors = ['#9e9e9e', '#1e88e5', '#fbc02d', '#f4511e'];
 
         for (let i = 0; i < N; i++) {
-            let nodeColor = { background: state.social.includes(i) ? '#ce93d8' : '#64b5f6', border: '#fff' };
+            let nodeColor = { background: state.social.includes(i) ? '#f3e5f5' : '#e3f2fd', border: state.social.includes(i) ? '#6a1b9a' : '#1565c0' };
             networkNodesZ.push({ id: i, label: state.sectors[i].name, value: sectoral_scales[i] || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
             networkNodesA.push({ id: i, label: state.sectors[i].name, value: provisioning_weights[i] * 100 || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
             for (let j = 0; j < N; j++) {
@@ -755,16 +822,16 @@
         resetStale();
     }
 
-    // Power iteration on A^T → converges to dominant left eigenvector of A
+    // Power iteration on A^T — converges to dominant left eigenvector of A
     function getDominantEigenvector(A, iterations = 500) {
         let n = A.length;
         let v = new Array(n).fill(1);
-        let lambda = 1;
+        let lambda = 0;
         for (let iter = 0; iter < iterations; iter++) {
             let v_new = new Array(n).fill(0);
             for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) v_new[i] += A[j][i] * v[j];
             let norm = Math.sqrt(v_new.reduce((sum, val) => sum + val * val, 0));
-            if (norm === 0) break;
+            if (norm === 0) { console.warn('getDominantEigenvector: zero norm encountered; result may be unreliable.'); break; }
             for (let i = 0; i < n; i++) v_new[i] /= norm;
             let num = 0, den = 0;
             for (let i = 0; i < n; i++) {
@@ -772,7 +839,7 @@
                 for (let j = 0; j < n; j++) Av_i += A[j][i] * v_new[j];
                 num += Av_i * v_new[i]; den += v_new[i] * v_new[i];
             }
-            lambda = num / den;
+            lambda = den > 0 ? num / den : 0;
             v = v_new;
         }
         return { lambda, eigenvector: v };
@@ -847,28 +914,30 @@
             options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
         });
 
+        // Doughnut: grey=unspecified, blue=market, gold=redistribution, terracotta=reciprocity
         instChartInst = new Chart(document.getElementById('instChart').getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: ['Unspecified', 'Market Exchange', 'Redistribution', 'Reciprocity'],
-                datasets: [{ data: instTotals, backgroundColor: ['#eceff1', '#64b5f6', '#ffb300', '#81c784'] }]
+                datasets: [{ data: instTotals, backgroundColor: ['#e0e0e0', '#90caf9', '#fff59d', '#ffab91'] }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
         });
 
+        // Radar in green
         radarChartInst = new Chart(document.getElementById('radarChart').getContext('2d'), {
             type: 'radar',
             data: {
                 labels: scaleLabels,
                 datasets: [{
-                    label: 'Provisioning Centrality',
+                    label: 'Systemic Reproduction Weights',
                     data: centralityValues,
-                    backgroundColor: 'rgba(38, 166, 154, 0.2)',
-                    borderColor: '#26a69a',
+                    backgroundColor: 'rgba(46, 125, 50, 0.2)',
+                    borderColor: '#2e7d32',
                     pointBackgroundColor: scaleColors,
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#26a69a'
+                    pointHoverBorderColor: '#2e7d32'
                 }]
             },
             options: {

@@ -334,4 +334,46 @@ NOTE 10: INSTITUTIONAL BLOCK MATRIX AND/OR POLITICAL SETTLEMENTS (e.g. extend sr
 - Future extension: Fracture the single topology into an interacting Block Matrix, where distinct institutional spheres obey distinct algebraic laws of motion.
 - Example formulation: A Capitalist Market governed by a uniform profit rate (r), a State governed by fiat tax extraction (tau), and a Household sector governed by the shadow-price of unpaid reproduction (v). 
 - This framework allows researchers to model the "crisis of social reproduction" algebraically—demonstrating, for instance, how a rising capitalist profit rate mathematically forces the implicit value of unpaid care (v) to plummet, requiring households to cannibalize their own social and emotional bandwidth to subsidize the market core.
+
+REFERENCES WITH HALLUCINATIONS:
+<li>Acemoglu, D., Carvalho, V.M., Ozdaglar, A. and Tahbaz-Salehi, A. (2012). "The Network Origins of Aggregate Fluctuations." <em>Econometrica</em> 80(5): 1977–2016.</li>
+    <li>Aglietta, M. (1979). <em>A Theory of Capitalist Regulation</em>. NLB.</li>
+    <li>Antonopoulos, R. and Hirway, I. (eds.) (2010). <em>Unpaid Work and the Economy</em>. Palgrave Macmillan.</li>
+    <li>Boyer, R. (1990). <em>The Regulation School: A Critical Introduction</em>. Columbia University Press.</li>
+    <li>Cesaratto, S. (2012). "Neo-Kaleckian and Sraffian Controversies on the Theory of Accumulation." <em>Review of Political Economy</em> 24(3).</li>
+    <li>Cesaratto, S. (2024). "Surplus Approach and Institutions: Where Sraffa Meets Polanyi." Forthcoming.</li>
+    <li>Cesaratto, S. (2025). "Surplus Approach, Historical Materialism, and Pre-Capitalist Economies: Some Open Questions." Forthcoming.</li>
+    <li>Cesaratto, S. and Di Bucchianico, S. (2020). "From the Core to the Cores: Surplus Approach, Institutions and Economic Formations." <em>Contributions to Political Economy</em>.</li>
+    <li>Cesaratto, S. and Di Bucchianico, S. (2021). "The Surplus Approach, the Polanyian Tradition, and Institutions in Economic Anthropology and Archaeology." <em>Review of Political Economy</em>.</li>
+    <li>Chiodi, G. (2010). "On Non-Self-Replacing States." <em>Metroeconomica</em> 61(1).</li>
+    <li>Dennett, D.C. (2013). <em>Intuition Pumps and Other Tools for Thinking</em>. Norton.</li>
+    <li>Di Bucchianico, S. and Cesaratto, S. (2025). "Recent Neoclassical Contributions on the Origins of Inequality: A Sraffian Critique." Forthcoming.</li>
+    <li>Ferraciolli, E. et al. (2026). "The Devil's Dung: Money as a Mechanism of Generalized Reciprocity in Human Societies." <em>Rationality &amp; Society</em>.</li>
+    <li>Folbre, N. (2001). <em>The Invisible Heart: Economics and Family Values</em>. New Press.</li>
+    <li>Godley, W. and Lavoie, M. (2007). <em>Monetary Economics: An Integrated Approach to Credit, Money, Income, Production and Wealth</em>. Palgrave Macmillan.</li>
+    <li>Gregory, C.A. (1982). <em>Gifts and Commodities</em>. Academic Press.</li>
+    <li>Hannon, B. (1973). "The Structure of Ecosystems." <em>Journal of Theoretical Biology</em> 41(3).</li>
+    <li>Hayden, F.G. (2006). <em>Policymaking for a Good Society: The Social Fabric Matrix Approach</em>. Springer.</li>
+    <li>Hudson, M. (2004). "The Archaeology of Money." In Wray (ed.), <em>Credit and State Theories of Money</em>. Edward Elgar.</li>
+    <li>Hudson, M. and Wunsch, C. (eds.) (2004). <em>Creating Economic Order: Record-Keeping, Standardization and the Development of Accounting in the Ancient Near East</em>. CDL Press.</li>
+    <li>Jo, T.-H. (2011). "Social Provisioning Process and Socio-Economic Modeling." <em>American Journal of Economics and Sociology</em> 70(5): 1094–1116.</li>
+    <li>Kauffman, S. (1993). <em>The Origins of Order: Self-Organization and Selection in Evolution</em>. Oxford University Press.</li>
+    <li>Kurz, H.D. and Salvadori, N. (1995). <em>Theory of Production: A Long-Period Analysis</em>. Cambridge University Press.</li>
+    <li>Lee, F.S. and Jo, T.-H. (2011). "Social Surplus Approach and Heterodox Economics." <em>Journal of Economic Issues</em> 45(4): 857–875.</li>
+    <li>Lee, R.B. (1968). "What Hunters Do for a Living." In Lee and DeVore (eds.), <em>Man the Hunter</em>. Aldine.</li>
+    <li>Leontief, W. (1941). <em>The Structure of the American Economy, 1919–1929</em>. Harvard University Press.</li>
+    <li>Martins, N.O. (2014). <em>The Cambridge Revival of Political Economy</em>. Routledge.</li>
+    <li>Pasinetti, L.L. (1977). <em>Lectures on the Theory of Production</em>. Columbia University Press.</li>
+    <li>Picchio, A. (1992). <em>Social Reproduction: The Political Economy of the Labour Market</em>. Cambridge University Press.</li>
+    <li>Pivetti, M. (1991). <em>An Essay on Money and Distribution</em>. Macmillan.</li>
+    <li>Polanyi, K. (1944). <em>The Great Transformation</em>. Farrar &amp; Rinehart.</li>
+    <li>Polanyi, K., Arensberg, C. and Pearson, H. (eds.) (1957). <em>Trade and Market in the Early Empires</em>. Free Press.</li>
+    <li>Prigogine, I. and Stengers, I. (1984). <em>Order Out of Chaos</em>. Bantam.</li>
+    <li>Pyatt, G. and Round, J.I. (1977). "Social Accounting Matrices for Development Planning." <em>Review of Income and Wealth</em> 23(4).</li>
+    <li>Sahlins, M. (1972). <em>Stone Age Economics</em>. Aldine.</li>
+    <li>Simmel, G. (1900/1978). <em>The Philosophy of Money</em>. Routledge.</li>
+    <li>Sraffa, P. (1960). <em>Production of Commodities by Means of Commodities</em>. Cambridge University Press.</li>
+    <li>Stone, R. (1986). "The Accounts of Society." <em>Journal of Applied Econometrics</em> 1(1).</li>
+    <li>Williamson, O.E. (1985). <em>The Economic Institutions of Capitalism</em>. Free Press.</li>
+    <li>Woodburn, J. (1968). "An Introduction to Hadza Ecology." In Lee and DeVore (eds.), <em>Man the Hunter</em>. Aldine.</li>
 """

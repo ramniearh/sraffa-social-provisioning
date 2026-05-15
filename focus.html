@@ -6,6 +6,7 @@
     <title>Sraffa meets Polanyi: a Social Provisioning Sandbox</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     <style>
         :root {
             --bg: #eceff1;
@@ -14,19 +15,19 @@
             --primary: #455a64;
             
             /* Integration form cell backgrounds */
-            --inst-unassigned: #f5f5f5;                     /* very light grey */
-            --inst-exchange: rgba(30, 136, 229, 0.15);      /* soft blue — market */
-            --inst-redistribution: rgba(253, 216, 53, 0.25);/* soft gold — state/centric */
-            --inst-reciprocity: rgba(244, 81, 30, 0.15);    /* terracotta — kinship/gift */
+            --inst-unassigned: #f5f5f5;                     
+            --inst-exchange: rgba(30, 136, 229, 0.15);      
+            --inst-redistribution: rgba(253, 216, 53, 0.25);
+            --inst-reciprocity: rgba(244, 81, 30, 0.15);    
             
             /* Sector text colours */
-            --text-economic: #1565c0;   /* deep indigo blue */
-            --text-social: #6a1b9a;     /* rich plum violet */
+            --text-economic: #1565c0;   
+            --text-social: #6a1b9a;     
             
             /* Diagnostic Math Colors & UI Buttons */
-            --val-surplus: #00897b; /* Teal (Surplus, Non-basic, Active, Calculate) */
-            --val-deficit: #e53935; /* Red (Deficit, Remove, Stale) */
-            --val-balance: #455a64; /* Slate Grey (Balance, Subsistence, Add) */
+            --val-surplus: #00897b; 
+            --val-deficit: #e53935; 
+            --val-balance: #455a64; 
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -36,34 +37,105 @@
             padding: 20px;
             line-height: 1.5;
         }
-        .container { max-width: 1400px; margin: auto; }
+
+        /* --- FOCUS MODE CSS --- */
+        .compact-dashboard { display: none; }
+        
+        body.focus-mode .primer,
+        body.focus-mode .chart-intro,
+        body.focus-mode .chart-caption,
+        body.focus-mode .course-box,
+        body.focus-mode .verbose-view,
+        body.focus-mode h1,
+        body.focus-mode h3 {
+            display: none !important;
+        }
+
+        body.focus-mode .container { max-width: 100%; padding: 0 10px; }
+        body.focus-mode .preset-bar { margin-bottom: 10px; padding: 10px; }
+        body.focus-mode .panel { padding: 10px; margin-bottom: 10px; }
+
+        /* Single-line compact summary */
+        body.focus-mode .compact-dashboard {
+            display: flex !important;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            background: #e0f2f1;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border: 1px solid var(--val-surplus);
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        /* Focus Mode Splits (2/3 Matrix, 1/3 Network) */
+        body.focus-mode .focus-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+        body.focus-mode .focus-split > div { min-width: 0; }
+
+        /* Shrink UI elements in Focus Mode to fit screen */
+        body.focus-mode th { padding: 4px; font-size: 12px; }
+        body.focus-mode td { padding: 4px !important; }
+        body.focus-mode input[type="number"].matrix-cell { width: 45px; padding: 2px; font-size: 12px; }
+        body.focus-mode input[type="text"].input-name { width: 80px; font-size: 12px; }
+        body.focus-mode input[type="text"].input-unit { width: 40px; font-size: 11px; }
+        body.focus-mode .btn-action { padding: 10px; font-size: 14px; margin-top: 10px; }
+        
+        /* Shrink Visualizations heavily in Focus Mode */
+        body.focus-mode .viz-grid-bottom { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 10px; }
+        body.focus-mode #networkMapZ, body.focus-mode #networkMapA { height: 260px !important; margin-top: 0 !important;}
+        body.focus-mode .chart-wrapper { height: 130px; margin-top: 0;}
+        body.focus-mode .chart-wrapper-horizontal { height: 80px; margin-top: 0;}
+        body.focus-mode .sub-header { font-size: 12px; margin-top: 5px; margin-bottom: 2px; }
+        body.focus-mode .heatmap-table th, body.focus-mode .heatmap-table td { padding: 4px 8px; font-size: 11px; }
+
+        /* --- STANDARD CSS --- */
+        .container { max-width: 1400px; margin: auto; transition: max-width 0.3s; }
         .panel {
             background: var(--panel); padding: 25px; border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border);
-            margin-bottom: 20px;
+            margin-bottom: 20px; transition: all 0.3s;
         }
         h1 { margin-top: 0; margin-bottom: 10px; color: var(--primary); }
+        
         .preset-bar { display: flex; gap: 8px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: #f0f4f8; padding: 15px; border-radius: 6px; border: 1px solid var(--border);}
         .btn-preset { background: var(--val-balance); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s; border: 2px solid transparent;}
         .btn-preset:hover { opacity: 0.9; }
         .btn-preset.active { border: 2px solid var(--val-surplus); background: var(--val-surplus); box-shadow: 0 0 8px rgba(0,137,123,0.4); }
+        
         .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; text-align: center; }
-        table { border-collapse: collapse; width: 100%; margin: 0 auto; font-size: 13px; }
+        
+        /* Centralized 'Un-hugged' Matrix constraints */
+        table { border-collapse: collapse; margin: 0 auto; font-size: 13px; }
+        .matrix-wrapper table { width: max-content; margin: 0 auto; }
+        
         th, td { border: 1px solid var(--border); padding: 0; text-align: center; transition: background-color 0.2s; }
         th { background: #f0f4f8; font-weight: 600; font-size: 13px; padding: 6px;}
         .row-header { display: flex; gap: 5px; justify-content: flex-start; align-items: center; padding: 6px; background: #fff; }
+        
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
         input[type="number"].matrix-cell {
             appearance: textfield; -moz-appearance: textfield; width: 60px; text-align: right;
             padding: 4px; font-family: monospace; font-size: 13px; border-radius: 3px;
-            border: 1px solid rgba(0,0,0,0.3); background: #ffffff; outline: none; cursor: pointer; box-sizing: border-box;
-            margin: 4px auto; display: block; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.3); background: #ffffff; outline: none; box-sizing: border-box;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); margin: 0 auto; display: block; cursor: text;
         }
         input[type="number"].matrix-cell:hover, input[type="number"].matrix-cell:focus {
             border-color: var(--val-surplus); background: #f8faff;
         }
+
+        td.interactive-cell { position: relative; cursor: pointer; padding: 8px; }
+        td.interactive-cell:hover { filter: brightness(0.95); }
         
         input[type="text"] { padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px;}
         .input-name { width: 110px; font-weight: bold; }
@@ -71,26 +143,31 @@
         .total-cell { font-weight: bold; padding: 6px; transition: background 0.3s; white-space: nowrap; }
         .total-input { background: #fff; border: 1px solid rgba(0,0,0,0.3); font-weight: bold; font-family: monospace; font-size: 13px; width: 65px; border-radius: 3px; text-align: right; padding: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
         .toggle-col { background: #fafafa; padding: 6px;}
+        
         .btn-action { background: var(--val-surplus); color: white; border: none; width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-top: 15px;}
         .btn-action:hover { opacity: 0.9; }
-        .btn-action.stale { background: var(--val-deficit); } /* Red when matrix changes */
-        .controls { display: flex; gap: 10px; margin-bottom: 5px; align-items: center;}
+        .btn-action.stale { background: var(--val-deficit); } 
+        
+        .controls { display: flex; gap: 10px; margin-bottom: 5px; align-items: center; justify-content: center;}
         h3 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 12px;}
         .heatmap-table { margin: 0 auto; width: auto; font-family: monospace; font-size: 13px; }
         .heatmap-table th, .heatmap-table td { padding: 10px 18px; transition: background-color 0.3s; }
         .primer { font-size: 14px; color: #37474f; margin-bottom: 10px; }
-        /* chart layout classes */
+        
         .chart-intro { font-size: 14px; color: #455a64; font-weight: 500; margin-top: 8px; margin-bottom: 4px; }
         .chart-caption { font-size: 12px; color: #78909c; font-style: italic; margin-top: 8px; line-height: 1.5; border-top: 1px solid #e0e0e0; padding-top: 6px; }
         .chart-wrapper { position: relative; height: 280px; width: 100%; margin-top: 6px; }
         .chart-wrapper-horizontal { position: relative; height: 140px; width: 100%; margin-top: 6px; }
-        .diag-table { width: 100%; margin-bottom: 15px; background: white; border-collapse: collapse; }
+        
+        .viz-grid-top { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px; }
+        .viz-grid-bottom { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 40px; }
+
+        .diag-table { width: auto; min-width: 40%; margin-bottom: 15px; background: white; border-collapse: collapse; }
         .diag-table th { background: #eceff1; text-align: left; font-size: 13px; padding: 8px; border: 1px solid #cfd8dc; }
         .diag-table td { text-align: left; font-size: 14px; padding: 8px; border: 1px solid #cfd8dc; }
-        .auto-width-table table { width: auto; min-width: 60%; }
         .sub-header { font-weight: 600; color: var(--primary); margin-top: 20px; margin-bottom: 4px; font-size: 15px;}
         .inst-box { display: inline-block; width: 16px; height: 12px; border: 1px solid #ccc; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
-        /* Course box */
+        
         .course-box { background: #e8ecef; padding: 30px; border-radius: 8px; border-left: 6px solid var(--primary); margin-top: 40px; line-height: 1.6;}
         .course-box h2 { margin-top: 0; color: var(--primary); }
         .course-box h4 { margin-top: 25px; margin-bottom: 10px; color: #263238; font-size: 16px; border-bottom: 1px solid #cfd8dc; padding-bottom: 5px;}
@@ -114,6 +191,8 @@
         <button class="btn-preset" id="btn-sahlins" onclick="loadPreset('sahlins', this)">Sahlins (Foraging)</button>
         <button class="btn-preset" id="btn-hudson" onclick="loadPreset('hudson', this)">Hudson (Palace Economy)</button>
         <button class="btn-preset" id="btn-capitalist" onclick="loadPreset('capitalist', this)">Capitalism</button>
+        <div style="flex-grow: 1;"></div>
+        <button class="btn-preset" id="btn-focus" onclick="toggleFocusMode()" style="background: var(--primary); font-weight: bold;">🔍 Toggle Focus Mode</button>
     </div>
 
     <div class="panel">
@@ -121,26 +200,16 @@
             This exploratory sandbox tool represents the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. As presented by Piero Sraffa in <i>Production of Commodities by Means of Commodities</i>, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers). The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
         </p>
         <p class="primer">
-            Select a preset economy above and press <em>Calculate System Parameters</em> to see the structural properties of the system. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, toggle designations, or right-click cells. Click the calculate button again to see the effect of your changes.
+            Select a preset economy above and press <em>Calculate System Parameters</em> to see the structural properties of the system. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, or toggle designations. Click the calculate button again to see the effect of your changes.
         </p>
-
-        <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
-
-        <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
-
-        <div class="controls" style="margin-bottom: 15px;">
-            <button class="btn-preset" onclick="addSector()" style="background: var(--val-balance);">+ Add Sector</button>
-            <button class="btn-preset" onclick="removeSector()" style="background: var(--val-deficit);">- Remove Sector</button>
-        </div>
-
         <p class="primer">
             Where a row's sum differs from its stated TOTAL OUTPUT, the &gt; or &lt; indicators show whether output exceeds or falls short of allocated flows. Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (the unit of account used as a reference to normalize calculations for the other sectors). The numéraire choice does not affect the structure of the system, it only rescales quantities of other sectors in relation to the one selected.
         </p>
         <p class="primer">
             <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> in the column and row names denotes economic sectors (commodity-producing activities, in Sraffa's original sense). Toggle the <em>Social</em> checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">violet</span>, sectors whose primary function is social or ecological reproduction (in broadened provisioning sense that goes beyond Sraffa's and includes households, community institutions, the state, the biosphere). This designation directly affects the calculation of the viability parameters below, as it draws a separation between a commodity subsystem and the broader social system in which it is embedded.
         </p>
-        <p class="primer">
-            Cell background colors annotate the primary form of integration (in the sense of Karl Polanyi) through which that flow is organized. These are just annotations; they do not affect the structure of the system or alter calculations. Right-click any cell to cycle through the colors marked below:<br>
+        <p class="primer" style="margin-bottom: 25px;">
+            Cell background colors annotate the primary form of integration (in the sense of Karl Polanyi) through which that flow is organized. These are just annotations; they do not affect the structure of the system or alter calculations. Click the background of any cell to cycle through the colors marked below:<br>
             <span style="display:inline-block; margin-top:8px;">
                 <span class="inst-box" style="background:var(--inst-unassigned);"></span> Unassigned &nbsp;&nbsp;&nbsp;
                 <span class="inst-box" style="background:var(--inst-exchange);"></span> Market Exchange &nbsp;&nbsp;&nbsp;
@@ -149,12 +218,24 @@
             </span>
         </p>
 
+        <h3 style="margin-top: 0; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
+        
+        <div id="z-focus-split" class="focus-split">
+            <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
+            </div>
+
+        <div class="controls" style="margin-bottom: 15px;">
+            <button class="btn-preset" onclick="addSector()" style="background: var(--val-balance);">+ Add Sector</button>
+            <button class="btn-preset" onclick="removeSector()" style="background: var(--val-deficit);">- Remove Sector</button>
+        </div>
+
         <button id="calc-btn" class="btn-action" onclick="calculateSystem()">CLICK HERE to Calculate System Parameters</button>
     </div>
 
-    <div id="results-area">
+    <div id="compact-dashboard" class="compact-dashboard"></div>
 
-        <div class="panel">
+    <div id="results-area">
+        <div class="panel verbose-view">
             <h3>System Reproduction Parameters</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px;">
 
@@ -191,9 +272,9 @@
 
         <div class="panel">
             <h3>Visualizations</h3>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px;">
-                <div>
+            
+            <div class="viz-grid-top" id="viz-grid-top">
+                <div id="z-network-wrapper">
                     <div class="sub-header" style="margin-top: 0;">Physical Flow Network (Z)</div>
                     <p class="chart-intro">Visualizes the absolute material activity in the system. Larger nodes represent greater systemic scale; thicker edges indicate higher physical flow volumes.</p>
                     <div id="networkMapZ" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
@@ -201,7 +282,8 @@
                         The "extensive" topology: node size represents Gross Systemic Scale (Provisioning Centrality × total output), combining structural importance with output volume. Edge thickness represents the absolute physical flow Z[i&rarr;j]. Edge color reflects the user-assigned integration form. This network shows where the largest absolute volumes of material exchange occur in the system — which sectors are big in aggregate terms, and where the heaviest flow dependencies lie. Node colors map to economic (blue) and social (violet) classifications.
                     </p>
                 </div>
-                <div>
+                
+                <div id="a-network-wrapper">
                     <div class="sub-header" style="margin-top: 0;">Technical Dependency Network (A)</div>
                     <p class="chart-intro">Visualizes the per-unit technical dependencies. Larger nodes indicate higher systemic centrality per unit of output; thicker edges represent larger input requirements per unit produced.</p>
                     <div id="networkMapA" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
@@ -211,8 +293,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
-
+            <div class="viz-grid-bottom">
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Gross Sectoral Scale (in Numéraire)</div>
                     <p class="chart-intro">Calculates the total size of each sector within the provisioning system.</p>
@@ -220,15 +301,10 @@
                     <p class="chart-caption">
                         Each sector's total output multiplied by its Provisioning Centrality weight, expressed in numéraire units. This translates physically heterogeneous outputs (tons of wheat, hours of labor, ecological services) into a single common structural scale. In the subsistence case (λ = 1), this equals Sraffian value (price × quantity). In other cases, it is a provisional measure of each sector's extensive contribution to total provisioning. Blue bars = economic sectors; violet bars = social sectors.
                     </p>
+                </div>
 
-                    <div class="sub-header" style="margin-top: 30px;">Gross Input Absorption by Social Sector</div>
-                    <p class="chart-intro">Displays the share of total systemic activity flowing through each social sector as inputs received.</p>
-                    <div class="chart-wrapper-horizontal"><canvas id="absChart"></canvas></div>
-                    <p class="chart-caption">
-                        Each social sector's share of total systemic scale, measured by the weighted sum of inputs it receives (each inflow weighted by the Provisioning Centrality of its source sector). The grey remainder represents inputs absorbed by intermediate economic production. This is a gross flow measure of input absorption; it does not represent net surplus extraction.
-                    </p>
-
-                    <div class="sub-header" style="margin-top: 30px;">Net Flow Position of Social Sectors</div>
+                <div>
+                    <div class="sub-header" style="margin-top: 0;">Net Flow Position of Social Sectors</div>
                     <p class="chart-intro">Calculates whether social sectors send more outflows into the system than they receive (as measured by respective system weights), or vice versa.</p>
                     <div class="chart-wrapper"><canvas id="netFlowChart"></canvas></div>
                     <p class="chart-caption">
@@ -243,21 +319,36 @@
                     <p class="chart-caption">
                         Each flow Z[i&rarr;j] is attributed to its user-assigned Polanyian integration form. The flow's structural weight (Z[i][j] × Provisioning Centrality of sector i) is aggregated by integration type. This chart reflects the qualitative annotations entered in the matrix and should be interpreted accordingly — it does not independently validate or empirically measure integration forms. The proportions change entirely if annotations are revised.
                     </p>
+                </div>
 
-                    <div class="sub-header" style="margin-top: 30px;">Provisioning Centrality Profile (Radar)</div>
+                <div>
+                    <div class="sub-header" style="margin-top: 0;">Provisioning Centrality Profile (Radar)</div>
                     <p class="chart-intro">Plots the distribution of systemic weight across all sectors (these are sensitive to scaling units of measurement up or down, but not to choice of numéraira).</p>
                     <div class="chart-wrapper"><canvas id="radarChart"></canvas></div>
                     <p class="chart-caption">
                         A radial profile of Systemic Reproduction Weights across all sectors, normalized to the numéraire. Axes are not comparable across different numéraire choices.
                     </p>
-                    
-                    <div class="sub-header" style="margin-top: 30px;">Technical Coefficients Matrix (A)</div>
-                    <p class="chart-intro">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j.</p>
-                    <div class="matrix-wrapper" id="heatmap-container" style="margin-top: 10px; overflow-x: auto; background: #fafafa; border: 1px solid #cfd8dc; border-radius: 6px; padding: 10px;"></div>
-
                 </div>
 
+                <div>
+                    <div class="sub-header" style="margin-top: 0;">Gross Input Absorption by Social Sector</div>
+                    <p class="chart-intro">Displays the share of total systemic activity flowing through each social sector as inputs received.</p>
+                    <div class="chart-wrapper-horizontal"><canvas id="absChart"></canvas></div>
+                    <p class="chart-caption">
+                        Each social sector's share of total systemic scale, measured by the weighted sum of inputs it receives (each inflow weighted by the Provisioning Centrality of its source sector). The grey remainder represents inputs absorbed by intermediate economic production. This is a gross flow measure of input absorption; it does not represent net surplus extraction.
+                    </p>
+                </div>
             </div>
+        </div>
+        
+        <div class="panel">
+            <h3>Technical Flow Breakdown</h3>
+            <div class="sub-header" style="margin-top: 0;">Technical Coefficients Matrix (A)</div>
+            <p class="chart-intro">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j.</p>
+            
+            <div id="a-focus-split" class="focus-split">
+                <div class="matrix-wrapper" id="heatmap-container" style="margin-top: 10px; overflow-x: auto; background: #fafafa; border: 1px solid #cfd8dc; border-radius: 6px; padding: 10px;"></div>
+                </div>
         </div>
 
         <div class="course-box">
@@ -283,7 +374,7 @@
 
             <p>In Sraffa's original formulation, wages and profits are distributional parameters settled by institutional or political processes outside the matrix. This is very much in agreement with the perspective of embeddedness in Polanyian economic sociology, which holds that distributional outcomes are the result of social and institutional settlements rather than outcomes of the market. In fact, this is also true for non-market economies, which must also reproduce themselves through institutional processes. Feminist and ecological economics extend this further: the reproduction of labor through care work and domestic production, and the regeneration of natural systems, are necessary conditions for any economic process (not externalities to be treated as given), and these broader physical and social processes make a difference to the functioning of markets. By designating sectors as Social and incuding them in the same matrix, we bring institutions and reproduction into the same formalism that handles commodity production. Every sector, economic or social, now appears as both a user of inputs (its column) and a provider of outputs (its row). </p>
 
-            <p>When social sectors are included in the full matrix, the dominant left eigenvector of A (here called <strong>Provisioning Centrality</strong>) can be seen as an extended, more general version of Sraffa's price vectors, now no longer restricted to market societies. In Sraffa's subsistence model, this eigenvector determines the exchange ratios required for the economic core to exactly reproduce itself. In our extended model, it calculates the proportion of a system's total reproductive output required to sustain any given sector, whether economic or social. 
+            <p>When social sectors are included in the full matrix, the dominant left eigenvector of A (here called <strong>Provisioning Centrality</strong>) can be seen as an extended, more general version of Sraffa's price vectors, now no longer restricted to market societies. In Sraffa's subsistence model, this eigenvector determines the exchange ratios required for the economic core to exactly reproduce itself. In our extended model, it calculates the proportion of a system's total reproductive output required to sustain any given sector, whether economic or social. </p>
             
             <p>In Sraffa's Chapter 2, distributing a physical surplus as a uniform rate of profit requires homogenizing heterogeneous goods into a common unit of account. Because our version of the matrix maps material flows without reference to monetary values, distributing a physical surplus to a social sector yields structural weights that diverge from Sraffian prices. This divergence is connected to how specific institutional conventions (like monetary value accounting) represent specific ways to implement a broader process of economic provisioning. Palace rations, potlatch obligations, and capitalist wage contracts represent different institutional solutions to the same structural issue - the fact that every society that produces a surplus must organize its distribution.</p>
 
@@ -482,6 +573,34 @@
     let networkInstZ = null, networkInstA = null;
     let isStale = false;
 
+    // DOM Repositioning for Focus Mode Split
+    function toggleFocusMode() {
+        const isFocus = document.body.classList.toggle('focus-mode');
+        
+        const zNetWrap = document.getElementById('z-network-wrapper');
+        const aNetWrap = document.getElementById('a-network-wrapper');
+        const zSplit = document.getElementById('z-focus-split');
+        const aSplit = document.getElementById('a-focus-split');
+        const vizTop = document.getElementById('viz-grid-top');
+
+        if (isFocus) {
+            zSplit.appendChild(zNetWrap);
+            aSplit.appendChild(aNetWrap);
+        } else {
+            vizTop.appendChild(zNetWrap);
+            vizTop.appendChild(aNetWrap);
+        }
+
+        // Force resize for charts & networks
+        if(networkInstZ) { networkInstZ.redraw(); networkInstZ.fit(); }
+        if(networkInstA) { networkInstA.redraw(); networkInstA.fit(); }
+        if(scaleChartInst) scaleChartInst.resize();
+        if(absChartInst) absChartInst.resize();
+        if(netFlowChartInst) netFlowChartInst.resize();
+        if(instChartInst) instChartInst.resize();
+        if(radarChartInst) radarChartInst.resize();
+    }
+
     function markStale() {
         if (!isStale) {
             isStale = true;
@@ -522,7 +641,8 @@
     function cycleInst(e, i, j) {
         e.preventDefault();
         state.institutions[i][j] = (state.institutions[i][j] + 1) % 4;
-        document.getElementById(`td_${i}_${j}`).style.backgroundColor = instBgs[state.institutions[i][j]];
+        let bg = instBgs[state.institutions[i][j]];
+        document.getElementById(`td_${i}_${j}`).style.backgroundColor = bg;
         markStale();
     }
 
@@ -566,9 +686,8 @@
                 </td>`;
             for (let j = 0; j < N; j++) {
                 let bg = instBgs[state.institutions[i][j] || 0];
-                html += `<td id="td_${i}_${j}" style="background-color: ${bg};" oncontextmenu="cycleInst(event, ${i}, ${j})">
-                    <input type="number" id="cell_${i}_${j}" class="matrix-cell" value="${state.Z[i][j]}" min="0"
-                    onchange="state.Z[${i}][${j}]=parseFloat(this.value)||0; markStale();">
+                html += `<td id="td_${i}_${j}" class="interactive-cell" style="background-color: ${bg};" onclick="cycleInst(event, ${i}, ${j})" title="Click background to cycle Integration Form">
+                    <input type="number" id="cell_${i}_${j}" class="matrix-cell" value="${state.Z[i][j]}" min="0" onclick="event.stopPropagation()" onchange="state.Z[${i}][${j}]=parseFloat(this.value)||0; markStale();">
                 </td>`;
             }
             html += `<td class="total-cell" style="background:${totalBg};">
@@ -638,6 +757,7 @@
                 </div>`;
             document.getElementById('out-balance').innerHTML = '';
             document.getElementById('out-centrality-tbody').innerHTML = '';
+            document.getElementById('compact-dashboard').innerHTML = '<span style="color:var(--val-deficit)">⚠️ Mathematical Error: Ensure total outputs are > 0.</span>';
             if (scaleChartInst) scaleChartInst.destroy();
             if (absChartInst) absChartInst.destroy();
             if (netFlowChartInst) netFlowChartInst.destroy();
@@ -649,16 +769,14 @@
             return;
         }
 
-        // Build A
-        let A = [];
+        let A = math.zeros(N, N).toArray();
         for (let i = 0; i < N; i++) {
-            A.push([]);
-            for (let j = 0; j < N; j++)
+            for (let j = 0; j < N; j++) {
                 A[i][j] = state.total_output[j] > 0 ? (state.Z[i][j] / state.total_output[j]) : 0;
+            }
         }
         renderHeatmap(A);
 
-        // Economic sub-system (social sectors excluded)
         let econ_indices = [];
         for (let i = 0; i < N; i++) { if (!state.social.includes(i)) econ_indices.push(i); }
         let A_econ = [];
@@ -667,10 +785,10 @@
             for (let j = 0; j < econ_indices.length; j++)
                 A_econ[i].push(A[econ_indices[i]][econ_indices[j]]);
         }
+        
         let lambda_core = econ_indices.length > 0 ? getDominantEigenvector(A_econ).lambda : 0;
         let {lambda: sigma_extended, eigenvector} = getDominantEigenvector(A);
 
-        // Non-basic process detection
         let nonBasicsList = detectNonBasics();
         let nonBasicText = nonBasicsList.length > 0
             ? `<strong>Non-Basic Processes:</strong> <span style="color:var(--val-surplus);">${nonBasicsList.join(", ")}</span>`
@@ -711,6 +829,7 @@
 
         let balHtml = "";
         let isBalanced = true;
+        let balanceIssues = [];
         for (let i = 0; i < N; i++) {
             let rowSum = state.Z[i].reduce((a, b) => a + b, 0);
             let diff = state.total_output[i] - rowSum;
@@ -719,6 +838,7 @@
                 let diffColor = diff > 0 ? "var(--val-surplus)" : "var(--val-deficit)";
                 balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diffColor};">${diff > 0 ? "Unallocated Surplus" : "Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
                 isBalanced = false;
+                balanceIssues.push(`${state.sectors[i].name} ${diff > 0 ? '+' : ''}${diff.toFixed(1)}`);
             }
         }
         if (!isBalanced) balHtml += `</table></div>`;
@@ -738,13 +858,37 @@
             let scale = provisioning_weights[i] * state.total_output[i];
             sectoral_scales.push(scale);
             labels.push(state.sectors[i].name);
-            // Deep blue for economic, plum violet for social
             bgColors.push(state.social.includes(i) ? '#6a1b9a' : '#1565c0');
             centralityTbody += `<tr ${i === state.numeraire ? 'style="background:rgba(69, 90, 100, 0.1); font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${provisioning_weights[i].toFixed(4)}</td></tr>`;
         }
         document.getElementById('out-centrality-tbody').innerHTML = centralityTbody;
 
-        // Absorption + Net Flow for social sectors
+        // Populate the strictly 1-line Compact Dashboard
+        let compactBalHtml = balanceIssues.length === 0 
+            ? '<span style="color:var(--val-balance); font-weight:bold;">OK</span>'
+            : '<span style="color:var(--val-deficit); font-weight:bold;">' + balanceIssues.join(' | ') + '</span>';
+
+        let compactBasic = nonBasicsList.length === 0 
+            ? '<span style="color:var(--val-balance); font-weight:bold;">All</span>' 
+            : `<span style="color:var(--val-surplus); font-weight:bold;">${nonBasicsList.join(", ")}</span>`;
+
+        let weightsStr = "";
+        for(let i=0; i<N; i++) { 
+            weightsStr += `<span style="margin-right: 10px;">${state.sectors[i].name.substring(0,3)}: ${provisioning_weights[i].toFixed(2)}</span>`; 
+        }
+        
+        document.getElementById('compact-dashboard').innerHTML = `
+            <span><strong>&lambda;:</strong> <span style="color:${lambdaColor}; font-weight:bold;">${lambda_core.toFixed(4)}</span></span>
+            <span style="color:#cfd8dc;">|</span>
+            <span><strong>&sigma;:</strong> <span style="color:${sigmaColor}; font-weight:bold;">${sigma_extended.toFixed(4)}</span></span>
+            <span style="color:#cfd8dc;">|</span>
+            <span><strong>Basic:</strong> ${compactBasic}</span>
+            <span style="color:#cfd8dc;">|</span>
+            <span><strong>Bal:</strong> ${compactBalHtml}</span>
+            <span style="color:#cfd8dc;">|</span>
+            <span style="color: #546e7a;"><strong>W:</strong> ${weightsStr}</span>
+        `;
+
         let totalSocialPct = 0, absChartDatasets = [], netFlowLabels = [], netFlowData = [], netFlowColors = [];
         const classColorPalette = ['#6a1b9a', '#8e24aa', '#ab47bc', '#ce93d8', '#e1bee7'];
 
@@ -764,14 +908,12 @@
             let net = absorbed_scale - contributed_scale;
             netFlowLabels.push(state.sectors[s].name);
             netFlowData.push(net);
-            // Light red = net absorber, light green = net contributor
             netFlowColors.push(net >= 0 ? '#ef9a9a' : '#c5e1a5');
         }
         let remainder = Math.max(0, 100 - totalSocialPct);
         if (remainder > 0.01)
             absChartDatasets.push({ label: `Intermediate Economic Production`, data: [remainder], backgroundColor: '#cfd8dc', borderColor: '#fff', borderWidth: 1, stack: 'Stack 0' });
 
-        // Institutional breakdown
         let instTotals = [0, 0, 0, 0];
         for (let i = 0; i < N; i++)
             for (let j = 0; j < N; j++) {
@@ -779,9 +921,7 @@
                 instTotals[state.institutions[i][j] || 0] += flowScale;
             }
 
-        // Network data
         let networkNodesZ = [], networkEdgesZ = [], networkNodesA = [], networkEdgesA = [];
-        // Edge colors: grey=unspecified, blue=market, gold=redistribution, terracotta=reciprocity
         let instHexColors = ['#9e9e9e', '#1e88e5', '#fbc02d', '#f4511e'];
 
         for (let i = 0; i < N; i++) {
@@ -799,7 +939,6 @@
         resetStale();
     }
 
-    // Power iteration on A^T — converges to dominant left eigenvector of A
     function getDominantEigenvector(A, iterations = 500) {
         let n = A.length;
         let v = new Array(n).fill(1);
@@ -891,7 +1030,6 @@
             options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
         });
 
-        // Doughnut: grey=unspecified, blue=market, gold=redistribution, terracotta=reciprocity
         instChartInst = new Chart(document.getElementById('instChart').getContext('2d'), {
             type: 'doughnut',
             data: {
@@ -901,7 +1039,6 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
         });
 
-        // Radar in green
         radarChartInst = new Chart(document.getElementById('radarChart').getContext('2d'), {
             type: 'radar',
             data: {

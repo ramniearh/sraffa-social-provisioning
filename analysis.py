@@ -270,3 +270,68 @@ plt.xticks(rotation=45, ha='left')
 
 # Show all generated windows simultaneously
 plt.show()
+
+
+# =====================================================================
+# THEORETICAL FOUNDATIONS & FUTURE RESEARCH EXTENSIONS
+# =====================================================================
+"""
+NOTE 1: THE GOVERNANCE OVERLAY MATRIX (Gamma) & WILLIAMSON
+- Future ABM steps: Create a second matrix `gamma` of same dimensions.
+- Populate it with institutional states: 'M' (Market), 'F' (Firm), 'S' (State), 'C' (Communal).
+- Algorithm idea: If an `oikos` block shows high internal density but low external edges 
+  (high asset specificity), transaction cost logic should automatically force its `gamma` 
+  state from 'M' to 'F' (corporate consolidation).
+
+NOTE 2: N-K DYNAMICS (Stuart Kauffman)
+- N = Matrix dimension. K = Density of the `oikos` matrix.
+- Innovation in an ABM is an evolutionary search: slightly mutate a coefficient a_ij.
+- If this mutation lowers total thermodynamic respiration (or increases the Eigenvalue > 1), 
+  the technology spreads.
+
+NOTE 3: BIOLOGICAL SANDBOXING
+- Because the math is agnostic, renaming sectors allows ecological modeling.
+- [Workers -> Fungi, Grain -> Oak Canopy, Tools -> Nitrogen, etc.]
+- The matrix structural blocks change from 'Firms' to 'Trophic Cascades' and 'Symbiotic Mutualisms'.
+
+NOTE 4: SIMMEL, ABSTRACTION, & THE PDU
+- The prices (PDUs) calculated here represent Simmel's "claims upon society" or 
+  "the value of things without the things themselves".
+- By imposing the Numeraire, the Authority converts physical interdependence into quantified social trust.
+
+NOTE 5: THE POLANYIAN SURPLUS SHOCK (The Bridge to Capitalism)
+- Current state: Eigenvalue = 1 (Perfect Subsistence).
+- Next step: Introduce a technology shock. Grain output jumps, inputs remain identical.
+- The Eigenvalue drops below 1 (the system produces more than it consumes). 
+- How is the surplus distributed?
+    a) RECIPROCITY: Absorb it into Social Reproduction.
+    b) REDISTRIBUTION: Absorb it into Authority to build Non-Basics.
+    c) EXCHANGE: Rip the 'Workers' row/col out, establish a Wage (w) and Profit Rate (r).
+
+NOTE 6: EXTERNAL TRADE & OPEN SYSTEMS
+- This is currently a closed thermodynamic loop. To model early trade (e.g., Bronze Age imports), 
+  we must append an 'Export' column and 'Import' row.
+
+NOTE 7: THEORETICAL FOUNDATIONS & SUGGESTED READING
+- Anthropology/Gift Economies: Chris Gregory (1982) "Gifts and Commodities". 
+- Feminist Economics/Social Reproduction: Antonella Picchio (1992) "Social Reproduction". 
+- Institutionalism/Pre-Capitalist Surplus: Sergio Cesaratto (2015/2020). 
+- Ecological I-O: Bruce Hannon (1973) "The Structure of Ecosystems". 
+
+NOTE 8: ENTROPY & DISSIPATIVE STRUCTURES (Prigogine)
+- In Sraffa's system, surplus is either perfectly consumed or extracted, allowing the cycle to restart.
+- Through a thermodynamic lens, the Sraffian matrix is a "Dissipative Structure" operating far from equilibrium.
+- A surplus represents an injection of "free energy" (exergy). If the society does not continuously 
+  dissipate that energy through expanded consumption, luxury, or warfare (acting as entropy sinks), 
+  the system faces a thermodynamic/accumulation crisis and structurally collapses.
+
+NOTE 9: MONEY AS ITS OWN SOCIAL SECTOR SINK, and post-keynesian effective demand. Also versus Leontieff *monetary* matrix.
+where regulation school?
+
+
+NOTE 10: INSTITUTIONAL BLOCK MATRIX AND/OR POLITICAL SETTLEMENTS (e.g. extend sraffa wage-profit logic to mulitple social sectors)
+- The current topological matrix evaluates all sectors using a single mathematical logic (Provisioning Centrality).
+- Future extension: Fracture the single topology into an interacting Block Matrix, where distinct institutional spheres obey distinct algebraic laws of motion.
+- Example formulation: A Capitalist Market governed by a uniform profit rate (r), a State governed by fiat tax extraction (tau), and a Household sector governed by the shadow-price of unpaid reproduction (v). 
+- This framework allows researchers to model the "crisis of social reproduction" algebraically—demonstrating, for instance, how a rising capitalist profit rate mathematically forces the implicit value of unpaid care (v) to plummet, requiring households to cannibalize their own social and emotional bandwidth to subsidize the market core.
+"""

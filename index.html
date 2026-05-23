@@ -111,18 +111,31 @@
         <button class="btn-preset active" id="btn-diy" onclick="loadPreset('diy', this)">Custom/Sandbox</button>
         <button class="btn-preset" id="btn-sraffa_ch1" onclick="loadPreset('sraffa_ch1', this)">Sraffa Ch. 1: subsistence</button>
         <button class="btn-preset" id="btn-sraffa_ch2" onclick="loadPreset('sraffa_ch2', this)">Sraffa Ch. 2: surplus (Adapted)</button>
-        <button class="btn-preset" id="btn-oikos" onclick="loadPreset('oikos', this)">Greek Oikos</button>
         <button class="btn-preset" id="btn-sahlins" onclick="loadPreset('sahlins', this)">Sahlins (Foraging)</button>
         <button class="btn-preset" id="btn-hudson" onclick="loadPreset('hudson', this)">Hudson (Palace Economy)</button>
         <button class="btn-preset" id="btn-capitalist" onclick="loadPreset('capitalist', this)">Capitalism</button>
+        
+        <select id="preset-select" onchange="handleDropdownChange(this)" style="padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); font-size: 14px; font-family: inherit; cursor: pointer; background-color: #fff; margin-left: auto;">
+            <option value="" disabled selected>Other Historical Presets...</option>
+            <optgroup label="Physiocracy (Quesnay)">
+                <option value="quesnay_tableau">Tableau Économique (3-Sector Macro)</option>
+                <option value="quesnay_diagram_disaggregated">Tableau (Disaggregated Farm)</option>
+                <option value="quesnay_full_formule">Tableau (Expanded Formule)</option>
+            </optgroup>
+            <optgroup label="Classical Antiquity">
+                <option value="oikos">Small Greek Oikos/Household</option>
+                <option value="greek_polis">Aggregate Greek Polis</option>
+                <option value="roman_latifundium">Roman Latifundium (Cato)</option>
+            </optgroup>
+        </select>
     </div>
 
     <div class="panel">
         <p class="primer" style="margin-top: 5px;">
-            This interactive exploratory tool represents the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. As presented by Piero Sraffa in <i>Production of Commodities by Means of Commodities</i>, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers). The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
+            This interactive exploratory tool represents the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. Following Piero Sraffa's framework in <i>Production of Commodities by Means of Commodities</i>, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers). Unlike Sraffa, however, this matrix analyses social sectors to represent a complete view of these provisioning systems, whether or not they operate as market economies. The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
         </p>
         <p class="primer">
-            Select a preset economy above and press <em>Calculate System Parameters</em> to see the structural properties of the system. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, toggle designations, or right-click cells. Click the calculate button again to see the effect of your changes.
+            Select a preset economy above and press <em>Calculate System Parameters</em> to see the mathematical properties of the system used as input. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, toggle designations, or right-click cells. Click the calculate button again to see the effect of your changes.
         </p>
 
         <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
@@ -219,7 +232,7 @@
                     <p class="chart-intro">Calculates the total size of each sector within the provisioning system.</p>
                     <div class="chart-wrapper"><canvas id="scaleChart"></canvas></div>
                     <p class="chart-caption">
-                        Each sector's total output multiplied by its Provisioning Centrality weight, expressed in numéraire units. This translates physically heterogeneous outputs (tons of wheat, hours of labor, ecological services) into a single common structural scale. In the subsistence case (λ = 1), this equals Sraffian value (price × quantity). In other cases, it is a provisional measure of each sector's extensive contribution to total provisioning. Blue bars = economic sectors; violet bars = social sectors.
+                        Each sector's total output multiplied by its Provisioning Centrality weight, expressed in numéraire units. This translates heterogeneous physical outputs (tons of wheat, hours of labor, ecological services) into a single common structural scale. In the subsistence case (λ = 1), this equals Sraffian value (price × quantity). In other cases, it is a provisional measure of each sector's extensive contribution to total provisioning. Blue bars = economic sectors; violet bars = social sectors.
                     </p>
 
                     <div class="sub-header" style="margin-top: 30px;">Gross Input Absorption by Social Sector</div>
@@ -313,13 +326,13 @@
 
             <p><strong>Sraffa Ch. 2 (Adapted):</strong> Sraffa's surplus economy, adapted by bringing workers and capitalists directly into the matrix as sectors with explicit reproduction requirements. In this preset, λ ≈ 0.647 for the economic core (wheat and iron alone), confirming an economic surplus of material goods. σ = 1.00 for the full provisioning system is a mathematical consequence of the matrix being fully closed: every unit of every good is absorbed within the system as an input somewhere (all row sums equal total outputs). In this specific preset, we modeled a political settlement where the 280 units of original agricultural grain input are split between seed (80), worker biological subsistence (160), and capitalist baseline consumption (40). The remaining 175 units of surplus wheat are distributed roughly 70% to Capitalists (122.5 units) and 30% to Workers (52.5 units) as discretionary consumption. This specific allocation represents only one point on Sraffa's wage-profit curve. It is a choice we made to illustrate Sraffa's Chapter 2 within our framework, pre-calibrating it to σ = 1. The broader theoretical implications of closing the matrix in different ways require further discussion and theory.</p>
 
-            <p><strong>Greek Oikos (Classical Athens):</strong> A stylized representation of a hoplite-class citizen household operating a 5-hectare agricultural plot. The economic sub-system (agriculture and trade) generates a massive mathematical surplus (&lambda; &approx; 0.23), but this merely reflects the enormous physical output required to sustain human labor power. When the Labor/Reproduction sector (representing the 6 person-years of free and enslaved household members) is included, the matrix is perfectly closed and exactly self-replacing (&sigma; = 1.0). The preset highlights the structural vulnerability of the system's trade bottleneck: the household relies heavily on generating a surplus of Cash Crops and Textiles to exchange via the <em>agora</em> for the metal tools required to maintain its agrarian core. Internal household flows are modeled as Redistribution, reflecting the centralized pooling and allocation by the household heads.</p>
-
             <p><strong>Sahlins (Foraging):</strong> Inspired by Marshall Sahlins' "Original Affluent Society" argument. Sahlins drew on ethnographic time-budget studies — most notably Richard Lee's work with the !Kung San and James Woodburn's findings among the Hadza — to argue that foragers achieve material sufficiency with far less labor than industrial workers (adults would roughly 12–19 hours per week on food procurement, devoting the remainder of their time to social life, rest, and ceremony). In this spirit, we allocated 400 hours (out of 2,200 total) of community labor to the Foraging sector; the rest flows to community maintenance, temporary camps, tools, and ceremonial feasts. The Mobile Shelter sector indicates a nomadic life, with frequent changes in settlement location (and little accumulation of physical property). λ ≈ 0.32 for the economic sub-system indicates the productive core operates well within capacity. σ = 1.0 reflects a closed, exactly-reproducing provisioning system where potential physical surpluses are absorbed by social expenditure. The Feasts sector is structurally basic in this matrix, illustrating our substantivist interpretation - that is, social expenditure can be seen as a production input in a more general, extended sense. Integration is modeled throughout as Reciprocity.</p>
 
             <p><strong>Hudson (Palace Economy):</strong> Loosely based on Michael Hudson's analysis of Bronze Age Mesopotamian palace and temple economies. Hudson's scholarship draws on cuneiform tablets documenting a provisioning system anchored in centralized temple-palace accounting rather than market exchange. Standard monthly grain rations in Ur III and Old Babylonian records run to roughly 60 liters (sila) per adult male worker per month, with lower allocations for women and dependents. Domestic provisioning ran on grain and fixed labor obligations, while silver functioned primarily as an accounting unit for long-distance trade. The administration pegged 1 shekel of silver to 1 <em>gur</em> (300 <em>sila</em>) of grain (in our preset, we make the input requirements for the Silver sector proportional to those of the Grain sector according to this ration, so that the eigenvector calculation results in an identical Provisioning Centrality weights). Modeled in this way, the economic surplus (λ ≈ 0.17) generated by the agricultural core reflects the temple complex extracting output to feed dependent labor (corvée, weavers) and trade for external luxuries. While not represented in this static matrix capturing only physical reproduction, Hudson notes that agrarian debts grew exponentially and were periodically cleared by "Clean Slate" debt cancellations. A post-cancellation period could be represented in the matrix by a different distribution of grain between workers and the temple. </p>
             
             <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized, but innovative, capitalism. This preset is a loose collage of several different themes relevant to economics and sociology. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with claims on system output through property rights and financial instruments. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the production circuit as inputs to Industry, Services, and other sectors. Veblenian/Luxury goods flow exclusively to F.I.R.E.. The Work sector features a large self-loop (Z[4][4] = 6,900 hours, annotated as Reciprocity) representing unpaid domestic and care labor (the work assigned to other sectors is understood as paid; this reflects estimates for the care-to-paid-work ratio in advanced economies). The Biosphere sector has a total output set below its row sum (gross material extractions), indicating rapid depletion of ecological stocks. Waste is modeled as a non-basic terminal sink (output flows nowhere). The economic core is at surplus because the core isolates Industry and Services, treating their dependencies on Work and Biosphere as if they were free. However, note that the full-system eigenvalue approximates 1, indicating a that the complete system is able to reproduce itself (at least while ecological stocks are not depleted).</p>
+
+            <p><strong>Other Historical Models:</strong> The dropdown menu contains several additional illustrative matrices. These include François Quesnay's Physiocratic models (the 3-sector macroeconomic Tableau, a detailed mapping of the original 1758 zigzag diagram, and the expanded Formule including capital and taxation). It also includes models of classical Mediterranean provisioning: the baseline autarky of a Greek <em>oikos</em>, an aggregated Greek <em>polis</em> showing household interaction with state and urban markets, and a Roman <em>latifundium</em> demonstrating highly integrated, slave-staffed cash-crop extraction. These specific numerical arrays are pedagogical abstractions intended to map structural topologies, not formal quantitative reconstructions.</p>
 
             <h4>5. Related Literature, Research Directions</h4>
 
@@ -402,36 +415,6 @@
                 [1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1]
             ]
         },
-        oikos: {
-            sectors: [
-                {name: "Grain", unit: "kg"},
-                {name: "Pulses/Protein", unit: "kg"},
-                {name: "Cash Crops (Oil/Wine)", unit: "liters"},
-                {name: "Textiles", unit: "pieces"},
-                {name: "External Trade (Tools)", unit: "kg-metal"},
-                {name: "Labor / Reproduction", unit: "person-yrs"}
-            ],
-            Z: [
-                // 0:Grain  1:Pulses  2:Cash  3:Textiles  4:Trade  5:Labor
-                [  400,       0,        0,       0,         100,     1500  ], // Grain inputs
-                [    0,      60,        0,       0,           0,      240  ], // Pulses inputs
-                [    0,       0,       50,       0,         300,      150  ], // Cash Crop inputs
-                [    0,       0,        0,       0,           2,       10  ], // Textile inputs
-                [   10,       2,        4,       2,           0,        2  ], // Tool/Metal inputs
-                [  2.5,     0.5,      1.0,     1.0,         0.2,      0.8  ]  // Labor inputs
-            ],
-            total_output: [2000, 300, 500, 12, 20, 6.0],
-            numeraire_index: 0, 
-            social_indices: [5], 
-            institutions: [
-                [2, 2, 2, 2, 1, 2],
-                [2, 2, 2, 2, 1, 2],
-                [2, 2, 2, 2, 1, 2],
-                [2, 2, 2, 2, 1, 2],
-                [1, 1, 1, 1, 1, 1], // External tool acquisition mapped as Market
-                [2, 2, 2, 2, 1, 2]
-            ]
-        },
         sahlins: {
             sectors: [
                 {name: "Foraging", unit: "kcal"}, {name: "Tools", unit: "units"},
@@ -506,6 +489,166 @@
                 [0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0]
             ]
+        },
+        greek_polis: {
+            sectors: [
+                {name: "Agrarian Oikoi", unit: "tons"}, 
+                {name: "Urban Workshops (Crafts)", unit: "goods"},
+                {name: "State & Temples", unit: "actions"},
+                {name: "Enslaved Labor Force", unit: "hours"},
+                {name: "Foreign Trade / Agora", unit: "drachmae"}
+            ],
+            Z: [
+                [ 2000,   500,   200,  1500,   800],
+                [  400,   200,   100,   100,   200],
+                [  100,   100,    50,    50,     0],
+                [ 2000,  1000,   500,  1000,     0],
+                [  500,   200,   150,     0,     0]
+            ],
+            total_output: [5000, 1000, 300, 4500, 850],
+            numeraire_index: 0, 
+            social_indices: [2, 3],
+            institutions: [
+                [2, 1, 2, 2, 1],
+                [1, 1, 1, 0, 1],
+                [2, 2, 2, 2, 0],
+                [2, 2, 2, 2, 0],
+                [1, 1, 1, 0, 1]
+            ]
+        },
+        quesnay_tableau: {
+            sectors: [
+                {name: "Productive (Agriculture)", unit: "milliards"}, 
+                {name: "Sterile (Artisans)", unit: "milliards"},
+                {name: "Proprietary (Landlords)", unit: "titles/rent"}
+            ],
+            Z: [
+                [  2,   2,   1],
+                [  1,   0,   1],
+                [  2,   0,   0]
+            ],
+            total_output: [5, 2, 2],
+            numeraire_index: 0, 
+            social_indices: [2],
+            institutions: [
+                [1, 1, 1],
+                [1, 0, 1],
+                [2, 0, 0]
+            ]
+        },
+        quesnay_diagram_disaggregated: {
+            sectors: [
+                {name: "Farmer (Agric. Output)", unit: "units"}, 
+                {name: "Artisan (Manuf. Output)", unit: "units"},
+                {name: "Landlord (Rent)", unit: "titles"},
+                {name: "Farmhands (Labor)", unit: "hours"},
+                {name: "Livestock", unit: "work/manure"},
+                {name: "F. Merchant (Exports)", unit: "goods"}
+            ],
+            Z: [
+                [ 150,  450,  300,  150,  300,  150], 
+                [ 150,  150,  300,  150,    0,    0], 
+                [ 600,    0,    0,    0,    0,    0], 
+                [ 300,    0,    0,    0,    0,    0], 
+                [ 300,    0,    0,    0,    0,    0], 
+                [   0,    0,    0,    0,    0,    0]  
+            ],
+            total_output: [1500, 750, 600, 300, 300, 150],
+            numeraire_index: 0, 
+            social_indices: [2, 3, 5], 
+            institutions: [
+                [1, 1, 1, 2, 0, 1],
+                [1, 1, 1, 1, 0, 0],
+                [2, 0, 0, 0, 0, 0],
+                [3, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0], 
+                [0, 0, 0, 0, 0, 0]
+            ]
+        },
+        quesnay_full_formule: {
+            sectors: [
+                {name: "Crops (Annual Advances)", unit: "milliards"}, 
+                {name: "Livestock & Capital (Orig. Advances)", unit: "milliards"},
+                {name: "Artisans & Merchants (Sterile)", unit: "milliards"},
+                {name: "Landlords (Rent)", unit: "titles"},
+                {name: "Church & Sovereign (Tithe/Tax)", unit: "titles"}
+            ],
+            Z: [
+                [ 1,  1,  1,  1,  1],
+                [ 1,  0,  0,  0,  0],
+                [ 1,  0,  0,  1,  0],
+                [ 2,  0,  0,  0,  0],
+                [ 1,  0,  0,  0,  0]
+            ],
+            total_output: [5, 1, 2, 2, 1],
+            numeraire_index: 0, 
+            social_indices: [3, 4],
+            institutions: [
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 1, 0],
+                [2, 0, 0, 0, 0],
+                [2, 0, 0, 0, 0]
+            ]
+        },
+        oikos: {
+            sectors: [
+                {name: "Grain", unit: "kg"},
+                {name: "Pulses/Protein", unit: "kg"},
+                {name: "Cash Crops (Oil/Wine)", unit: "liters"},
+                {name: "Textiles", unit: "pieces"},
+                {name: "External Trade (Tools)", unit: "kg-metal"},
+                {name: "Labor / Reproduction", unit: "person-yrs"}
+            ],
+            Z: [
+                // 0:Grain  1:Pulses  2:Cash  3:Textiles  4:Trade  5:Labor
+                [  400,       0,        0,       0,         100,     1500  ], // Grain inputs
+                [    0,      60,        0,       0,           0,      240  ], // Pulses inputs
+                [    0,       0,       50,       0,         300,      150  ], // Cash Crop inputs
+                [    0,       0,        0,       0,           2,       10  ], // Textile inputs
+                [   10,       2,        4,       2,           0,        2  ], // Tool/Metal inputs
+                [  2.5,     0.5,      1.0,     1.0,         0.2,      0.8  ]  // Labor inputs
+            ],
+            total_output: [2000, 300, 500, 12, 20, 6.0],
+            numeraire_index: 0, 
+            social_indices: [5], // Labor/Reproduction is the social sector
+            institutions: [
+                [2, 2, 2, 2, 1, 2],
+                [2, 2, 2, 2, 1, 2],
+                [2, 2, 2, 2, 1, 2],
+                [2, 2, 2, 2, 1, 2],
+                [1, 1, 1, 1, 1, 1], // External tool acquisition mapped as Market
+                [2, 2, 2, 2, 1, 2]
+            ]
+        },
+        roman_latifundium: {
+            sectors: [
+                {name: "Wine (Cash Crop)", unit: "liters"}, 
+                {name: "Rations (Grain)", unit: "kg"},
+                {name: "Estate Infrastructure", unit: "units"}, 
+                {name: "Enslaved Labor", unit: "hours"},
+                {name: "Free Wage Labor", unit: "hours"}, 
+                {name: "Market / Absentee Owner", unit: "sesterces"}
+            ],
+            Z: [
+                [    0,    0,    0,  2880,  120, 27000],
+                [    0, 1000,    0,  4000,    0,     0],
+                [ 1500,    0,  500,     0,    0,     0],
+                [25000, 5000, 5000,  5000,    0,     0],
+                [ 2000,    0,    0,     0,    0,     0],
+                [  500,    0, 1000,     0,  500,  8000]
+            ],
+            total_output: [30000, 5000, 2000, 40000, 2000, 10000],
+            numeraire_index: 0, 
+            social_indices: [3, 4, 5],
+            institutions: [
+                [0, 0, 0, 2, 1, 1],
+                [0, 2, 0, 2, 0, 0],
+                [2, 0, 2, 0, 0, 0],
+                [2, 2, 2, 2, 0, 0],
+                [1, 0, 0, 0, 0, 0],
+                [1, 0, 1, 0, 1, 1]
+            ]
         }
     };
 
@@ -533,12 +676,35 @@
         updateRowSums();
     }
 
-    function loadPreset(key, btnElement) {
-        if (isStale || document.getElementById('out-centrality-tbody').innerHTML !== '') {
-            if (!confirm("Loading a preset will overwrite your current matrix. Continue?")) return;
+    function handleDropdownChange(selectElement) {
+        if (selectElement.value) {
+            loadPreset(selectElement.value, selectElement);
         }
+    }
+
+    function loadPreset(key, triggerElement) {
+        if (isStale || document.getElementById('out-centrality-tbody').innerHTML !== '') {
+            if (!confirm("Loading a preset will overwrite your current matrix. Continue?")) {
+                // If they cancel, revert the dropdown to the previous state
+                if (triggerElement && triggerElement.tagName === 'SELECT') {
+                    triggerElement.value = ""; 
+                }
+                return;
+            }
+        }
+
+        // Handle UI toggles
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-        if (btnElement) btnElement.classList.add('active');
+        
+        if (triggerElement && triggerElement.tagName === 'BUTTON') {
+            triggerElement.classList.add('active');
+            document.getElementById('preset-select').value = ""; // clear dropdown
+        } else if (!triggerElement) {
+            // Fallback for window.onload
+            let btn = document.getElementById('btn-' + key);
+            if(btn) btn.classList.add('active');
+        }
+        
         const p = presets[key];
         state = {
             sectors: JSON.parse(JSON.stringify(p.sectors)),
@@ -548,6 +714,7 @@
             social: [...p.social_indices],
             institutions: p.institutions ? p.institutions.map(row => [...row]) : makeInst(p.sectors.length, 0)
         };
+        
         renderMatrix();
         markStale();
     }
@@ -632,6 +799,7 @@
     function addSector() {
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-diy').classList.add('active');
+        document.getElementById('preset-select').value = "";
         state.sectors.push({name: `Sector ${state.sectors.length + 1}`, unit: "units"});
         state.total_output.push(0);
         state.Z.forEach(row => row.push(0));
@@ -646,6 +814,7 @@
         if (state.sectors.length <= 2) return alert("Minimum 2 sectors required.");
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-diy').classList.add('active');
+        document.getElementById('preset-select').value = "";
         state.sectors.pop(); state.total_output.pop(); state.Z.pop();
         state.Z.forEach(row => row.pop());
         state.institutions.pop();
@@ -976,7 +1145,7 @@
         );
     }
 
-    window.onload = () => loadPreset('diy', document.getElementById('btn-diy'));
+    window.onload = () => loadPreset('diy');
 </script>
 </body>
 </html>

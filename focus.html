@@ -38,67 +38,23 @@
             line-height: 1.5;
         }
 
-        /* --- FOCUS MODE CSS --- */
-        .compact-dashboard { display: none; }
+        /* --- STANDARD CSS & DOM REORDERING --- */
+        .container { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 1400px; 
+            margin: auto; 
+            transition: max-width 0.3s; 
+        }
         
-        body.focus-mode .primer,
-        body.focus-mode .chart-intro,
-        body.focus-mode .chart-caption,
-        body.focus-mode .course-box,
-        body.focus-mode .verbose-view,
-        body.focus-mode h1,
-        body.focus-mode h3 {
-            display: none !important;
-        }
+        /* Default Structural Order */
+        #preset-bar { order: 1; }
+        #phys-panel { order: 2; }
+        #compact-dashboard { order: 3; }
+        #results-area { order: 4; }
+        #tech-panel { order: 5; }
+        .course-box { order: 6; }
 
-        body.focus-mode .container { max-width: 100%; padding: 0 10px; }
-        body.focus-mode .preset-bar { margin-bottom: 10px; padding: 10px; }
-        body.focus-mode .panel { padding: 10px; margin-bottom: 10px; }
-
-        /* Single-line compact summary */
-        body.focus-mode .compact-dashboard {
-            display: flex !important;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            background: #e0f2f1;
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            border: 1px solid var(--val-surplus);
-            white-space: nowrap;
-            overflow-x: auto;
-        }
-
-        /* Focus Mode Splits (2/3 Matrix, 1/3 Network) */
-        body.focus-mode .focus-split {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            align-items: center;
-        }
-        body.focus-mode .focus-split > div { min-width: 0; }
-
-        /* Shrink UI elements in Focus Mode to fit screen */
-        body.focus-mode th { padding: 4px; font-size: 12px; }
-        body.focus-mode td { padding: 4px !important; }
-        body.focus-mode input[type="number"].matrix-cell { width: 45px; padding: 2px; font-size: 12px; }
-        body.focus-mode input[type="text"].input-name { width: 80px; font-size: 12px; }
-        body.focus-mode input[type="text"].input-unit { width: 40px; font-size: 11px; }
-        body.focus-mode .btn-action { padding: 10px; font-size: 14px; margin-top: 10px; }
-        
-        /* Shrink Visualizations heavily in Focus Mode */
-        body.focus-mode .viz-grid-bottom { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 10px; }
-        body.focus-mode #networkMapZ, body.focus-mode #networkMapA { height: 260px !important; margin-top: 0 !important;}
-        body.focus-mode .chart-wrapper { height: 130px; margin-top: 0;}
-        body.focus-mode .chart-wrapper-horizontal { height: 80px; margin-top: 0;}
-        body.focus-mode .sub-header { font-size: 12px; margin-top: 5px; margin-bottom: 2px; }
-        body.focus-mode .heatmap-table th, body.focus-mode .heatmap-table td { padding: 4px 8px; font-size: 11px; }
-
-        /* --- STANDARD CSS --- */
-        .container { max-width: 1400px; margin: auto; transition: max-width 0.3s; }
         .panel {
             background: var(--panel); padding: 25px; border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border);
@@ -112,8 +68,6 @@
         .btn-preset.active { border: 2px solid var(--val-surplus); background: var(--val-surplus); box-shadow: 0 0 8px rgba(0,137,123,0.4); }
         
         .matrix-wrapper { overflow-x: auto; margin-bottom: 10px; text-align: center; }
-        
-        /* Centralized 'Un-hugged' Matrix constraints */
         table { border-collapse: collapse; margin: 0 auto; font-size: 13px; }
         .matrix-wrapper table { width: max-content; margin: 0 auto; }
         
@@ -176,6 +130,94 @@
         .course-box li { margin-bottom: 8px; }
         .ref-list { font-size: 13px; color: #546e7a; margin-top: 0; padding-left: 20px; }
         .ref-list li { margin-bottom: 6px; }
+
+        /* --- FOCUS MODE CSS --- */
+        .compact-dashboard { display: none; }
+        
+        body.focus-mode .primer,
+        body.focus-mode .chart-intro,
+        body.focus-mode .chart-caption,
+        body.focus-mode .course-box,
+        body.focus-mode .verbose-view,
+        body.focus-mode h1,
+        body.focus-mode h3 {
+            display: none !important;
+        }
+
+        body.focus-mode .container { max-width: 100%; padding: 0 10px; }
+        body.focus-mode .preset-bar { margin-bottom: 10px; padding: 10px; }
+        body.focus-mode .panel { padding: 15px; margin-bottom: 10px; }
+
+        /* Structural Reordering for Focus Mode (Tech > Phys > Dash > Charts) */
+        body.focus-mode #preset-bar { order: 1; }
+        body.focus-mode #tech-panel { order: 2; }
+        body.focus-mode #phys-panel { order: 3; }
+        body.focus-mode #compact-dashboard { order: 4; }
+        body.focus-mode #results-area { order: 5; }
+
+        /* Single-line compact summary */
+        body.focus-mode .compact-dashboard {
+            display: flex !important;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            background: #e0f2f1;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border: 1px solid var(--val-surplus);
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        /* Focus Mode Splits (2/3 Matrix, 1/3 Network) */
+        body.focus-mode .focus-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+        body.focus-mode .focus-split > div { min-width: 0; }
+
+        /* Fixed Aspect Ratio for Networks to prevent "strips" */
+        body.focus-mode #networkMapZ, 
+        body.focus-mode #networkMapA { 
+            height: auto !important; 
+            aspect-ratio: 1 / 1; 
+            width: 100%; 
+            margin-top: 0 !important;
+            min-height: 200px;
+        }
+
+        /* Shrink UI elements in Focus Mode to fit screen */
+        body.focus-mode th { padding: 4px; font-size: 12px; }
+        body.focus-mode td { padding: 4px !important; }
+        body.focus-mode input[type="number"].matrix-cell { width: 45px; padding: 2px; font-size: 12px; }
+        body.focus-mode input[type="text"].input-name { width: 80px; font-size: 12px; }
+        body.focus-mode input[type="text"].input-unit { width: 40px; font-size: 11px; }
+        body.focus-mode .btn-action { padding: 10px; font-size: 14px; margin-top: 10px; }
+        
+        /* Flex Wrap for Bottom Charts to prevent squishing Horizontal Bar */
+        body.focus-mode .viz-grid-bottom { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 15px; 
+            margin-top: 10px; 
+        }
+        body.focus-mode .viz-grid-bottom > div {
+            flex: 1 1 200px;
+            min-width: 180px;
+        }
+        body.focus-mode .viz-grid-bottom > div:nth-child(5) {
+            flex: 2 1 300px; /* Gives the Horizontal Chart 2x the space */
+        }
+        body.focus-mode .chart-wrapper { height: 130px; margin-top: 0;}
+        body.focus-mode .chart-wrapper-horizontal { height: 120px; margin-top: 0;}
+        body.focus-mode .sub-header { font-size: 12px; margin-top: 5px; margin-bottom: 2px; }
+        body.focus-mode .heatmap-table th, body.focus-mode .heatmap-table td { padding: 4px 8px; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -195,20 +237,35 @@
         <button class="btn-preset" id="btn-focus" onclick="toggleFocusMode()" style="background: var(--primary); font-weight: bold;">🔍 Toggle Focus Mode</button>
     </div>
 
-    <div class="panel">
+    <div id="compact-dashboard" class="compact-dashboard"></div>
+
+    <div class="panel" id="phys-panel">
         <p class="primer" style="margin-top: 5px;">
             This exploratory sandbox tool represents the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. As presented by Piero Sraffa in <i>Production of Commodities by Means of Commodities</i>, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers). The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
         </p>
         <p class="primer">
             Select a preset economy above and press <em>Calculate System Parameters</em> to see the structural properties of the system. Then experiment: you can input numbers directly into a cell (inter-sector flow) or in the TOTAL OUTPUT box, add or remove sectors, or toggle designations. Click the calculate button again to see the effect of your changes.
         </p>
-        <p class="primer">
+
+        <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
+        
+        <div id="z-focus-split" class="focus-split">
+            <div class="layout-col">
+                <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
+                <div class="controls" style="margin-bottom: 15px;">
+                    <button class="btn-preset" onclick="addSector()" style="background: var(--val-balance);">+ Add Sector</button>
+                    <button class="btn-preset" onclick="removeSector()" style="background: var(--val-deficit);">- Remove Sector</button>
+                </div>
+            </div>
+            </div>
+
+        <p class="primer" style="margin-top: 15px;">
             Where a row's sum differs from its stated TOTAL OUTPUT, the &gt; or &lt; indicators show whether output exceeds or falls short of allocated flows. Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (the unit of account used as a reference to normalize calculations for the other sectors). The numéraire choice does not affect the structure of the system, it only rescales quantities of other sectors in relation to the one selected.
         </p>
         <p class="primer">
             <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> in the column and row names denotes economic sectors (commodity-producing activities, in Sraffa's original sense). Toggle the <em>Social</em> checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">violet</span>, sectors whose primary function is social or ecological reproduction (in broadened provisioning sense that goes beyond Sraffa's and includes households, community institutions, the state, the biosphere). This designation directly affects the calculation of the viability parameters below, as it draws a separation between a commodity subsystem and the broader social system in which it is embedded.
         </p>
-        <p class="primer" style="margin-bottom: 25px;">
+        <p class="primer">
             Cell background colors annotate the primary form of integration (in the sense of Karl Polanyi) through which that flow is organized. These are just annotations; they do not affect the structure of the system or alter calculations. Click the background of any cell to cycle through the colors marked below:<br>
             <span style="display:inline-block; margin-top:8px;">
                 <span class="inst-box" style="background:var(--inst-unassigned);"></span> Unassigned &nbsp;&nbsp;&nbsp;
@@ -218,21 +275,8 @@
             </span>
         </p>
 
-        <h3 style="margin-top: 0; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
-        
-        <div id="z-focus-split" class="focus-split">
-            <div class="matrix-wrapper" id="matrix-container" oninput="markStale()" onchange="markStale()"></div>
-            </div>
-
-        <div class="controls" style="margin-bottom: 15px;">
-            <button class="btn-preset" onclick="addSector()" style="background: var(--val-balance);">+ Add Sector</button>
-            <button class="btn-preset" onclick="removeSector()" style="background: var(--val-deficit);">- Remove Sector</button>
-        </div>
-
         <button id="calc-btn" class="btn-action" onclick="calculateSystem()">CLICK HERE to Calculate System Parameters</button>
     </div>
-
-    <div id="compact-dashboard" class="compact-dashboard"></div>
 
     <div id="results-area">
         <div class="panel verbose-view">
@@ -271,7 +315,7 @@
         </div>
 
         <div class="panel">
-            <h3>Visualizations</h3>
+            <h3>Visualizations & Sectoral Analytics</h3>
             
             <div class="viz-grid-top" id="viz-grid-top">
                 <div id="z-network-wrapper">
@@ -340,105 +384,109 @@
                 </div>
             </div>
         </div>
+    </div> <div class="panel" id="tech-panel">
+        <h3>Technical Structure Analytics</h3>
         
-        <div class="panel">
-            <h3>Technical Flow Breakdown</h3>
-            <div class="sub-header" style="margin-top: 0;">Technical Coefficients Matrix (A)</div>
-            <p class="chart-intro">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j.</p>
-            
-            <div id="a-focus-split" class="focus-split">
+        <div id="a-focus-split" class="focus-split">
+            <div class="layout-col">
+                <div class="sub-header" style="margin-top: 0;">Technical Coefficients Matrix (A)</div>
+                <p class="chart-intro">A[i][j] = Z[i][j] / total_output[j]: the quantity of good i required as a direct input to produce one unit of good j.</p>
                 <div class="matrix-wrapper" id="heatmap-container" style="margin-top: 10px; overflow-x: auto; background: #fafafa; border: 1px solid #cfd8dc; border-radius: 6px; padding: 10px;"></div>
-                </div>
-        </div>
+            </div>
+            </div>
+    </div>
 
-        <div class="course-box">
-            <h2>Sraffa and Polanyi: A Conceptual Introduction to the Social Provisioning Framework</h2>
+    <div class="course-box">
+        <h2>Sraffa and Polanyi: A Conceptual Introduction to the Social Provisioning Framework</h2>
 
-            <p>This sandbox applies Sraffa's input-output matrix formalism to a broader class of economies than the capitalist commodity system Sraffa analyzed. The premise is that any society sustaining itself over time — through markets, palace redistribution, or generalized reciprocity — must maintain a set of interdependent material flows. These flows can be represented as a provisioning matrix whose mathematical properties (eigenvalues, eigenvectors) describe structural conditions of viability independently of the institutional form through which they are organized.</p>
+        <p>This sandbox applies Sraffa's input-output matrix formalism to a broader class of economies than the capitalist commodity system Sraffa analyzed. The premise is that any society sustaining itself over time — through markets, palace redistribution, or generalized reciprocity — must maintain a set of interdependent material flows. These flows can be represented as a provisioning matrix whose mathematical properties (eigenvalues, eigenvectors) describe structural conditions of viability independently of the institutional form through which they are organized.</p>
 
-            <p>This tool is intended as an <em>intuition pump</em>: a thought-experiment device for making ideas about provisioning systems tangible and manipulable (in other words, this is not a tool for actual empirical research). The presets are only illustrations meant to convey the spirit of the cases, the institutional annotations are impressionistic and not formally connected to the rest of the mathematical framework, and the mathematics and visualizations rely on non-rigorous HTML-embedded calculations. The last section of the document sketches how this might be developed towards actual research applications.</p>
+        <p>This tool is intended as an <em>intuition pump</em>: a thought-experiment device for making ideas about provisioning systems tangible and manipulable (in other words, this is not a tool for actual empirical research). The presets are only illustrations meant to convey the spirit of the cases, the institutional annotations are impressionistic and not formally connected to the rest of the mathematical framework, and the mathematics and visualizations rely on non-rigorous HTML-embedded calculations. The last section of the document sketches how this might be developed towards actual research applications.</p>
 
-            <h4>1. Sraffa and Material Reproduction</h4>
+        <h4>1. Sraffa and Material Reproduction</h4>
 
-            <p>In <em>Production of Commodities by Means of Commodities</em> (1960), Piero Sraffa proposed analyzing the economy not through the lens of individual subjective preferences, utility maximization, and the relative scarcity of given resources. Instead, he conceptualized the economy as an objective system of circular, interdependent production processes, where commodities are produced by means of other commodities. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed workers). These physical interdependencies are captured in the flow matrix Z, where Z[i][j] is the quantity of good i used as an input in producing good j. Dividing each cell by the total output of its column sector yields the technical coefficients matrix A, where A[i][j] is the quantity of good i required per unit of output j. This formalism yields two results:</p>
+        <p>In <em>Production of Commodities by Means of Commodities</em> (1960), Piero Sraffa proposed analyzing the economy not through the lens of individual subjective preferences, utility maximization, and the relative scarcity of given resources. Instead, he conceptualized the economy as an objective system of circular, interdependent production processes, where commodities are produced by means of other commodities. To produce wheat, one needs iron (for tools); to produce iron, one needs wheat (to feed workers). These physical interdependencies are captured in the flow matrix Z, where Z[i][j] is the quantity of good i used as an input in producing good j. Dividing each cell by the total output of its column sector yields the technical coefficients matrix A, where A[i][j] is the quantity of good i required per unit of output j. This formalism yields two results:</p>
 
-            <ul>
-                <li><strong>Viability (λ):</strong> The dominant eigenvalue of A determines whether the system can physically reproduce itself. When λ &lt; 1, the system produces a physical surplus over its direct reproduction requirements; λ = 1 is exact subsistence; λ &gt; 1 is a physical deficit. The <em>Sraffa Ch. 1</em> preset reproduces the two-sector numerical example from Sraffa with λ = 1 exactly. Normalizing to wheat gives p<sub>iron</sub>/p<sub>wheat</sub> = 10.</li>
-                <li><strong>Exchange Ratios:</strong> At subsistence (λ = 1), the dominant left eigenvector of A (the price vector <strong>p</strong> satisfying <strong>p</strong>·A = <strong>p</strong>), normalized to a chosen numéraire, exactly reproduces Sraffa's exchange ratios for basic commodities.</li>
-                <li><strong>Basic vs. Non-Basic Commodities:</strong> A process is <em>basic</em> if its outputs enter, directly or indirectly, into the reproduction of every other process in the system. A process is <em>non-basic</em> if its outputs cannot reach all other processes through the flow network — meaning the system could reproduce without them (in formal terms, their removal does not alter the dominant eigenvalue or exchange ratios of the basic sub-system).</li>
-            </ul>
+        <ul>
+            <li><strong>Viability (λ):</strong> The dominant eigenvalue of A determines whether the system can physically reproduce itself. When λ &lt; 1, the system produces a physical surplus over its direct reproduction requirements; λ = 1 is exact subsistence; λ &gt; 1 is a physical deficit. The <em>Sraffa Ch. 1</em> preset reproduces the two-sector numerical example from Sraffa with λ = 1 exactly. Normalizing to wheat gives p<sub>iron</sub>/p<sub>wheat</sub> = 10.</li>
+            <li><strong>Exchange Ratios:</strong> At subsistence (λ = 1), the dominant left eigenvector of A (the price vector <strong>p</strong> satisfying <strong>p</strong>·A = <strong>p</strong>), normalized to a chosen numéraire, exactly reproduces Sraffa's exchange ratios for basic commodities.</li>
+            <li><strong>Basic vs. Non-Basic Commodities:</strong> A process is <em>basic</em> if its outputs enter, directly or indirectly, into the reproduction of every other process in the system. A process is <em>non-basic</em> if its outputs cannot reach all other processes through the flow network — meaning the system could reproduce without them (in formal terms, their removal does not alter the dominant eigenvalue or exchange ratios of the basic sub-system).</li>
+        </ul>
 
-            <p>Sraffa also showed that in a surplus economy (λ &lt; 1), the distribution of the surplus between wages and profits cannot be determined by the physical system alone: it requires an additional social or institutional parameter. This is the starting point for the extension below.</p>
+        <p>Sraffa also showed that in a surplus economy (λ &lt; 1), the distribution of the surplus between wages and profits cannot be determined by the physical system alone: it requires an additional social or institutional parameter. This is the starting point for the extension below.</p>
 
-            <h4>2. Endogenizing Social Reproduction</h4>
+        <h4>2. Endogenizing Social Reproduction</h4>
 
-            <p>In Sraffa's original formulation, wages and profits are distributional parameters settled by institutional or political processes outside the matrix. This is very much in agreement with the perspective of embeddedness in Polanyian economic sociology, which holds that distributional outcomes are the result of social and institutional settlements rather than outcomes of the market. In fact, this is also true for non-market economies, which must also reproduce themselves through institutional processes. Feminist and ecological economics extend this further: the reproduction of labor through care work and domestic production, and the regeneration of natural systems, are necessary conditions for any economic process (not externalities to be treated as given), and these broader physical and social processes make a difference to the functioning of markets. By designating sectors as Social and incuding them in the same matrix, we bring institutions and reproduction into the same formalism that handles commodity production. Every sector, economic or social, now appears as both a user of inputs (its column) and a provider of outputs (its row). </p>
+        <p>In Sraffa's original formulation, wages and profits are distributional parameters settled by institutional or political processes outside the matrix. This is very much in agreement with the perspective of embeddedness in Polanyian economic sociology, which holds that distributional outcomes are the result of social and institutional settlements rather than outcomes of the market. In fact, this is also true for non-market economies, which must also reproduce themselves through institutional processes. Feminist and ecological economics extend this further: the reproduction of labor through care work and domestic production, and the regeneration of natural systems, are necessary conditions for any economic process (not externalities to be treated as given), and these broader physical and social processes make a difference to the functioning of markets. By designating sectors as Social and incuding them in the same matrix, we bring institutions and reproduction into the same formalism that handles commodity production. Every sector, economic or social, now appears as both a user of inputs (its column) and a provider of outputs (its row). </p>
 
-            <p>When social sectors are included in the full matrix, the dominant left eigenvector of A (here called <strong>Provisioning Centrality</strong>) can be seen as an extended, more general version of Sraffa's price vectors, now no longer restricted to market societies. In Sraffa's subsistence model, this eigenvector determines the exchange ratios required for the economic core to exactly reproduce itself. In our extended model, it calculates the proportion of a system's total reproductive output required to sustain any given sector, whether economic or social. </p>
-            
-            <p>In Sraffa's Chapter 2, distributing a physical surplus as a uniform rate of profit requires homogenizing heterogeneous goods into a common unit of account. Because our version of the matrix maps material flows without reference to monetary values, distributing a physical surplus to a social sector yields structural weights that diverge from Sraffian prices. This divergence is connected to how specific institutional conventions (like monetary value accounting) represent specific ways to implement a broader process of economic provisioning. Palace rations, potlatch obligations, and capitalist wage contracts represent different institutional solutions to the same structural issue - the fact that every society that produces a surplus must organize its distribution.</p>
+        <p>When social sectors are included in the full matrix, the dominant left eigenvector of A (here called <strong>Provisioning Centrality</strong>) can be seen as an extended, more general version of Sraffa's price vectors, now no longer restricted to market societies. In Sraffa's subsistence model, this eigenvector determines the exchange ratios required for the economic core to exactly reproduce itself. In our extended model, it calculates the proportion of a system's total reproductive output required to sustain any given sector, whether economic or social. </p>
+        
+        <p>In Sraffa's Chapter 2, distributing a physical surplus as a uniform rate of profit requires homogenizing heterogeneous goods into a common unit of account. Because our version of the matrix maps material flows without reference to monetary values, distributing a physical surplus to a social sector yields structural weights that diverge from Sraffian prices. This divergence is connected to how specific institutional conventions (like monetary value accounting) represent specific ways to implement a broader process of economic provisioning. Palace rations, potlatch obligations, and capitalist wage contracts represent different institutional solutions to the same structural issue - the fact that every society that produces a surplus must organize its distribution.</p>
 
-            <p>This extension requires some care with interpreting the basic/non-basic distinction. The tool detects non-basic processes by "graph reachability": starting from a sector's outputs and following flows forward through Z, can all other sectors eventually be reached? If not, the sector is structurally non-basic — its outputs are absorbed without feeding back into the full reproduction circuit. However, in the extended provisioning matrix, many activities that look non-basic in commodity terms turn out to be basic in the broader substantivist sense. In the Sahlins preset, the Feasts sector absorbs biomass and community labor but feeds its output entirely to the Worker Community, which supplies labor to all productive activities. Feasts is therefore structurally basic: it sustains the social cohesion on which all other processes depend. A sector is genuinely non-basic in the extended matrix only when its outputs reach no other process. An example is the Waste sector in the Custom preset: it is produced as a byproduct but feeds back into nothing. Defining what constitutes necessary reproduction in a substantivist framework is a relevant problem requiring further reflection.</p>
+        <p>This extension requires some care with interpreting the basic/non-basic distinction. The tool detects non-basic processes by "graph reachability": starting from a sector's outputs and following flows forward through Z, can all other sectors eventually be reached? If not, the sector is structurally non-basic — its outputs are absorbed without feeding back into the full reproduction circuit. However, in the extended provisioning matrix, many activities that look non-basic in commodity terms turn out to be basic in the broader substantivist sense. In the Sahlins preset, the Feasts sector absorbs biomass and community labor but feeds its output entirely to the Worker Community, which supplies labor to all productive activities. Feasts is therefore structurally basic: it sustains the social cohesion on which all other processes depend. A sector is genuinely non-basic in the extended matrix only when its outputs reach no other process. An example is the Waste sector in the Custom preset: it is produced as a byproduct but feeds back into nothing. Defining what constitutes necessary reproduction in a substantivist framework is a relevant problem requiring further reflection.</p>
 
-            <h4>3. Polanyi's Forms of Integration</h4>
+        <h4>3. Polanyi's Forms of Integration</h4>
 
-            <p>Karl Polanyi drew a fundamental distinction between the formal meaning of economy ('rational allocation of scarce means', in the classic formulation of what economics does) and the <em>substantive</em> meaning: the actual material provisioning of human societies through people's relationships with nature and with each other. For Polanyi, the formal definition is historically specific to market economies, but the substantive definition applies to all human societies. The economy, in the substantive sense, is an "instituted process": material provisioning is always organized through social institutions — whether kinship systems, temples, states, or markets — and cannot be understood independently of them.</p>
-            
-            <p>Cell background colors in the matrix annotate the primary form of integration through which a flow is organized. Polanyi identified three main historically recurring forms through which material flows can be institutionally organized, each underpinned by a distinct structural principle:</p>
-            <ul>
-                <li><strong>Market Exchange</strong> rests on the principle of a price-forming market system: flows are mediated by supply, demand, and the competitive formation of prices. Exchange is impersonal, bilateral, and motivated by price differentials. Polanyi argued that genuine price-forming markets are historically rare and institutionally fragile — they require extensive political and legal infrastructure to maintain and tend to disembed from the social relations that previously governed them.</li>
-                <li><strong>Redistribution</strong> rests on the principle of centricity: flows converge to a center (a palace, a state treasury, a religious institution, a common fund) and are reallocated outward from it. The center may be a physical location, a social institution, or a rule system. Redistribution requires a stable political authority capable of collecting, storing, and allocating resources according to explicit or customary rules.</li>
-                <li><strong>Reciprocity</strong> rests on the principle of symmetry: flows pass between symmetrically positioned social groups — moieties, households, kin groups — bound by mutual obligation. Reciprocity does not require a center or a price; it requires social relationships of recognized equivalence and obligation. Gift economies, potlatch obligations, and household sharing largely operate on the reciprocity principle.</li>
-            </ul>
+        <p>Karl Polanyi drew a fundamental distinction between the formal meaning of economy ('rational allocation of scarce means', in the classic formulation of what economics does) and the <em>substantive</em> meaning: the actual material provisioning of human societies through people's relationships with nature and with each other. For Polanyi, the formal definition is historically specific to market economies, but the substantive definition applies to all human societies. The economy, in the substantive sense, is an "instituted process": material provisioning is always organized through social institutions — whether kinship systems, temples, states, or markets — and cannot be understood independently of them.</p>
+        
+        <p>Cell background colors in the matrix annotate the primary form of integration through which a flow is organized. Polanyi identified three main historically recurring forms through which material flows can be institutionally organized, each underpinned by a distinct structural principle:</p>
+        <ul>
+            <li><strong>Market Exchange</strong> rests on the principle of a price-forming market system: flows are mediated by supply, demand, and the competitive formation of prices. Exchange is impersonal, bilateral, and motivated by price differentials. Polanyi argued that genuine price-forming markets are historically rare and institutionally fragile — they require extensive political and legal infrastructure to maintain and tend to disembed from the social relations that previously governed them.</li>
+            <li><strong>Redistribution</strong> rests on the principle of centricity: flows converge to a center (a palace, a state treasury, a religious institution, a common fund) and are reallocated outward from it. The center may be a physical location, a social institution, or a rule system. Redistribution requires a stable political authority capable of collecting, storing, and allocating resources according to explicit or customary rules.</li>
+            <li><strong>Reciprocity</strong> rests on the principle of symmetry: flows pass between symmetrically positioned social groups — moieties, households, kin groups — bound by mutual obligation. Reciprocity does not require a center or a price; it requires social relationships of recognized equivalence and obligation. Gift economies, potlatch obligations, and household sharing largely operate on the reciprocity principle.</li>
+        </ul>
 
-            <p>Polanyi also drew attention to what he called fictitious commodities. Labor, land, and money are not produced for sale (they arise from social life, nature, and political authority), yet market economies treat them as if they were ordinary commodities, subjecting them to market dynamics such as supply and demand. Including elements like labor, other social sectors, and natural resources in the matrix brings this to the fore: they appear as a key part of the socioeconomic provisioning process, but their reproduction logic differs from the logic of typical commodities.</p>
+        <p>Polanyi also drew attention to what he called fictitious commodities. Labor, land, and money are not produced for sale (they arise from social life, nature, and political authority), yet market economies treat them as if they were ordinary commodities, subjecting them to market dynamics such as supply and demand. Including elements like labor, other social sectors, and natural resources in the matrix brings this to the fore: they appear as a key part of the socioeconomic provisioning process, but their reproduction logic differs from the logic of typical commodities.</p>
 
-            <p>In this tool, the three integration forms serve as cell-level annotations only (they do not alter eigenvalues, Provisioning Centrality, or any other property of the system, and only affect the aesthetics of the visualizations). However, they point at an underlying premise about the embeddedness of the economy in society: the same set of physical interdependences that reproduce a given economy can, at least in principle, be organized through different forms of integration. This tool only points towards this, but relationships between specific processes of provisioning and the institutional forms that govern them is an important analytical question that a Sraffa-Polanyi synthesis is very well positioned to illuminate.</p>
+        <p>In this tool, the three integration forms serve as cell-level annotations only (they do not alter eigenvalues, Provisioning Centrality, or any other property of the system, and only affect the aesthetics of the visualizations). However, they point at an underlying premise about the embeddedness of the economy in society: the same set of physical interdependences that reproduce a given economy can, at least in principle, be organized through different forms of integration. This tool only points towards this, but relationships between specific processes of provisioning and the institutional forms that govern them is an important analytical question that a Sraffa-Polanyi synthesis is very well positioned to illuminate.</p>
 
-            <h4>4. The Preset Scenarios</h4>
+        <h4>4. The Preset Scenarios</h4>
 
-            <p>The tool includes 5 preset matrixes capturing the logic of social provisioning in different social formations. These are stylized, illustrative sketches — the specific numerical values are not calibrated to historical, ethnographic, or empirical data, and should not be understood as empirical measurements. The goal here is only to capture some of the likely forms taken by provisioning in these well-studied systems, using our own formalism.</p>
+        <p>The tool includes 5 preset matrixes capturing the logic of social provisioning in different social formations. These are stylized, illustrative sketches — the specific numerical values are not calibrated to historical, ethnographic, or empirical data, and should not be understood as empirical measurements. The goal here is only to capture some of the likely forms taken by provisioning in these well-studied systems, using our own formalism.</p>
 
-            <p><strong>Sraffa Ch. 1 (Subsistence):</strong> The two-sector numerical example from Sraffa's Chapter 1, reproduced exactly. Wheat and iron are mutually dependent; λ = 1. The exchange ratio p<sub>iron</sub>/p<sub>wheat</sub> = 10 emerges from the input structure alone.</p>
+        <p><strong>Sraffa Ch. 1 (Subsistence):</strong> The two-sector numerical example from Sraffa's Chapter 1, reproduced exactly. Wheat and iron are mutually dependent; λ = 1. The exchange ratio p<sub>iron</sub>/p<sub>wheat</sub> = 10 emerges from the input structure alone.</p>
 
-            <p><strong>Sraffa Ch. 2 (Adapted):</strong> Sraffa's surplus economy, adapted by bringing workers and capitalists directly into the matrix as sectors with explicit reproduction requirements. In this preset, λ ≈ 0.647 for the economic core (wheat and iron alone), confirming an economic surplus of material goods. σ = 1.00 for the full provisioning system is a mathematical consequence of the matrix being fully closed: every unit of every good is absorbed within the system as an input somewhere (all row sums equal total outputs). In this specific preset, we modeled a political settlement where the 280 units of original agricultural grain input are split between seed (80), worker biological subsistence (160), and capitalist baseline consumption (40). The remaining 175 units of surplus wheat are distributed roughly 70% to Capitalists (122.5 units) and 30% to Workers (52.5 units) as discretionary consumption. This specific allocation represents only one point on Sraffa's wage-profit curve. It is a choice we made to illustrate Sraffa's Chapter 2 within our framework, pre-calibrating it to σ = 1. The broader theoretical implications of closing the matrix in different ways require further discussion and theory.</p>
+        <p><strong>Sraffa Ch. 2 (Adapted):</strong> Sraffa's surplus economy, adapted by bringing workers and capitalists directly into the matrix as sectors with explicit reproduction requirements. In this preset, λ ≈ 0.647 for the economic core (wheat and iron alone), confirming an economic surplus of material goods. σ = 1.00 for the full provisioning system is a mathematical consequence of the matrix being fully closed: every unit of every good is absorbed within the system as an input somewhere (all row sums equal total outputs). In this specific preset, we modeled a political settlement where the 280 units of original agricultural grain input are split between seed (80), worker biological subsistence (160), and capitalist baseline consumption (40). The remaining 175 units of surplus wheat are distributed roughly 70% to Capitalists (122.5 units) and 30% to Workers (52.5 units) as discretionary consumption. This specific allocation represents only one point on Sraffa's wage-profit curve. It is a choice we made to illustrate Sraffa's Chapter 2 within our framework, pre-calibrating it to σ = 1. The broader theoretical implications of closing the matrix in different ways require further discussion and theory.</p>
 
-            <p><strong>Sahlins (Foraging):</strong> Inspired by Marshall Sahlins' "Original Affluent Society" argument. Sahlins drew on ethnographic time-budget studies — most notably Richard Lee's work with the !Kung San and James Woodburn's findings among the Hadza — to argue that foragers achieve material sufficiency with far less labor than industrial workers (adults would roughly 12–19 hours per week on food procurement, devoting the remainder of their time to social life, rest, and ceremony). In this spirit, we allocated 400 hours (out of 2,200 total) of community labor to the Foraging sector; the rest flows to community maintenance, temporary camps, tools, and ceremonial feasts. The Mobile Shelter sector indicates a nomadic life, with frequent changes in settlement location (and little accumulation of physical property). λ ≈ 0.32 for the economic sub-system indicates the productive core operates well within capacity. σ = 1.0 reflects a closed, exactly-reproducing provisioning system where potential physical surpluses are absorbed by social expenditure. The Feasts sector is structurally basic in this matrix, illustrating our substantivist interpretation - that is, social expenditure can be seen as a production input in a more general, extended sense. Integration is modeled throughout as Reciprocity.</p>
+        <p><strong>Sahlins (Foraging):</strong> Inspired by Marshall Sahlins' "Original Affluent Society" argument. Sahlins drew on ethnographic time-budget studies — most notably Richard Lee's work with the !Kung San and James Woodburn's findings among the Hadza — to argue that foragers achieve material sufficiency with far less labor than industrial workers (adults would roughly 12–19 hours per week on food procurement, devoting the remainder of their time to social life, rest, and ceremony). In this spirit, we allocated 400 hours (out of 2,200 total) of community labor to the Foraging sector; the rest flows to community maintenance, temporary camps, tools, and ceremonial feasts. The Mobile Shelter sector indicates a nomadic life, with frequent changes in settlement location (and little accumulation of physical property). λ ≈ 0.32 for the economic sub-system indicates the productive core operates well within capacity. σ = 1.0 reflects a closed, exactly-reproducing provisioning system where potential physical surpluses are absorbed by social expenditure. The Feasts sector is structurally basic in this matrix, illustrating our substantivist interpretation - that is, social expenditure can be seen as a production input in a more general, extended sense. Integration is modeled throughout as Reciprocity.</p>
 
-            <p><strong>Hudson (Palace Economy):</strong> Loosely based on Michael Hudson's analysis of Bronze Age Mesopotamian palace and temple economies. Hudson's scholarship draws on cuneiform tablets documenting a provisioning system anchored in centralized temple-palace accounting rather than market exchange. Standard monthly grain rations in Ur III and Old Babylonian records run to roughly 60 liters (sila) per adult male worker per month, with lower allocations for women and dependents. Domestic provisioning ran on grain and fixed labor obligations, while silver functioned primarily as an accounting unit for long-distance trade. The administration pegged 1 shekel of silver to 1 <em>gur</em> (300 <em>sila</em>) of grain (in our preset, we make the input requirements for the Silver sector proportional to those of the Grain sector according to this ration, so that the eigenvector calculation results in an identical Provisioning Centrality weights). Modeled in this way, the economic surplus (λ ≈ 0.17) generated by the agricultural core reflects the temple complex extracting output to feed dependent labor (corvée, weavers) and trade for external luxuries. While not represented in this static matrix capturing only physical reproduction, Hudson notes that agrarian debts grew exponentially and were periodically cleared by "Clean Slate" debt cancellations. A post-cancellation period could be represented in the matrix by a different distribution of grain between workers and the temple. </p>
-            
-            <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized, but innovative, capitalism. This preset is a loose collage of several different themes relevant to economics and sociology. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with claims on system output through property rights and financial instruments. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the production circuit as inputs to Industry, Services, and other sectors. Veblenian/Luxury goods flow exclusively to F.I.R.E.. The Work sector features a large self-loop (Z[4][4] = 6,900 hours, annotated as Reciprocity) representing unpaid domestic and care labor (the work assigned to other sectors is understood as paid; this reflects estimates for the care-to-paid-work ratio in advanced economies). The Biosphere sector has a total output set below its row sum (gross material extractions), indicating rapid depletion of ecological stocks. Waste is modeled as a non-basic terminal sink (output flows nowhere). The economic core is at surplus because the core isolates Industry and Services, treating their dependencies on Work and Biosphere as if they were free. However, note that the full-system eigenvalue approximates 1, indicating a that the complete system is able to reproduce itself (at least while ecological stocks are not depleted).</p>
+        <p><strong>Hudson (Palace Economy):</strong> Loosely based on Michael Hudson's analysis of Bronze Age Mesopotamian palace and temple economies. Hudson's scholarship draws on cuneiform tablets documenting a provisioning system anchored in centralized temple-palace accounting rather than market exchange. Standard monthly grain rations in Ur III and Old Babylonian records run to roughly 60 liters (sila) per adult male worker per month, with lower allocations for women and dependents. Domestic provisioning ran on grain and fixed labor obligations, while silver functioned primarily as an accounting unit for long-distance trade. The administration pegged 1 shekel of silver to 1 <em>gur</em> (300 <em>sila</em>) of grain (in our preset, we make the input requirements for the Silver sector proportional to those of the Grain sector according to this ration, so that the eigenvector calculation results in an identical Provisioning Centrality weights). Modeled in this way, the economic surplus (λ ≈ 0.17) generated by the agricultural core reflects the temple complex extracting output to feed dependent labor (corvée, weavers) and trade for external luxuries. While not represented in this static matrix capturing only physical reproduction, Hudson notes that agrarian debts grew exponentially and were periodically cleared by "Clean Slate" debt cancellations. A post-cancellation period could be represented in the matrix by a different distribution of grain between workers and the temple. </p>
+        
+        <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized, but innovative, capitalism. This preset is a loose collage of several different themes relevant to economics and sociology. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with claims on system output through property rights and financial instruments. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the production circuit as inputs to Industry, Services, and other sectors. Veblenian/Luxury goods flow exclusively to F.I.R.E.. The Work sector features a large self-loop (Z[4][4] = 6,900 hours, annotated as Reciprocity) representing unpaid domestic and care labor (the work assigned to other sectors is understood as paid; this reflects estimates for the care-to-paid-work ratio in advanced economies). The Biosphere sector has a total output set below its row sum (gross material extractions), indicating rapid depletion of ecological stocks. Waste is modeled as a non-basic terminal sink (output flows nowhere). The economic core is at surplus because the core isolates Industry and Services, treating their dependencies on Work and Biosphere as if they were free. However, note that the full-system eigenvalue approximates 1, indicating a that the complete system is able to reproduce itself (at least while ecological stocks are not depleted).</p>
 
-            <h4>5. Related Literature, Research Directions</h4>
+        <h4>5. Related Literature, Research Directions</h4>
 
-            <p>The matrix formalism, preset scenarios, and conceptual framing in this sandbox loosely implement ideas developed across several current research traditions. Sraffa's framework has been developed in an extensive neo-Ricardian literature (e.g., Kurz and Salvadori; Pivetti for monetary and distributional extensions; Martins for institutionalist and capability approaches; Chiodi for non-self-replacing states). The theoretical case for combining the classical surplus approach with Polanyian institutional analysis is central to the ongoing work of Cesaratto and Di Bucchianico. The treatment of social reproduction as endogenous to economic analysis is grounded in the social provisioning framework (Jo, Lee) and the Social Fabric Matrix (Hayden), alongside extensions in Social Accounting Matrices (Pyatt, Round, Stone), feminist economics (Folbre, Picchio, Antonopoulos, Hirway), and ecological input-output analysis (Hannon). Substantivist grounding relies on Polanyi, Sahlins, Hudson, and Gregory.</p>
+        <p>The matrix formalism, preset scenarios, and conceptual framing in this sandbox loosely implement ideas developed across several current research traditions. Sraffa's framework has been developed in an extensive neo-Ricardian literature (e.g., Kurz and Salvadori; Pivetti for monetary and distributional extensions; Martins for institutionalist and capability approaches; Chiodi for non-self-replacing states). The theoretical case for combining the classical surplus approach with Polanyian institutional analysis is central to the ongoing work of Cesaratto and Di Bucchianico. The treatment of social reproduction as endogenous to economic analysis is grounded in the social provisioning framework (Jo, Lee) and the Social Fabric Matrix (Hayden), alongside extensions in Social Accounting Matrices (Pyatt, Round, Stone), feminist economics (Folbre, Picchio, Antonopoulos, Hirway), and ecological input-output analysis (Hannon). Substantivist grounding relies on Polanyi, Sahlins, Hudson, and Gregory.</p>
 
-            <p>While this is just a sandbox and much more rigorous reflection would be required to use it for any substantive claims, it raises several relevant questions for theoretical reflection and potentially opens up a few novel research directions. Immediate extensions of the framework would include empirical calibration (e.g. using community currency records, time-use data, or archaeological and ethnographic evidence), extending the tool to cover important parts of Sraffa's framework that were not discussed above (e.g. joint production, fixed capital), and implementing a time dimension (for instance, by connecting to stock-flow consistent models and NK-models of interdependence). Beyond that, we believe three theoretical questions are raised by this framework: establishing more carefully the meanings of 'surplus' in a substantivist view in which the matrix is closed by the addition of social sectors; more carefully mapping the analogies and divergences between commodity-based price vectors and our measure of provisioning centrality; and operationalizing the institutional layer of the tool, which currently serves only as annotations/visualizations (some options would be: by generalizing sraffa's treatment of wages and profits to other social sectors, like taxes and reproductive care; by defining other dimensions of the matrix related to each form of integration and exploring interactions with the material-social provisioning matrix; or by applying a transaction cost framework to determine which types of intercell flows should best be understood as occuring inside organizational hierarchies within markets). Some of these themes are also addressed, from a non-material-reproduction perspective, in the author's other current work (see Ferraciolli, 2026).</p>
+        <p>While this is just a sandbox and much more rigorous reflection would be required to use it for any substantive claims, it raises several relevant questions for theoretical reflection and potentially opens up a few novel research directions. Immediate extensions of the framework would include empirical calibration (e.g. using community currency records, time-use data, or archaeological and ethnographic evidence), extending the tool to cover important parts of Sraffa's framework that were not discussed above (e.g. joint production, fixed capital), and implementing a time dimension (for instance, by connecting to stock-flow consistent models and NK-models of interdependence). Beyond that, we believe three theoretical questions are raised by this framework: establishing more carefully the meanings of 'surplus' in a substantivist view in which the matrix is closed by the addition of social sectors; more carefully mapping the analogies and divergences between commodity-based price vectors and our measure of provisioning centrality; and operationalizing the institutional layer of the tool, which currently serves only as annotations/visualizations (some options would be: by generalizing sraffa's treatment of wages and profits to other social sectors, like taxes and reproductive care; by defining other dimensions of the matrix related to each form of integration and exploring interactions with the material-social provisioning matrix; or by applying a transaction cost framework to determine which types of intercell flows should best be understood as occuring inside organizational hierarchies within markets). Some of these themes are also addressed, from a non-material-reproduction perspective, in the author's other current work (see Ferraciolli, 2026).</p>
 
-            <p style="font-size: 13px; color: #546e7a; margin-bottom: 8px;">The tool takes (very loose) inspiration from ideas discussed in the references below, but in a very exploratory early-contact manner. It does not attemp to replicate any specific approach.</p>
+        <p style="font-size: 13px; color: #546e7a; margin-bottom: 8px;">The tool takes (very loose) inspiration from ideas discussed in the references below, but in a very exploratory early-contact manner. It does not attemp to replicate any specific approach.</p>
 
-            <ul class="ref-list">
-    <li>Acemoglu, D., Carvalho, V.M., Ozdaglar, A. and Tahbaz-Salehi, A. (2012). "The Network Origins of Aggregate Fluctuations." <em>Econometrica</em> 80(5): 1977–2016.</li>
-    <li>Cesaratto, S. (2024). "Surplus Approach and Institutions: Where Sraffa Meets Polanyi." Forthcoming.</li>
-    <li>Dennett, D.C. (2013). <em>Intuition Pumps and Other Tools for Thinking</em>. Norton.</li>
-    <li>Ferraciolli, E. et al. (2026). "The Devil's Dung: Money as a Mechanism of Generalized Reciprocity in Human Societies." <em>Rationality &amp; Society</em>.</li>
-    <li>Hannon, B. (1973). "The Structure of Ecosystems." <em>Journal of Theoretical Biology</em> 41(3).</li>
-    <li>Hayden, F.G. (2006). <em>Policymaking for a Good Society: The Social Fabric Matrix Approach</em>. Springer.</li>
-    <li>Hudson, M. and Wunsch, C. (eds.) (2004). <em>Creating Economic Order: Record-Keeping, Standardization and the Development of Accounting in the Ancient Near East</em>. CDL Press.</li>
-    <li>Jo, T.-H. (2011). "Social Provisioning Process and Socio-Economic Modeling." <em>American Journal of Economics and Sociology</em> 70(5): 1094–1116.</li>
-    <li>Kauffman, S. (1993). <em>The Origins of Order: Self-Organization and Selection in Evolution</em>. Oxford University Press.</li>
-    <li>Lee, F.S. and Jo, T.-H. (2011). "Social Surplus Approach and Heterodox Economics." <em>Journal of Economic Issues</em> 45(4): 857–875.</li>
-    <li>Picchio, A. (1992). <em>Social Reproduction: The Political Economy of the Labour Market</em>. Cambridge University Press.</li>
-    <li>Pivetti, M. (1991). <em>An Essay on Money and Distribution</em>. Macmillan.</li>
-    <li>Polanyi, K. (1944). <em>The Great Transformation</em>. Farrar &amp; Rinehart.</li>
-    <li>Polanyi, K., Arensberg, C. and Pearson, H. (eds.) (1957). <em>Trade and Market in the Early Empires</em>. Free Press.</li>
-    <li>Pyatt, G. and Round, J.I. (1977). "Social Accounting Matrices for Development Planning." <em>Review of Income and Wealth</em> 23(4).</li>
-    <li>Sahlins, M. (1972). <em>Stone Age Economics</em>. Aldine.</li>
-    <li>Simmel, G. (1900/1978). <em>The Philosophy of Money</em>. Routledge.</li>
-    <li>Sraffa, P. (1960). <em>Production of Commodities by Means of Commodities</em>. Cambridge University Press.</li>
-    <li>Williamson, O.E. (1985). <em>The Economic Institutions of Capitalism</em>. Free Press.</li>
-            </ul>
-        </div></div></div><script>
+        <ul class="ref-list">
+<li>Acemoglu, D., Carvalho, V.M., Ozdaglar, A. and Tahbaz-Salehi, A. (2012). "The Network Origins of Aggregate Fluctuations." <em>Econometrica</em> 80(5): 1977–2016.</li>
+<li>Cesaratto, S. (2024). "Surplus Approach and Institutions: Where Sraffa Meets Polanyi." Forthcoming.</li>
+<li>Dennett, D.C. (2013). <em>Intuition Pumps and Other Tools for Thinking</em>. Norton.</li>
+<li>Ferraciolli, E. et al. (2026). "The Devil's Dung: Money as a Mechanism of Generalized Reciprocity in Human Societies." <em>Rationality &amp; Society</em>.</li>
+<li>Hannon, B. (1973). "The Structure of Ecosystems." <em>Journal of Theoretical Biology</em> 41(3).</li>
+<li>Hayden, F.G. (2006). <em>Policymaking for a Good Society: The Social Fabric Matrix Approach</em>. Springer.</li>
+<li>Hudson, M. and Wunsch, C. (eds.) (2004). <em>Creating Economic Order: Record-Keeping, Standardization and the Development of Accounting in the Ancient Near East</em>. CDL Press.</li>
+<li>Jo, T.-H. (2011). "Social Provisioning Process and Socio-Economic Modeling." <em>American Journal of Economics and Sociology</em> 70(5): 1094–1116.</li>
+<li>Kauffman, S. (1993). <em>The Origins of Order: Self-Organization and Selection in Evolution</em>. Oxford University Press.</li>
+<li>Lee, F.S. and Jo, T.-H. (2011). "Social Surplus Approach and Heterodox Economics." <em>Journal of Economic Issues</em> 45(4): 857–875.</li>
+<li>Picchio, A. (1992). <em>Social Reproduction: The Political Economy of the Labour Market</em>. Cambridge University Press.</li>
+<li>Pivetti, M. (1991). <em>An Essay on Money and Distribution</em>. Macmillan.</li>
+<li>Polanyi, K. (1944). <em>The Great Transformation</em>. Farrar &amp; Rinehart.</li>
+<li>Polanyi, K., Arensberg, C. and Pearson, H. (eds.) (1957). <em>Trade and Market in the Early Empires</em>. Free Press.</li>
+<li>Pyatt, G. and Round, J.I. (1977). "Social Accounting Matrices for Development Planning." <em>Review of Income and Wealth</em> 23(4).</li>
+<li>Sahlins, M. (1972). <em>Stone Age Economics</em>. Aldine.</li>
+<li>Simmel, G. (1900/1978). <em>The Philosophy of Money</em>. Routledge.</li>
+<li>Sraffa, P. (1960). <em>Production of Commodities by Means of Commodities</em>. Cambridge University Press.</li>
+<li>Williamson, O.E. (1985). <em>The Economic Institutions of Capitalism</em>. Free Press.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
     const instBgs = ['var(--inst-unassigned)', 'var(--inst-exchange)', 'var(--inst-redistribution)', 'var(--inst-reciprocity)'];
     const makeInst = (n, val) => Array.from({length: n}, () => new Array(n).fill(val));
 
@@ -641,8 +689,7 @@
     function cycleInst(e, i, j) {
         e.preventDefault();
         state.institutions[i][j] = (state.institutions[i][j] + 1) % 4;
-        let bg = instBgs[state.institutions[i][j]];
-        document.getElementById(`td_${i}_${j}`).style.backgroundColor = bg;
+        document.getElementById(`td_${i}_${j}`).style.backgroundColor = instBgs[state.institutions[i][j]];
         markStale();
     }
 
@@ -838,7 +885,7 @@
                 let diffColor = diff > 0 ? "var(--val-surplus)" : "var(--val-deficit)";
                 balHtml += `<tr><td><strong>${state.sectors[i].name}</strong></td><td style="color:${diffColor};">${diff > 0 ? "Unallocated Surplus" : "Deficit"} of ${Math.abs(diff).toFixed(2)} ${state.sectors[i].unit}</td></tr>`;
                 isBalanced = false;
-                balanceIssues.push(`${state.sectors[i].name} ${diff > 0 ? '+' : ''}${diff.toFixed(1)}`);
+                balanceIssues.push(`${state.sectors[i].name} (${diff > 0 ? '+' : ''}${diff.toFixed(1)})`);
             }
         }
         if (!isBalanced) balHtml += `</table></div>`;

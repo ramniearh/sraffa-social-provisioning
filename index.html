@@ -127,6 +127,9 @@
                 <option value="greek_polis">Aggregate Greek Polis</option>
                 <option value="roman_latifundium">Roman Latifundium (Cato)</option>
             </optgroup>
+            <optgroup label="Theory of the Firm">
+                <option value="simon_firm">Simon/Coase/Williamson Organization</option>
+            </optgroup>
         </select>
     </div>
 
@@ -305,12 +308,12 @@
 
             <h4>3. Polanyi's Forms of Integration</h4>
 
-            <p>Karl Polanyi drew a fundamental distinction between the formal meaning of economy ('rational allocation of scarce means', in the classic formulation of what economics does) and the <em>substantive</em> meaning: the actual material provisioning of human societies through people's relationships with nature and with each other. For Polanyi, the formal definition is historically specific to market economies, but the substantive definition applies to all human societies. The economy, in the substantive sense, is an "instituted process": material provisioning is always organized through social institutions — whether kinship systems, temples, states, or markets — and cannot be understood independently of them.</p>
+            <p>Karl Polanyi drew a distinction between a formal understanding of the economy ('rational allocation of scarce means', in the classic formulation of what economics does) and a broader <em>substantive</em> meaning: the actual material provisioning of human societies through people's relationships with nature and with each other. For Polanyi, the formal definition is historically specific to market economies, but the substantive definition applies to all human societies. The economy, in the substantive sense, is an "instituted process": material provisioning is always organized through social institutions — whether kinship systems, temples, states, or markets — and cannot be understood independently of them.</p>
             
-            <p>Cell background colors in the matrix annotate the primary form of integration through which a flow is organized. Polanyi identified three main historically recurring forms through which material flows can be institutionally organized, each underpinned by a distinct structural principle:</p>
+            <p>Cell background colors in the matrix annotate the primary form of integration through which a flow is organized. Polanyi identified three main historically recurring forms through which material flows can be institutionally organized, each underpinned by a distinct institutional principle:</p>
             <ul>
                 <li><strong>Market Exchange</strong> rests on the principle of a price-forming market system: flows are mediated by supply, demand, and the competitive formation of prices. Exchange is impersonal, bilateral, and motivated by price differentials. Polanyi argued that genuine price-forming markets are historically rare and institutionally fragile — they require extensive political and legal infrastructure to maintain and tend to disembed from the social relations that previously governed them.</li>
-                <li><strong>Redistribution</strong> rests on the principle of centricity: flows converge to a center (a palace, a state treasury, a religious institution, a common fund) and are reallocated outward from it. The center may be a physical location, a social institution, or a rule system. Redistribution requires a stable political authority capable of collecting, storing, and allocating resources according to explicit or customary rules.</li>
+                <li><strong>Redistribution</strong> rests on the principle of centricity: flows converge to a center (a palace, a state treasury, a religious institution, a common fund) and are reallocated outward from it. The center may be a physical location, a social institution, or a rule system. Redistribution requires a stable political authority capable of collecting, storing, and allocating resources according to explicit or customary rules. We have combined the Polanyi's 'householding' form of integration into redistribution. Note that internal flows to a modern organization would also be classified as redistributive.</li>
                 <li><strong>Reciprocity</strong> rests on the principle of symmetry: flows pass between symmetrically positioned social groups — moieties, households, kin groups — bound by mutual obligation. Reciprocity does not require a center or a price; it requires social relationships of recognized equivalence and obligation. Gift economies, potlatch obligations, and household sharing largely operate on the reciprocity principle.</li>
             </ul>
 
@@ -332,7 +335,7 @@
             
             <p><strong>Capitalism:</strong> A stylized representation of contemporary financialized, but innovative, capitalism. This preset is a loose collage of several different themes relevant to economics and sociology. F.I.R.E. (Finance, Insurance, Real Estate) is treated as a social sector with relatively few direct physical inputs but with claims on system output through property rights and financial instruments. Technical Innovation absorbs material and labor inputs; its outputs (knowledge goods, patents) re-enter the production circuit as inputs to Industry, Services, and other sectors. Veblenian/Luxury goods flow exclusively to F.I.R.E.. The Work sector features a large self-loop (Z[4][4] = 6,900 hours, annotated as Reciprocity) representing unpaid domestic and care labor (the work assigned to other sectors is understood as paid; this reflects estimates for the care-to-paid-work ratio in advanced economies). The Biosphere sector has a total output set below its row sum (gross material extractions), indicating rapid depletion of ecological stocks. Waste is modeled as a non-basic terminal sink (output flows nowhere). The economic core is at surplus because the core isolates Industry and Services, treating their dependencies on Work and Biosphere as if they were free. However, note that the full-system eigenvalue approximates 1, indicating a that the complete system is able to reproduce itself (at least while ecological stocks are not depleted).</p>
 
-            <p><strong>Other Historical Models:</strong> The dropdown menu contains several additional illustrative matrices. These include François Quesnay's Physiocratic models (the 3-sector macroeconomic Tableau, a detailed mapping of the original 1758 zigzag diagram, and the expanded Formule including capital and taxation). It also includes models of classical Mediterranean provisioning: the baseline autarky of a Greek <em>oikos</em>, an aggregated Greek <em>polis</em> showing household interaction with state and urban markets, and a Roman <em>latifundium</em> demonstrating highly integrated, slave-staffed cash-crop extraction. These specific numerical arrays are pedagogical abstractions intended to map structural topologies, not formal quantitative reconstructions.</p>
+            <p><strong>Other Presets (less carefully validated):</strong> The dropdown menu contains several additional illustrative matrices. These include François Quesnay's Physiocratic models (the 3-sector macroeconomic Tableau, a detailed mapping of the original 1758 zigzag diagram, and the expanded Formule including capital and taxation). It also includes three sketches of classical Mediterranean provisioning systems: a semi-autarkic Greek <em>oikos</em> household, an aggregated Greek <em>polis</em> showing household interaction with state and urban markets, and a Roman <em>latifundium</em> demonstrating slave-staffed cash-crop extraction. The "Simon" preset applies an analogous logic to a modern corporation, annotated here as a largely redistributive hierarchy that has market interactions with its outside, as in Herbert Simon's reconstruction of Coase/Williamson transaction cost economics. </p>
 
             <h4>5. Related Literature, Research Directions</h4>
 
@@ -649,7 +652,34 @@
                 [1, 0, 0, 0, 0, 0],
                 [1, 0, 1, 0, 1, 1]
             ]
-        }
+        },
+        simon_firm: {
+            sectors: [
+                {name: "HQ & Management", unit: "directives"}, 
+                {name: "Division A (Components)", unit: "parts"},
+                {name: "Division B (Assembly)", unit: "goods"},
+                {name: "Firm Employees", unit: "hours"},
+                {name: "External Market", unit: "transactions"}
+            ],
+            Z: [
+                // 0:HQ  1:DivA  2:DivB  3:Emp  4:Market
+                [   0,     50,     50,     0,      0  ], // HQ coordinates the two internal divisions
+                [   0,      0,    500,     0,      0  ], // Div A sends all components to Div B (Internal supply chain)
+                [   0,      0,      0,     0,   1000  ], // Div B exports finished goods to the External Market
+                [ 200,    400,    400,     0,      0  ], // Employees allocate labor hours across the firm
+                [ 100,    300,      0,  1000,      0  ]  // Market provides HQ services, raw materials to A, and wage-goods to Employees
+            ],
+            total_output: [100, 500, 1000, 1000, 1400],
+            numeraire_index: 4, 
+            social_indices: [3, 4], // Employees and the Market are the social/external environment
+            institutions: [
+                [2, 2, 2, 2, 1], // HQ uses Redistribution (Command/Hierarchy)
+                [2, 2, 2, 2, 1], // Div A transfers internally via Redistribution
+                [1, 1, 1, 1, 1], // Div B sells to Market via Exchange
+                [2, 2, 2, 2, 1], // Employee labor tasks are allocated by Redistribution (Authority)
+                [1, 1, 1, 1, 1]  // The External Market operates entirely by Exchange
+            ]
+        },
     };
 
     let state = {};

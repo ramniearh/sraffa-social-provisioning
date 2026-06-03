@@ -138,7 +138,7 @@
             This interactive exploratory tool describes the way a society provides for its needs as a matrix of interdependent material and social processes. Rows and columns below represent economic and social sectors. Read rows horizontally to follow how a good is distributed across sectors; read columns vertically to see what a sector requires to function. Following Piero Sraffa's framework in <i>Production of Commodities by Means of Commodities</i>, sectors depend on each other in interconnected, mutually reinforcing ways (e.g. wheat farming needs iron tools, while iron smelting needs wheat to feed workers). Unlike in Sraffa, however, this matrix is extended to include "social sectors", aiming to capture a broader view of the material and social flows that characterize these provisioning systems - whether or not they operate as market economies. The matrix can be seen as a snapshot of an economy in one period, with its parameters indicating whether the economy produces enough materials to replenish itself and reproduce itself into the future. 
         </p>
         <p class="primer">
-            Select a preset economy above and press <em>Calculate System Parameters</em> to see the mathematical properties of the system described in the inputs. Then experiment: you can input numbers directly into a cell (both in the inter-sector flows or in the TOTAL OUTPUT box), add or remove sectors, select designations, or right-click cells to change annotation colors. Click the calculate button again to see the effect of your changes.
+            Select a preset economy above and press <em>Calculate System Parameters</em> to see the mathematical properties of the system as described in the cells. Then experiment: you can input numbers directly into a cell (both in the inter-sector flows or in the TOTAL OUTPUT box), add or remove sectors, select designations, or right-click cells to change annotation colors. Click the calculate button again to see the effect of your changes.
         </p>
 
         <h3 style="margin-top: 25px; margin-bottom: 10px;">Physical Flow Matrix (Z)</h3>
@@ -151,10 +151,10 @@
         </div>
 
         <p class="primer">
-            Where a row's sum differs from its stated TOTAL OUTPUT, the &gt; or &lt; indicators show whether output is larger or smaller than the allocated flows. Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (a unit-of-account analogue used as a reference to normalize calculations for the other sectors). The numéraire choice only rescales quantities of other sectors in relation to the one selected and has no effect on the rest of thesystem otherwise.
+            Where a row's sum differs from its stated TOTAL OUTPUT, the &gt; or &lt; indicators show whether output is larger or smaller than the allocated flows. Use the right-hand columns to designate a <strong><u>Numéraire</u></strong> (a unit-of-account analogue used as a reference to normalize calculations for the other sectors). The numéraire choice only rescales quantities of other sectors in relation to the one selected and otherwise has no effect on the rest of the system.
         </p>
         <p class="primer">
-            <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> in the column and row names denotes economic sectors (commodity-producing activities, in Sraffa's original sense). Toggle the <em>Social</em> checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">violet</span>, sectors whose primary function is social or ecological reproduction (in broadened provisioning sense that goes beyond Sraffa's and includes households, community institutions, the state, the biosphere). This does affects the calculation of the viability parameters below, as it draws a separation between a commodity subsystem and the broader social system in which it is embedded.
+            <span style="color: var(--text-economic); font-weight: bold;">Blue text</span> in the column and row names denotes economic sectors (commodity-producing activities, in Sraffa's original sense). Toggle the <em>Social</em> checkbox to designate, in <span style="color: var(--text-social); font-weight: bold;">violet</span>, sectors whose primary function is social or ecological reproduction (in broadened provisioning sense that goes beyond Sraffa's and includes households, community institutions, the state, or the biosphere). This does affects the calculation of the viability parameters below, as it draws a separation between a commodity subsystem and the broader social system in which it is embedded.
         </p>
         <p class="primer">
             Cell background colors annotate the primary form of integration (in Karl Polanyi's sense) through which that flow is organized. These are just annotations; they do not affect the structure of the flows or change the calculations. Right-click any cell to cycle through the colors marked below:<br>
@@ -177,19 +177,19 @@
 
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Viability and Reproduction (Eigenvalues and Sector Balances)</div>
-                    <p class="chart-intro">The core subsystem eigenvalue (λ) measures the isolated viability of the open economic matrix, approximating Sraffa's original framework of "reproduction of commodities by means of commodities". We also define an "extended system eigenvalue" (σ) measuring a fully closed, broader provisioning matrix that includes "social sectors".</p>
+                    <p class="chart-intro">The core subsystem eigenvalue (λ) measures the isolated viability of the open economic matrix. This approximates Sraffa's original framework of "reproduction of commodities by means of commodities". We also define an "extended system eigenvalue" (σ) measuring a fully closed, broader provisioning matrix that includes "social sectors".</p>
                     <div id="out-lambda" style="margin-bottom: 10px;"></div>
                     <div id="out-balance"></div>
                     <p class="chart-caption">
                         λ is the dominant eigenvalue of the technical coefficients sub-matrix formed by economic (non-social) sectors only. When λ &lt; 1, this sub-system generates a physical surplus relative to its own direct reproduction requirements; λ = 1 is exact subsistence; λ &gt; 1 is a direct physical deficit. Because λ excludes inputs from social sectors, it measures the economic core as if those inputs (labor, governance, ecological services) were freely available (TBD; a partial, lower-bound reading of economic viability?).
                         <br><br>
-                        σ is the dominant eigenvalue of the full provisioning matrix A, including social sectors. σ = 1 means the system as a whole is at exact reproduction; σ &lt; 1 indicates a system-level physical surplus; σ &gt; 1 indicates a system-level deficit. σ and the balance table carry different information: σ measures the reproductive condition implied by the technical coefficients; the balance table detects unallocated flows (row sums differing from stated total outputs). This implementation interprets "social reproduction" in the broadest possible sense of "that economy represented by the matrix subsists in time until the next period".
+                        σ is the dominant eigenvalue of the full provisioning matrix A, including social sectors. σ = 1 means the system as a whole is at exact reproduction; σ &lt; 1 indicates a system-level physical surplus; σ &gt; 1 indicates a system-level deficit. σ and the balance table carry different information: σ measures the conditions of reproduction of the system as captured by the technical matrix, while the balance table simply detects unallocated or insufficient flows (row sums differing from stated total outputs). This implementation interprets "social reproduction" in the broadest possible sense of "the economy represented by this matrix subsists in time until the next period".
                     </p>
                 </div>
 
                 <div>
                     <div class="sub-header" style="margin-top: 0;">Provisioning Centrality (Left Eigenvector)</div>
-                    <p class="chart-intro">These weights (normalized to the numéraire) indicate the system-level dependencies between the sectors included in the matrix. A sector's provisioning centrality weight indicates the relative importance of this sector in the provisioning network, i.e., how much of the flows from all the other sectors are required for the reproduction of this one. In a more narrowly economic and closed system at subsistence (as in Sraffa's Chapter 1), these also correspond to market prices. </p>
+                    <p class="chart-intro">These weights (normalized to the numéraire) indicate the system-level dependencies between the sectors included in the matrix. A sector's provisioning centrality weight indicates the relative importance of this sector in sustaining the provisioning network, i.e., how relevant this sector is for the reproduction of all the others. In a more narrowly economic and closed system at subsistence (as in Sraffa's Chapter 1), these also correspond to market prices. </p>
                     
                     <div style="display: flex; justify-content: center; margin-top: 10px;">
                         <table class="diag-table" style="width: auto; min-width: 40%; margin: 0;">
@@ -211,11 +211,11 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px;">
                 <div>
-                    <div class="sub-header" style="margin-top: 0;">Physical Flow Network (Z)</div>
-                    <p class="chart-intro">Visualizes the absolute material activity in the system. Larger nodes represent greater systemic scale; thicker edges indicate higher physical flow volumes.</p>
+                    <div class="sub-header" style="margin-top: 0;">Physical Flow Network (Z) (exploratory)</div>
+                    <p class="chart-intro">Visualizes the material and social activity in the system in absolute, heterogenous terms. Larger nodes represent greater systemic scale. Edge thickness indicates higher volumes of flow.</p>
                     <div id="networkMapZ" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
                     <p class="chart-caption">
-                        The "extensive" topology: node size represents Gross Systemic Scale (Provisioning Centrality × total output), combining structural importance with output volume. Edge thickness represents the absolute physical flow Z[i&rarr;j]. Edge color reflects the user-assigned integration form. This network shows where the largest absolute volumes of material exchange occur in the system — which sectors are big in aggregate terms, and where the heaviest flow dependencies lie. Node colors map to economic (blue) and social (violet) classifications.
+                        An "extensive" topology: node size represents Gross Systemic Scale (Provisioning Centrality × total output), combining weight in the system and output volume. Edge thickness represents the absolute physical flow Z[i&rarr;j]. Edge color reflects the user-assigned integration form. This network shows where the largest absolute volumes of material exchange occur in the system — which sectors are big in aggregate terms, and where the heaviest flow dependencies lie. Node colors map to economic (blue) and social (violet) classifications.
                     </p>
                 </div>
                 <div>
@@ -223,7 +223,7 @@
                     <p class="chart-intro">Visualizes the per-unit technical dependencies. Larger nodes indicate higher systemic centrality per unit of output; thicker edges represent larger input requirements per unit produced.</p>
                     <div id="networkMapA" style="height: 420px; border: 1px solid #cfd8dc; border-radius: 6px; background: #fafafa; margin-top: 6px;"></div>
                     <p class="chart-caption">
-                        The "intensive" structure: node size represents per-unit Provisioning Centrality — structural importance independent of output scale. Edge thickness represents the technical coefficient A[i&rarr;j]: the quantity of good i required per unit of output j. Edge color reflects the user-assigned integration form. This network shows which production processes carry the highest per-unit structural dependencies — the recipe of the economy stripped of its scale.
+                        An "intensive" topology: node size represents per-unit Provisioning Centrality — weight in the system independent of output scale. Edge thickness represents the technical coefficient A[i&rarr;j] (the quantity of good i required per unit of output j). Edge color reflects the user-assigned Polayian form of integration. This network shows which production processes carry the highest per-unit system dependencies — the "recipe" of the economy stripped of its scale.
                     </p>
                 </div>
             </div>
@@ -249,7 +249,7 @@
                     <p class="chart-intro">Calculates whether social sectors send more outflows into the system than they receive (as measured by respective system weights), or vice versa.</p>
                     <div class="chart-wrapper"><canvas id="netFlowChart"></canvas></div>
                     <p class="chart-caption">
-                        For each social sector: total weighted inputs received (column sum, each flow weighted by its source sector's Provisioning Centrality) minus total weighted outputs contributed (row sum, weighted by the sector's own Provisioning Centrality), expressed in numéraire units. A positive value indicates the sector receives more than it contributes structurally; negative indicates net structural contribution. Note that inputs and outputs use different weights (source-sector centrality vs. the sector's own centrality), creating an asymmetry that should be interpreted with care. This is a flow-accounting identity derived from the matrix structure; it does not constitute a normative judgment about the sector's social role or productivity.
+                        For each social sector: total weighted inputs received (column sum, each flow weighted by its source sector's Provisioning Centrality) minus total weighted outputs contributed (row sum, weighted by the sector's own Provisioning Centrality), expressed in numéraire units. A positive value indicates the sector receives more than it contributes to the structure; negative indicates net contribution. Note that inputs and outputs use different weights (source-sector centrality vs. the sector's own centrality), creating an asymmetry that should be interpreted with care. This is a flow-accounting identity derived from the matrix structure; it does not constitute a normative judgment about the sector's social role or productivity.
                     </p>
                 </div>
 
@@ -967,7 +967,7 @@
             provisioning_weights[i] = num_val > 0 ? (eigenvector[i] / num_val) : 0;
             let scale = provisioning_weights[i] * state.total_output[i];
             sectoral_scales.push(scale);
-            labels.push(state.sectors[i].name);
+            labels.push(`${state.sectors[i].name} (${state.sectors[i].unit})`);
             // Deep blue for economic, plum violet for social
             bgColors.push(state.social.includes(i) ? '#6a1b9a' : '#1565c0');
             centralityTbody += `<tr ${i === state.numeraire ? 'style="background:rgba(69, 90, 100, 0.1); font-weight:bold;"' : ''}><td>1 ${state.sectors[i].unit} <strong>${state.sectors[i].name}</strong></td><td>${provisioning_weights[i].toFixed(4)}</td></tr>`;
@@ -1016,8 +1016,8 @@
 
         for (let i = 0; i < N; i++) {
             let nodeColor = { background: state.social.includes(i) ? '#f3e5f5' : '#e3f2fd', border: state.social.includes(i) ? '#6a1b9a' : '#1565c0' };
-            networkNodesZ.push({ id: i, label: state.sectors[i].name, value: sectoral_scales[i] || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
-            networkNodesA.push({ id: i, label: state.sectors[i].name, value: provisioning_weights[i] * 100 || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
+            networkNodesZ.push({ id: i, label: `${state.sectors[i].name}\n(${state.sectors[i].unit})`, value: sectoral_scales[i] || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
+            networkNodesA.push({ id: i, label: `${state.sectors[i].name}\n(${state.sectors[i].unit})`, value: provisioning_weights[i] * 100 || 1, color: nodeColor, font: { size: 14, color: '#263238' } });
             for (let j = 0; j < N; j++) {
                 let instType = state.institutions[i][j] || 0;
                 if (state.Z[i][j] > 0) networkEdgesZ.push({ from: i, to: j, value: state.Z[i][j] * provisioning_weights[i], color: { color: instHexColors[instType], opacity: 0.8 }, arrows: 'to' });
